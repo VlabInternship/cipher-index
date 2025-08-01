@@ -30,7 +30,7 @@ export default function Home() {
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
             <li style={{ marginBottom: "1.5rem" }}>
               <a
-                href="/salsa20"
+                href="/salsa20-cipher"
                 style={{
                   display: "inline-block",
                   padding: "1rem 2.5rem",
@@ -49,12 +49,199 @@ export default function Home() {
                 SalSa20 Cipher
               </a>
             </li>
+            <li style={{ marginBottom: "1.5rem" }}>
+              <a
+                href="/hill-cipher"
+                style={{
+                  display: "inline-block",
+                  padding: "1rem 2.5rem",
+                  fontSize: "1.25rem",
+                  fontWeight: "500",
+                  color: "#fff",
+                  background: "linear-gradient(90deg,#0ea5e9,#38bdf8)",
+                  borderRadius: "0.75rem",
+                  textDecoration: "none",
+                  boxShadow: "0 2px 8px rgba(14,116,144,0.08)",
+                  transition: "background 0.2s, transform 0.2s",
+                }}
+                onMouseOver={e => e.currentTarget.style.background = "linear-gradient(90deg,#38bdf8,#0ea5e9)"}
+                onMouseOut={e => e.currentTarget.style.background = "linear-gradient(90deg,#0ea5e9,#38bdf8)"}
+              >
+                Hill Cipher
+              </a>
+            </li>
+            <li style={{ marginBottom: "1.5rem" }}>
+              <a
+                href="/railfence-cipher"
+                style={{
+                  display: "inline-block",
+                  padding: "1rem 2.5rem",
+                  fontSize: "1.25rem",
+                  fontWeight: "500",
+                  color: "#fff",
+                  background: "linear-gradient(90deg,#0ea5e9,#38bdf8)",
+                  borderRadius: "0.75rem",
+                  textDecoration: "none",
+                  boxShadow: "0 2px 8px rgba(14,116,144,0.08)",
+                  transition: "background 0.2s, transform 0.2s",
+                }}
+                onMouseOver={e => e.currentTarget.style.background = "linear-gradient(90deg,#38bdf8,#0ea5e9)"}
+                onMouseOut={e => e.currentTarget.style.background = "linear-gradient(90deg,#0ea5e9,#38bdf8)"}
+              >
+                RailFence Cipher
+              </a>
+            </li>
+            <li style={{ marginBottom: "1.5rem" }}>
+              <a
+                href="/vigenere-cipher"
+                style={{
+                  display: "inline-block",
+                  padding: "1rem 2.5rem",
+                  fontSize: "1.25rem",
+                  fontWeight: "500",
+                  color: "#fff",
+                  background: "linear-gradient(90deg,#0ea5e9,#38bdf8)",
+                  borderRadius: "0.75rem",
+                  textDecoration: "none",
+                  boxShadow: "0 2px 8px rgba(14,116,144,0.08)",
+                  transition: "background 0.2s, transform 0.2s",
+                }}
+                onMouseOver={e => e.currentTarget.style.background = "linear-gradient(90deg,#38bdf8,#0ea5e9)"}
+                onMouseOut={e => e.currentTarget.style.background = "linear-gradient(90deg,#0ea5e9,#38bdf8)"}
+              >
+                Vigenere Cipher
+              </a>
+            </li>
+            <li style={{ marginBottom: "1.5rem" }}>
+              <a
+                href="/a51-cipher"
+                style={{
+                  display: "inline-block",
+                  padding: "1rem 2.5rem",
+                  fontSize: "1.25rem",
+                  fontWeight: "500",
+                  color: "#fff",
+                  background: "linear-gradient(90deg,#0ea5e9,#38bdf8)",
+                  borderRadius: "0.75rem",
+                  textDecoration: "none",
+                  boxShadow: "0 2px 8px rgba(14,116,144,0.08)",
+                  transition: "background 0.2s, transform 0.2s",
+                }}
+                onMouseOver={e => e.currentTarget.style.background = "linear-gradient(90deg,#38bdf8,#0ea5e9)"}
+                onMouseOut={e => e.currentTarget.style.background = "linear-gradient(90deg,#0ea5e9,#38bdf8)"}
+              >
+                A5/1 Cipher
+              </a>
+            </li>
+            <li style={{ marginBottom: "1.5rem" }}>
+              <a
+                href="/chacha20-cipher"
+                style={{
+                  display: "inline-block",
+                  padding: "1rem 2.5rem",
+                  fontSize: "1.25rem",
+                  fontWeight: "500",
+                  color: "#fff",
+                  background: "linear-gradient(90deg,#0ea5e9,#38bdf8)",
+                  borderRadius: "0.75rem",
+                  textDecoration: "none",
+                  boxShadow: "0 2px 8px rgba(14,116,144,0.08)",
+                  transition: "background 0.2s, transform 0.2s",
+                }}
+                onMouseOver={e => e.currentTarget.style.background = "linear-gradient(90deg,#38bdf8,#0ea5e9)"}
+                onMouseOut={e => e.currentTarget.style.background = "linear-gradient(90deg,#0ea5e9,#38bdf8)"}
+              >
+                ChaCha20 Cipher
+              </a>
+            </li>
+            <li style={{ marginBottom: "1.5rem" }}>
+              <a
+                href="/onetimepad-cipher"
+                style={{
+                  display: "inline-block",
+                  padding: "1rem 2.5rem",
+                  fontSize: "1.25rem",
+                  fontWeight: "500",
+                  color: "#fff",
+                  background: "linear-gradient(90deg,#0ea5e9,#38bdf8)",
+                  borderRadius: "0.75rem",
+                  textDecoration: "none",
+                  boxShadow: "0 2px 8px rgba(14,116,144,0.08)",
+                  transition: "background 0.2s, transform 0.2s",
+                }}
+                onMouseOver={e => e.currentTarget.style.background = "linear-gradient(90deg,#38bdf8,#0ea5e9)"}
+                onMouseOut={e => e.currentTarget.style.background = "linear-gradient(90deg,#0ea5e9,#38bdf8)"}
+              >
+                One Time Pad Cipher
+              </a>
+            </li>
+            <li style={{ marginBottom: "1.5rem" }}>
+              <a
+                href="/speck-cipher"
+                style={{
+                  display: "inline-block",
+                  padding: "1rem 2.5rem",
+                  fontSize: "1.25rem",
+                  fontWeight: "500",
+                  color: "#fff",
+                  background: "linear-gradient(90deg,#0ea5e9,#38bdf8)",
+                  borderRadius: "0.75rem",
+                  textDecoration: "none",
+                  boxShadow: "0 2px 8px rgba(14,116,144,0.08)",
+                  transition: "background 0.2s, transform 0.2s",
+                }}
+                onMouseOver={e => e.currentTarget.style.background = "linear-gradient(90deg,#38bdf8,#0ea5e9)"}
+                onMouseOut={e => e.currentTarget.style.background = "linear-gradient(90deg,#0ea5e9,#38bdf8)"}
+              >
+                Speck Cipher
+              </a>
+            </li>
+            <li style={{ marginBottom: "1.5rem" }}>
+              <a
+                href="/present-cipher"
+                style={{
+                  display: "inline-block",
+                  padding: "1rem 2.5rem",
+                  fontSize: "1.25rem",
+                  fontWeight: "500",
+                  color: "#fff",
+                  background: "linear-gradient(90deg,#0ea5e9,#38bdf8)",
+                  borderRadius: "0.75rem",
+                  textDecoration: "none",
+                  boxShadow: "0 2px 8px rgba(14,116,144,0.08)",
+                  transition: "background 0.2s, transform 0.2s",
+                }}
+                onMouseOver={e => e.currentTarget.style.background = "linear-gradient(90deg,#38bdf8,#0ea5e9)"}
+                onMouseOut={e => e.currentTarget.style.background = "linear-gradient(90deg,#0ea5e9,#38bdf8)"}
+              >
+                Present Cipher
+              </a>
+            </li>
+            <li style={{ marginBottom: "1.5rem" }}>
+              <a
+                href="/rc4-cipher"
+                style={{
+                  display: "inline-block",
+                  padding: "1rem 2.5rem",
+                  fontSize: "1.25rem",
+                  fontWeight: "500",
+                  color: "#fff",
+                  background: "linear-gradient(90deg,#0ea5e9,#38bdf8)",
+                  borderRadius: "0.75rem",
+                  textDecoration: "none",
+                  boxShadow: "0 2px 8px rgba(14,116,144,0.08)",
+                  transition: "background 0.2s, transform 0.2s",
+                }}
+                onMouseOver={e => e.currentTarget.style.background = "linear-gradient(90deg,#38bdf8,#0ea5e9)"}
+                onMouseOut={e => e.currentTarget.style.background = "linear-gradient(90deg,#0ea5e9,#38bdf8)"}
+              >
+                RC4 Cipher
+              </a>
+            </li>
+            
             {/* Add more ciphers here as you create their pages */}
           </ul>
         </main>
-        <footer style={{ marginTop: "3rem", color: "#64748b", fontSize: "0.95rem" }}>
-          &copy; {new Date().getFullYear()} Ciphers Playground
-        </footer>
       </div>
     </>
   );
