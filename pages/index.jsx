@@ -259,6 +259,27 @@ export default function Home() {
             >
               AES Cipher
             </a>
+            <a
+              href="/des-cipher"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "1rem",
+                fontSize: "1.25rem",
+                fontWeight: "500",
+                color: "#fff",
+                background: "linear-gradient(90deg,#0ea5e9,#38bdf8)",
+                borderRadius: "0.75rem",
+                textDecoration: "none",
+                boxShadow: "0 2px 8px rgba(14,116,144,0.08)",
+                transition: "background 0.2s, transform 0.2s",
+              }}
+              onMouseOver={(e) => (e.currentTarget.style.background = "linear-gradient(90deg,#38bdf8,#0ea5e9)")}
+              onMouseOut={(e) => (e.currentTarget.style.background = "linear-gradient(90deg,#0ea5e9,#38bdf8)")}
+            >
+              DES Cipher
+              </a>
           </div>
         </main>
       </div>
