@@ -152,7 +152,7 @@ const XorVisualizer = ({ currentStep, keystreamBytes, plaintextBytes, ciphertext
   );
 };
 
-// --- Theory & Example Tabs (No changes here) ---
+// --- Theory & Example Tabs ---
 const TheoryTab = () => (
     <div className="space-y-6 animate-fade-in">
         <div className="bg-white border border-gray-200 rounded-lg p-6">
@@ -278,7 +278,7 @@ const ExampleTab = () => (
 
 // --- Main Component ---
 const Salsa20Interactive = () => {
-  const [activeTab, setActiveTab] = useState("cipher");
+  const [activeTab, setActiveTab] = useState("theory");
   const [input, setInput] = useState("This is a secret message.");
   const [key, setKey] = useState("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f");
   const [nonce, setNonce] = useState("0000000000000000");
@@ -525,7 +525,7 @@ const Salsa20Interactive = () => {
   };
   
   /**
-   * [FIXED] This function now accepts an onComplete callback to chain animations for autoplay.
+   * This function now accepts an onComplete callback to chain animations for autoplay.
    * It animates a single mixing round (column or diagonal).
    */
   const handleRoundClick = (roundIndex, onComplete) => {
@@ -621,7 +621,7 @@ const Salsa20Interactive = () => {
   };
   
   /**
-   * [FIXED] This function now uses the improved handleRoundClick to show a detailed
+   * This function now uses the improved handleRoundClick to show a detailed
    * animation for all 20 mixing rounds, instead of just stepping through the final states.
    */
   const startAutoPlay = () => {
@@ -648,26 +648,26 @@ const Salsa20Interactive = () => {
         
         const animateMixingRounds = () => {
             if (currentRound <= 20) {
-                // Animate the current round and provide a callback to continue the sequence
-                handleRoundClick(currentRound, () => {
-                    currentRound++;
-                    // A small delay between rounds for better pacing
-                    autoPlayTimeoutRef.current = setTimeout(animateMixingRounds, 200 * animationSpeed);
-                });
+              // Animate the current round and provide a callback to continue the sequence
+              handleRoundClick(currentRound, () => {
+                  currentRound++;
+                  // A small delay between rounds for better pacing
+                  autoPlayTimeoutRef.current = setTimeout(animateMixingRounds, 200 * animationSpeed);
+              });
             } else {
-                // Mixing is done, proceed to the next steps
-                autoPlayTimeoutRef.current = setTimeout(() => {
-                    navigateToStep(2, computed);
-                    autoPlayTimeoutRef.current = setTimeout(() => {
-                        navigateToStep(3, computed);
-                        autoPlayTimeoutRef.current = setTimeout(() => {
-                            navigateToStep(4, computed);
-                            autoPlayTimeoutRef.current = setTimeout(() => {
-                                setIsAutoPlaying(false);
-                            }, 500 * animationSpeed);
-                        }, 1200 * animationSpeed);
-                    }, 1200 * animationSpeed);
-                }, 500 * animationSpeed);
+              // Mixing is done, proceed to the next steps
+              autoPlayTimeoutRef.current = setTimeout(() => {
+                  navigateToStep(2, computed);
+                  autoPlayTimeoutRef.current = setTimeout(() => {
+                      navigateToStep(3, computed);
+                      autoPlayTimeoutRef.current = setTimeout(() => {
+                          navigateToStep(4, computed);
+                          autoPlayTimeoutRef.current = setTimeout(() => {
+                              setIsAutoPlaying(false);
+                          }, 500 * animationSpeed);
+                      }, 1200 * animationSpeed);
+                  }, 1200 * animationSpeed);
+              }, 500 * animationSpeed);
             }
         };
 
@@ -707,7 +707,7 @@ const Salsa20Interactive = () => {
         </header>
         <nav className="flex justify-center mb-8">
           <div className="bg-white rounded-lg p-1 flex space-x-1 shadow-md border">
-            {["cipher", "theory", "example"].map((tab) => (
+            {["theory", "example", "cipher"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -720,6 +720,8 @@ const Salsa20Interactive = () => {
           </div>
         </nav>
         <main>
+          {activeTab === "theory" && <TheoryTab />}
+          {activeTab === "example" && <ExampleTab />}
           {activeTab === "cipher" && (
             <section className="max-w-7xl mx-auto animate-fade-in">
               <div className="grid lg:grid-cols-5 gap-8">
@@ -962,8 +964,6 @@ const Salsa20Interactive = () => {
               </div>
             </section>
           )}
-          {activeTab === "theory" && <TheoryTab />}
-          {activeTab === "example" && <ExampleTab />}
         </main>
         <footer className="mt-16 text-center text-sm text-gray-500">
           <p>An interactive visualization of the Salsa20 stream cipher algorithm</p>
@@ -975,5 +975,3 @@ const Salsa20Interactive = () => {
 };
 
 export default Salsa20Interactive;
-
-

@@ -1,6 +1,236 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, Lock, Unlock, Play, RotateCcw } from 'lucide-react';
 
+const TheoryTab = () => (
+    <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">What is Rail Fence Cipher?</h2>
+      
+      <div className="prose max-w-none">
+        <p className="text-gray-700 mb-4">
+          The Rail Fence Cipher is a form of transposition cipher that gets its name from the way it's encoded. 
+          The plaintext is written in a zigzag pattern across multiple "rails" (rows), then read off in rows to create the ciphertext.
+        </p>
+
+        <h3 className="text-xl font-semibold text-gray-800 mb-3">How it works:</h3>
+        <ol className="list-decimal list-inside text-gray-700 mb-6 space-y-2">
+          <li>Choose the number of rails (rows)</li>
+          <li>Write the message in a zigzag pattern across the rails</li>
+          <li>Read the characters from each rail sequentially to form the cipher</li>
+        </ol>
+
+        <h3 className="text-xl font-semibold text-gray-800 mb-3">Example:</h3>
+        <div className="bg-gray-50 p-4 rounded-lg mb-4">
+          <p className="font-mono text-sm mb-2">Plaintext: "HELLO WORLD" with 3 rails</p>
+          <div className="font-mono text-sm space-y-1">
+            <div>Rail 1: H . . . O . . . R . .</div>
+            <div>Rail 2: . E . L . W . . L .</div>
+            <div>Rail 3: . . L . . . . O . . D</div>
+          </div>
+          <p className="font-mono text-sm mt-2">Reading the rails yields the ciphertext: "HORELWLLOD"</p>
+        </div>
+
+        <h3 className="text-xl font-semibold text-gray-800 mb-3">Properties:</h3>
+        <ul className="list-disc list-inside text-gray-700 space-y-1">
+          <li>Easy to implement and understand</li>
+          <li>Relatively weak security (can be broken with frequency analysis)</li>
+          <li>Preserves character frequency distribution</li>
+          <li>Historically used for simple message concealment</li>
+        </ul>
+      </div>
+    </div>
+);
+
+const ExampleTab = () => (
+    <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">Standard Test Vector Example</h2>
+      
+      <div className="prose max-w-none">
+        <p className="text-gray-700 mb-4">
+          This section demonstrates a concrete example of encryption and decryption using a standard test case.
+        </p>
+
+        <div className="bg-gray-50 p-4 rounded-lg mb-6">
+          <h3 className="text-xl font-semibold text-blue-700 mb-3">Encryption Example</h3>
+          <p className="font-mono text-sm mb-2"><b>Plaintext:</b> "WE ARE DISCOVERED FLEE AT ONCE"</p>
+          <p className="font-mono text-sm mb-2"><b>Number of Rails:</b> 3</p>
+          <p className="font-mono text-sm"><b>Expected Ciphertext:</b> "WECRLTEERDSOEEFEAOCAIVDEN"</p>
+        </div>
+
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <h3 className="text-xl font-semibold text-green-700 mb-3">Decryption Example</h3>
+          <p className="font-mono text-sm mb-2"><b>Ciphertext:</b> "WECRLTEERDSOEEFEAOCAIVDEN"</p>
+          <p className="font-mono text-sm mb-2"><b>Number of Rails:</b> 3</p>
+          <p className="font-mono text-sm"><b>Expected Plaintext:</b> "WEAREDISCOVEREDFLEEATONCE"</p>
+        </div>
+      </div>
+    </div>
+);
+
+const SimulationTab = ({
+  plaintext,
+  setPlaintext,
+  ciphertext,
+  setCiphertext,
+  rails,
+  setRails,
+  mode,
+  setMode,
+  isAnimating,
+  animationStep,
+  railPattern,
+  currentChar,
+  runAnimation,
+  handleProcess,
+  resetAnimation
+}) => (
+    <div className="space-y-6">
+      {/* Controls */}
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">Interactive Rail Fence Tool</h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Mode
+            </label>
+            <select
+              value={mode}
+              onChange={(e) => setMode(e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="encrypt">Encrypt</option>
+              <option value="decrypt">Decrypt</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Number of Rails: {rails}
+            </label>
+            <input
+              type="range"
+              min="2"
+              max="10"
+              value={rails}
+              onChange={(e) => setRails(parseInt(e.target.value))}
+              className="w-full"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {mode === 'encrypt' ? 'Plaintext' : 'Input Text'}
+            </label>
+            <input
+              type="text"
+              value={mode === 'encrypt' ? plaintext : ciphertext}
+              onChange={(e) => mode === 'encrypt' ? setPlaintext(e.target.value) : setCiphertext(e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Enter your message..."
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {mode === 'encrypt' ? 'Ciphertext' : 'Decrypted Text'}
+            </label>
+            <input
+              type="text"
+              value={mode === 'encrypt' ? ciphertext : plaintext}
+              readOnly
+              className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50"
+              placeholder="Result will appear here..."
+            />
+          </div>
+        </div>
+
+        <div className="flex gap-4 mt-6">
+          <button
+            onClick={runAnimation}
+            disabled={isAnimating}
+            className="flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            <Play size={18} />
+            {isAnimating ? 'Visualizing...' : 'Explain'}
+          </button>
+          
+          <button
+            onClick={handleProcess}
+            className="flex items-center gap-2 px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+          >
+            {mode === 'encrypt' ? <Lock size={18} /> : <Unlock size={18} />}
+            {mode === 'encrypt' ? 'Encrypt' : 'Decrypt'}
+          </button>
+
+          <button
+            onClick={resetAnimation}
+            className="flex items-center gap-2 px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+          >
+            <RotateCcw size={18} />
+            Reset
+          </button>
+        </div>
+      </div>
+
+      {/* Visualization */}
+      {(railPattern.length > 0 || animationStep > 0) && (
+        <div className="bg-white rounded-lg shadow-lg p-6">
+          <h3 className="text-xl font-bold text-gray-800 mb-4">Rail Pattern Visualization</h3>
+          
+          <div className="overflow-x-auto">
+            <div className="min-w-max">
+              {railPattern.map((rail, railIndex) => (
+                <div key={railIndex} className="flex items-center mb-4">
+                  <div className="w-16 text-sm font-medium text-gray-600 mr-4">
+                    Rail {railIndex + 1}:
+                  </div>
+                  <div className="flex gap-2">
+                    {rail.map((cell, cellIndex) => (
+                      <div
+                        key={cellIndex}
+                        className={`w-8 h-8 border-2 rounded flex items-center justify-center text-sm font-mono transition-all duration-300 ${
+                          cell 
+                            ? currentChar === cell.index
+                              ? 'border-red-500 bg-red-100 text-red-700 transform scale-110'
+                              : currentChar > cell.index || !isAnimating
+                              ? 'border-blue-500 bg-blue-100 text-blue-700'
+                              : 'border-gray-300 bg-gray-50 text-gray-400'
+                            : 'border-gray-200 bg-gray-50'
+                        }`}
+                      >
+                        {cell && (currentChar >= cell.index || !isAnimating) ? cell.char : ''}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {isAnimating && (
+            <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+              <div className="flex items-center gap-2 text-blue-700">
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                <span className="text-sm">
+                  {currentChar >= 0 && currentChar < (mode === 'encrypt' ? plaintext : ciphertext).length
+                    ? mode === 'encrypt' 
+                      ? `Placing character '${plaintext[currentChar]}' in zigzag pattern at position ${currentChar + 1}`
+                      : `Filling character '${ciphertext[currentChar]}' from ciphertext into rail pattern`
+                    : 'Processing...'}
+                </span>
+              </div>
+              <div className="text-xs text-blue-600 mt-1">
+                {mode === 'encrypt' 
+                  ? 'Encryption: Writing text in zigzag pattern across rails'
+                  : 'Decryption: Filling ciphertext into rails row by row, then reading diagonally'}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+);
+
 const RailFenceCipher = () => {
   const [activeTab, setActiveTab] = useState('theory');
   const [plaintext, setPlaintext] = useState('HELLO WORLD');
@@ -222,235 +452,49 @@ const RailFenceCipher = () => {
               Theory
             </button>
             <button
-              onClick={() => setActiveTab('interactive')}
+              onClick={() => setActiveTab('example')}
               className={`px-6 py-2 rounded-md transition-colors ${
-                activeTab === 'interactive' 
+                activeTab === 'example' 
                   ? 'bg-blue-500 text-white' 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              Interactive Tool
+              Example
+            </button>
+            <button
+              onClick={() => setActiveTab('simulation')}
+              className={`px-6 py-2 rounded-md transition-colors ${
+                activeTab === 'simulation' 
+                  ? 'bg-blue-500 text-white' 
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              Simulation
             </button>
           </div>
         </div>
 
-        {/* Theory Tab */}
-        {activeTab === 'theory' && (
-          <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">What is Rail Fence Cipher?</h2>
-            
-            <div className="prose max-w-none">
-              <p className="text-gray-700 mb-4">
-                The Rail Fence Cipher is a form of transposition cipher that gets its name from the way it's encoded. 
-                The plaintext is written in a zigzag pattern across multiple "rails" (rows), then read off in rows to create the ciphertext.
-              </p>
-
-              <h3 className="text-xl font-semibold text-gray-800 mb-3">How it works:</h3>
-              <ol className="list-decimal list-inside text-gray-700 mb-6 space-y-2">
-                <li>Choose the number of rails (rows)</li>
-                <li>Write the message in a zigzag pattern across the rails</li>
-                <li>Read the characters from each rail sequentially to form the cipher</li>
-              </ol>
-
-              <h3 className="text-xl font-semibold text-gray-800 mb-3">Example with 3 rails:</h3>
-              <div className="bg-gray-50 p-4 rounded-lg mb-4">
-                <p className="font-mono text-sm mb-2">Plaintext: "HELLO WORLD"</p>
-                <div className="font-mono text-sm space-y-1">
-                  <div>Rail 1: H _ _ _ O _ _ _ R _ _</div>
-                  <div>Rail 2: _ E _ L _ _ W _ _ L _</div>
-                  <div>Rail 3: _ _ L _ _ _ _ O _ _ D</div>
-                </div>
-                <p className="font-mono text-sm mt-2">Ciphertext: "HORELWLLOD"</p>
-              </div>
-
-              <h3 className="text-xl font-semibold text-gray-800 mb-3">Properties:</h3>
-              <ul className="list-disc list-inside text-gray-700 space-y-1">
-                <li>Easy to implement and understand</li>
-                <li>Relatively weak security (can be broken with frequency analysis)</li>
-                <li>Preserves character frequency distribution</li>
-                <li>Historically used for simple message concealment</li>
-              </ul>
-
-              <h3 className="text-xl font-semibold text-gray-800 mb-3">Historical Background:</h3>
-              <p className="text-gray-700 mb-4">
-                The Rail Fence Cipher is believed to have been used as early as the American Civil War for simple military communications. Its simplicity made it popular for hand-written messages, but it was never considered highly secure.
-              </p>
-
-              <h3 className="text-xl font-semibold text-gray-800 mb-3">Mathematical Structure:</h3>
-              <p className="text-gray-700 mb-4">
-                The cipher works by writing the message in a zigzag pattern across a set number of rails, then reading each rail sequentially. The pattern can be described mathematically, and the process can be reversed to decrypt the message if the number of rails is known.
-              </p>
-
-              <h3 className="text-xl font-semibold text-gray-800 mb-3">Security Considerations:</h3>
-              <ul className="list-disc list-inside text-gray-700 mb-4 space-y-1">
-                <li>The Rail Fence Cipher is not secure by modern standards and can be broken easily with brute force or pattern analysis.</li>
-                <li>It does not disguise letter frequencies, making it vulnerable to frequency analysis.</li>
-                <li>It is best used for educational purposes or as a puzzle rather than for real security.</li>
-              </ul>
-
-              <h3 className="text-xl font-semibold text-gray-800 mb-3">Variations:</h3>
-              <ul className="list-disc list-inside text-gray-700 mb-4 space-y-1">
-                <li><b>Offset Rail Fence:</b> The zigzag can start at a different rail, adding a small layer of complexity.</li>
-                <li><b>Multiple Passes:</b> The process can be repeated with different rail counts for added obfuscation.</li>
-                <li><b>Combination with Other Ciphers:</b> Sometimes used with substitution ciphers for increased security.</li>
-              </ul>
-
-              <h3 className="text-xl font-semibold text-gray-800 mb-3">Fun Fact:</h3>
-              <p className="text-gray-700 mb-4">
-                The name "Rail Fence" comes from the resemblance of the zigzag pattern to the rails of a split-rail fence!
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Interactive Tool Tab */}
-        {activeTab === 'interactive' && (
-          <div className="space-y-6">
-            {/* Controls */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">Interactive Rail Fence Tool</h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Mode
-                  </label>
-                  <select
-                    value={mode}
-                    onChange={(e) => setMode(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="encrypt">Encrypt</option>
-                    <option value="decrypt">Decrypt</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Number of Rails: {rails}
-                  </label>
-                  <input
-                    type="range"
-                    min="2"
-                    max="10"
-                    value={rails}
-                    onChange={(e) => setRails(parseInt(e.target.value))}
-                    className="w-full"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {mode === 'encrypt' ? 'Plaintext' : 'Input Text'}
-                  </label>
-                  <input
-                    type="text"
-                    value={mode === 'encrypt' ? plaintext : ciphertext}
-                    onChange={(e) => mode === 'encrypt' ? setPlaintext(e.target.value) : setCiphertext(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Enter your message..."
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {mode === 'encrypt' ? 'Ciphertext' : 'Decrypted Text'}
-                  </label>
-                  <input
-                    type="text"
-                    value={mode === 'encrypt' ? ciphertext : plaintext}
-                    readOnly
-                    className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50"
-                    placeholder="Result will appear here..."
-                  />
-                </div>
-              </div>
-
-              <div className="flex gap-4 mt-6">
-                <button
-                  onClick={runAnimation}
-                  disabled={isAnimating}
-                  className="flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  <Play size={18} />
-                  {isAnimating ? 'Visualizing...' : 'Explain'}
-                </button>
-                
-                <button
-                  onClick={handleProcess}
-                  className="flex items-center gap-2 px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
-                >
-                  {mode === 'encrypt' ? <Lock size={18} /> : <Unlock size={18} />}
-                  {mode === 'encrypt' ? 'Encrypt' : 'Decrypt'}
-                </button>
-
-                <button
-                  onClick={resetAnimation}
-                  className="flex items-center gap-2 px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
-                >
-                  <RotateCcw size={18} />
-                  Reset
-                </button>
-              </div>
-            </div>
-
-            {/* Visualization */}
-            {(railPattern.length > 0 || animationStep > 0) && (
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Rail Pattern Visualization</h3>
-                
-                <div className="overflow-x-auto">
-                  <div className="min-w-max">
-                    {railPattern.map((rail, railIndex) => (
-                      <div key={railIndex} className="flex items-center mb-4">
-                        <div className="w-16 text-sm font-medium text-gray-600 mr-4">
-                          Rail {railIndex + 1}:
-                        </div>
-                        <div className="flex gap-2">
-                          {rail.map((cell, cellIndex) => (
-                            <div
-                              key={cellIndex}
-                              className={`w-8 h-8 border-2 rounded flex items-center justify-center text-sm font-mono transition-all duration-300 ${
-                                cell 
-                                  ? currentChar === cell.index
-                                    ? 'border-red-500 bg-red-100 text-red-700 transform scale-110'
-                                    : currentChar > cell.index || !isAnimating
-                                    ? 'border-blue-500 bg-blue-100 text-blue-700'
-                                    : 'border-gray-300 bg-gray-50 text-gray-400'
-                                  : 'border-gray-200 bg-gray-50'
-                              }`}
-                            >
-                              {cell && (currentChar >= cell.index || !isAnimating) ? cell.char : ''}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {isAnimating && (
-                  <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-                    <div className="flex items-center gap-2 text-blue-700">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                      <span className="text-sm">
-                        {currentChar >= 0 && currentChar < (mode === 'encrypt' ? plaintext : ciphertext).length
-                          ? mode === 'encrypt' 
-                            ? `Placing character '${plaintext[currentChar]}' in zigzag pattern at position ${currentChar + 1}`
-                            : `Filling character '${ciphertext[currentChar]}' from ciphertext into rail pattern`
-                          : 'Processing...'}
-                      </span>
-                    </div>
-                    <div className="text-xs text-blue-600 mt-1">
-                      {mode === 'encrypt' 
-                        ? 'Encryption: Writing text in zigzag pattern across rails'
-                        : 'Decryption: Filling ciphertext into rails row by row, then reading diagonally'}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+        {/* Tab Content */}
+        {activeTab === 'theory' && <TheoryTab />}
+        {activeTab === 'example' && <ExampleTab />}
+        {activeTab === 'simulation' && (
+          <SimulationTab
+            plaintext={plaintext}
+            setPlaintext={setPlaintext}
+            ciphertext={ciphertext}
+            setCiphertext={setCiphertext}
+            rails={rails}
+            setRails={setRails}
+            mode={mode}
+            setMode={setMode}
+            isAnimating={isAnimating}
+            animationStep={animationStep}
+            railPattern={railPattern}
+            currentChar={currentChar}
+            runAnimation={runAnimation}
+            handleProcess={handleProcess}
+            resetAnimation={resetAnimation}
+          />
         )}
       </div>
     </div>
