@@ -284,7 +284,7 @@ const SpeckCipherVisualizer = () => {
     <div className="min-h-screen" style={{ backgroundColor: colors.background }}>
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8"><h1 className="text-4xl font-bold mb-2" style={{ color: colors.textDark }}>Speck Cipher Explorer</h1><p style={{ color: colors.textLight }}>An interactive tool for the Speck 32/64 lightweight block cipher</p></div>
-        <div className="flex justify-center mb-8"><div className="rounded-lg shadow-lg p-1 flex bg-white"><button onClick={() => setCurrentView('theory')} className={`px-6 py-3 rounded-md font-medium transition-all duration-200 flex items-center gap-2 ${currentView === 'theory' ? 'text-white shadow-md' : 'text-gray-600'}`} style={{ backgroundColor: currentView === 'theory' ? colors.primary : 'transparent' }}><BookOpen size={20} /> Theory</button><button onClick={() => setCurrentView('cipher')} className={`px-6 py-3 rounded-md font-medium transition-all duration-200 flex items-center gap-2 ${currentView === 'cipher' ? 'text-white shadow-md' : 'text-gray-600'}`} style={{ backgroundColor: currentView === 'cipher' ? colors.primary : 'transparent' }}><Code size={20} /> Cipher Tool</button></div></div>
+  <div className="flex justify-center mb-8"><div className="rounded-lg shadow-lg p-1 flex bg-white"><button onClick={() => setCurrentView('theory')} className={`px-6 py-3 rounded-md font-medium transition-all duration-200 flex items-center gap-2 ${currentView === 'theory' ? 'text-white shadow-md' : 'text-gray-600'}`} style={{ backgroundColor: currentView === 'theory' ? colors.primary : 'transparent' }}><BookOpen size={20} /> Theory</button><button onClick={() => setCurrentView('example')} className={`px-6 py-3 rounded-md font-medium transition-all duration-200 flex items-center gap-2 ${currentView === 'example' ? 'text-white shadow-md' : 'text-gray-600'}`} style={{ backgroundColor: currentView === 'example' ? colors.primary : 'transparent' }}><Play size={18} /> Example</button><button onClick={() => setCurrentView('cipher')} className={`px-6 py-3 rounded-md font-medium transition-all duration-200 flex items-center gap-2 ${currentView === 'cipher' ? 'text-white shadow-md' : 'text-gray-600'}`} style={{ backgroundColor: currentView === 'cipher' ? colors.primary : 'transparent' }}><Code size={20} /> Cipher Tool</button></div></div>
         {currentView === 'theory' && (
            <div className="max-w-4xl mx-auto">
             <div className="rounded-xl shadow-lg p-8 mb-8 bg-white"><h2 className="text-2xl font-bold mb-6" style={{ color: colors.textDark }}>Understanding the Speck Cipher</h2><div className="prose prose-lg max-w-none text-justify"><p className="mb-4" style={{ color: colors.textDark }}>Speck is a family of lightweight block ciphers notable for its high performance in software. It was designed by the U.S. National Security Agency (NSA). Its design philosophy is based on an Add-Rotate-XOR (ARX) structure, which uses operations that are fast on modern CPUs.</p></div></div>
@@ -316,6 +316,31 @@ const SpeckCipherVisualizer = () => {
                 </div>
             </div></div>
             </div>
+        )}
+        {currentView === 'example' && (
+           <div className="max-w-4xl mx-auto">
+            <div className="rounded-xl shadow-lg p-8 mb-8 bg-white">
+              <h2 className="text-2xl font-bold mb-4" style={{ color: colors.textDark }}>Speck 32/64 Example</h2>
+              <p className="mb-4" style={{ color: colors.textDark }}>This example encrypts the 32-bit plaintext 6574694C (ASCII 'Lite') with the 64-bit key 0F0E0D0C0B0A0908 using Speck 32/64.</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: colors.textLight }}>Plaintext (32-bit Hex)</label>
+                  <input value={plaintext} onChange={(e) => setPlaintext(e.target.value)} className="w-full font-mono px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2" style={{borderColor: colors.primary, backgroundColor: colors.secondary}} />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: colors.textLight }}>Key (64-bit Hex)</label>
+                  <input type="text" value={key} onChange={(e) => setKey(e.target.value)} className="w-full font-mono px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2" style={{borderColor: colors.primary, backgroundColor: colors.secondary}} />
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <button onClick={() => { setPlaintext('6574694C'); setKey('0F0E0D0C0B0A0908'); setTimeout(() => { handleCipherAction(); }, 50); }} className="px-4 py-2 rounded bg-chacha-primary text-white">Run Example</button>
+                <button onClick={() => { setPlaintext('6574694C'); setKey('0F0E0D0C0B0A0908'); }} className="px-4 py-2 rounded bg-chacha-accent/20 text-chacha-accent">Load Inputs</button>
+              </div>
+              <div className="mt-6">
+                <p className="text-sm text-chacha-accent">Expected behavior: the page will compute the ciphertext and populate the visualization steps. The output ciphertext will appear in the Cipher Tool view when you run the example.</p>
+              </div>
+            </div>
+           </div>
         )}
         {currentView === 'cipher' && (
           <div className="max-w-4xl mx-auto"><div className="rounded-xl shadow-lg p-8 bg-white"><h2 className="text-2xl font-bold mb-6 text-center" style={{ color: colors.textDark }}>Cipher Processor (Speck 32/64)</h2><div className="flex justify-center mb-6"><div className="rounded-lg p-1 flex" style={{ backgroundColor: colors.background }}><button onClick={() => setActiveMode('encrypt')} className={`px-4 py-2 rounded-md font-medium transition-all duration-200 flex items-center gap-2 ${activeMode === 'encrypt' ? 'text-white shadow-md' : 'text-gray-600'}`} style={{ backgroundColor: activeMode === 'encrypt' ? colors.accentGreen : 'transparent' }}><Lock size={18} /> Encrypt</button><button onClick={() => setActiveMode('decrypt')} className={`px-4 py-2 rounded-md font-medium transition-all duration-200 flex items-center gap-2 ${activeMode === 'decrypt' ? 'text-white shadow-md' : 'text-gray-600'}`} style={{ backgroundColor: activeMode === 'decrypt' ? colors.accentRed : 'transparent' }}><Unlock size={18} /> Decrypt</button></div></div><div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"><div><label className="block text-sm font-medium mb-2" style={{ color: colors.textLight }}>{activeMode === 'encrypt' ? 'Plaintext (32-bit Hex)' : 'Ciphertext (32-bit Hex)'}</label><input value={plaintext} onChange={(e) => setPlaintext(e.target.value)} className="w-full font-mono px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2" style={{borderColor: colors.primary, backgroundColor: colors.secondary}} placeholder="e.g., 6574694C" /></div><div><label className="block text-sm font-medium mb-2" style={{ color: colors.textLight }}>Key (64-bit Hex)</label><input type="text" value={key} onChange={(e) => setKey(e.target.value)} className="w-full font-mono px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2" style={{borderColor: colors.primary, backgroundColor: colors.secondary}} placeholder="e.g., 0F0E0D0C0B0A0908" /></div></div>{ciphertext && (<div className="mb-6"><label className="block text-sm font-medium mb-2 text-center" style={{ color: colors.textLight }}>Result</label><div className="border border-gray-300 rounded-lg p-4" style={{ backgroundColor: colors.secondary }}><p className="font-mono text-xl break-words text-center" style={{ color: colors.textDark }}>{ciphertext}</p></div></div>)}</div><VizPanel /></div>
