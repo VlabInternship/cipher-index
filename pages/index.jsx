@@ -21,6 +21,13 @@ const TABLE_DATA = [
   { algorithm: 'A5/1', type: 'Symmetric', class: 'Stream', keyLength: '64 bits', blockSize: 'N/A (Stream)', corePrinciple: 'Irregularly clocked LFSRs', keyStrength: 'Insecure (Known Attacks)', modernStatus: 'Obsolete' },
   { algorithm: 'RSA', type: 'Asymmetric', class: 'Public-Key', keyLength: '1024-4096+ bits', blockSize: 'N/A (Block)', corePrinciple: 'Factoring large primes', keyStrength: 'Secure (Large Keys)', modernStatus: 'Global Standard' },
   { algorithm: 'HMAC', type: 'N/A', class: 'Authentication', keyLength: 'Varies', blockSize: 'Varies', corePrinciple: 'Two-pass keyed hash', keyStrength: 'Highly Secure', modernStatus: 'Global Standard' },
+  { algorithm: 'SHA-256', type: 'Hash', class: 'Hash', keyLength: 'Varies', blockSize: 'Varies', corePrinciple: 'SHA-2 family', keyStrength: 'Highly Secure', modernStatus: 'Global Standard' },
+  { algorithm: 'SHA-384', type: 'Hash', class: 'Hash', keyLength: 'Varies', blockSize: 'Varies', corePrinciple: 'SHA-3 family', keyStrength: 'Highly Secure', modernStatus: 'Global Standard' },
+  { algorithm: 'SHA-512', type: 'Hash', class: 'Hash', keyLength: 'Varies', blockSize: 'Varies', corePrinciple: 'SHA-3 family', keyStrength: 'Highly Secure', modernStatus: 'Global Standard' },
+  { algorithm: 'SHA-3', type: 'Hash', class: 'Hash', keyLength: 'Varies', blockSize: 'Varies', corePrinciple: 'SHA-3 family', keyStrength: 'Highly Secure', modernStatus: 'Global Standard' },
+  { algorithm: 'SHA-3-256', type: 'Hash', class: 'Hash', keyLength: 'Varies', blockSize: 'Varies', corePrinciple: 'SHA-3 family', keyStrength: 'Highly Secure', modernStatus: 'Global Standard' },
+  { algorithm: 'SHA-3-384', type: 'Hash', class: 'Hash', keyLength: 'Varies', blockSize: 'Varies', corePrinciple: 'SHA-3 family', keyStrength: 'Highly Secure', modernStatus: 'Global Standard' },
+  { algorithm: 'SHA-3-512', type: 'Hash', class: 'Hash', keyLength: 'Varies', blockSize: 'Varies', corePrinciple: 'SHA-3 family', keyStrength: 'Highly Secure', modernStatus: 'Global Standard' },
 ];
 const PAGES = {
   'index': {
@@ -65,7 +72,7 @@ const PAGES = {
                 <li><a href="/aes-cipher" className="text-[#0056b3] hover:underline">8. Advanced Encryption Standard (AES): The Global Standard</a></li>
                 <li><a href="/threefish" className="text-[#0056b3] hover:underline">9. Threefish: A Tweakable and S-Box-Free Design</a></li>
                 <li><a href="/present-cipher" className="text-[#0056b3] hover:underline">10. PRESENT: The Lightweight Champion for IoT</a></li>
-                <li><a href="/idea" className="text-[#0056b3] hover:underline">11. International Data Encryption Algorithm (IDEA)</a></li>
+                <li><a href="/idea-cipher" className="text-[#0056b3] hover:underline">11. International Data Encryption Algorithm (IDEA)</a></li>
                 <li><a href="/speck-cipher" className="text-[#0056b3] hover:underline">12. SPECK: The Software-Optimized Lightweight Contender</a></li>
               </ul>
 
@@ -552,8 +559,27 @@ Rail 3: A I T P</pre>
           </div>
         </div>
       </>
-    ),
-  },
+        ),
+      },
+      'idea-cipher': {
+        title: 'IDEA Cipher',
+        subtitle: 'The Simple Elegance of Transposition',
+        content: (
+          <>
+            <div className="section-card">
+              <h2 className="section-title">What is the IDEA Cipher?</h2>
+              <div className="section-content">
+                <p>The IDEA cipher is a block cipher that operates on 64-bit blocks using a 128-bit key. It was designed by Xuejia Lai and James Massey in 1990 and is known for its use of three different mathematical operations on 16-bit sub-blocks to achieve strong diffusion.</p>
+                <div className="security-indicator-high">
+                  <p>Secure, but Largely Superseded by AES</p>
+                </div>
+                <p>While still considered secure, its adoption declined with the rise of AES. It remains an important historical example of a strong, non-Feistel block cipher design.</p>
+                <a href="/" className="back-to-index">&larr; Back to Index</a>
+              </div>
+            </div>
+          </>
+        ),
+      },
 };
 
 
