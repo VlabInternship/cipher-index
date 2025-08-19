@@ -3,7 +3,6 @@ import { ChevronDown, ChevronUp, Lock, Unlock, Play, RotateCcw } from 'lucide-re
 
 // Helpers for Feistel Cipher
 const stringToBinary = (str) => str.split('').map(ch => ch.charCodeAt(0).toString(2).padStart(8, '0')).join('');
-const binaryToString = (binary) => binary.match(/.{1,8}/g).map(b => String.fromCharCode(parseInt(b, 2))).join('');
 const xorBinary = (a, b) => a.split('').map((bit, i) => (bit ^ b[i]).toString()).join('');
 const rotlBitsStr = (bits, n) => bits.slice(n % bits.length) + bits.slice(0, n % bits.length);
 const permuteInterleave = (bits) => {
@@ -97,7 +96,7 @@ export default function FeistelCipher() {
       log.push({ round: r, rk, f, L, R });
     }
 
-    setOutput(binaryToString(L + R));
+    setOutput((L + R).match(/.{4}/g).map(b => parseInt(b, 2).toString(16).padStart(2, '0')).join(' '));
     if (explain) setTrace(log);
   };
 
@@ -108,7 +107,7 @@ export default function FeistelCipher() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-sky-50 to-slate-100 p-4">
       <div className="max-w-6xl mx-auto">
         <header className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-2">Feistel Cipher</h1>
@@ -128,8 +127,8 @@ export default function FeistelCipher() {
             <div className="prose max-w-none text-gray-700">
               <p>Feistel ciphers operate on plaintext split into two halves: L and R. Each round applies a function F and a round key to mix these halves.</p>
               <ol className="list-decimal list-inside">
-                <li>L<sub>n+1</sub> = R<sub>n</sub></li>
-                <li>R<sub>n+1</sub> = L<sub>n</sub> ⊕ F(R<sub>n</sub>, K<sub>n</sub>)</li>
+                <li>Lₙ₊₁ = Rₙ</li>
+                <li>Rₙ₊₁ = Lₙ ⊕ F(Rₙ, Kₙ)</li>
                 <li>Repeat for defined rounds</li>
               </ol>
               <p>The decryption process is identical but uses keys in reverse order.</p>
@@ -141,7 +140,6 @@ export default function FeistelCipher() {
           <div className="space-y-6">
             <div className="bg-white rounded-lg shadow-lg p-6">
               <h2 className="text-2xl font-bold text-gray-800 mb-4">Interactive Feistel Tool</h2>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Mode</label>
@@ -165,21 +163,15 @@ export default function FeistelCipher() {
               </div>
 
               <div className="flex gap-4 mt-6">
-                <button onClick={runExplain} className="flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-lg">
-                  <Play size={18} /> Explain
-                </button>
-                <button onClick={() => run(false)} className="flex items-center gap-2 px-6 py-3 bg-green-500 text-white rounded-lg">
-                  {mode === 'encrypt' ? <Lock size={18} /> : <Unlock size={18} />} {mode === 'encrypt' ? 'Encrypt' : 'Decrypt'}
-                </button>
-                <button onClick={reset} className="flex items-center gap-2 px-6 py-3 bg-gray-500 text-white rounded-lg">
-                  <RotateCcw size={18} /> Reset
-                </button>
+                <button onClick={runExplain} className="flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-lg"><Play size={18} /> Explain</button>
+                <button onClick={() => run(false)} className="flex items-center gap-2 px-6 py-3 bg-green-500 text-white rounded-lg">{mode === 'encrypt' ? <Lock size={18} /> : <Unlock size={18} />} {mode === 'encrypt' ? 'Encrypt' : 'Decrypt'}</button>
+                <button onClick={reset} className="flex items-center gap-2 px-6 py-3 bg-gray-500 text-white rounded-lg"><RotateCcw size={18} /> Reset</button>
               </div>
 
               {output && (
                 <div className="mt-6">
-                  <h3 className="font-semibold text-gray-700 mb-1">Output:</h3>
-                  <div className="bg-gray-100 p-3 rounded font-mono text-blue-700">{output}</div>
+                  <h3 className="font-semibold text-gray-700 mb-1">Output (Hex):</h3>
+                  <div className="bg-gray-100 p-3 rounded font-mono text-blue-700 break-all overflow-x-auto">{output}</div>
                 </div>
               )}
             </div>
@@ -188,9 +180,7 @@ export default function FeistelCipher() {
               <div className="bg-white p-4 rounded-lg shadow-lg">
                 <h3 className="text-xl font-bold text-gray-800 mb-4">Round Visualization</h3>
                 <div className="space-y-3">
-                  {trace.map((step, idx) => (
-                    <FeistelRound key={idx} roundIndex={step.round} step={step} openDefault={idx === 0 || idx === trace.length - 1} />
-                  ))}
+                  {trace.map((step, idx) => (<FeistelRound key={idx} roundIndex={step.round} step={step} openDefault={idx === 0 || idx === trace.length - 1} />))}
                 </div>
               </div>
             )}
