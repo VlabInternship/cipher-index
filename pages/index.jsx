@@ -80,7 +80,7 @@ const PAGES = {
               <h3 className="font-semibold mt-6">Part IV: The Asymmetric Revolution and Authentication</h3>
               <ul className="list-none p-0 mt-3 space-y-2">
                 <li><a href="/rsa" className="text-[#0056b3] hover:underline">17. RSA: The Cornerstone of Public-Key Cryptography</a></li>
-                <li><a href="/hmac" className="text-[#0056b3] hover:underline">18. HMAC: The Guardian of Integrity and Authenticity</a></li>
+                <li><a href="/hmac-cipher" className="text-[#0056b3] hover:underline">18. HMAC: The Guardian of Integrity and Authenticity</a></li>
               </ul>
             </div>
           </div>
