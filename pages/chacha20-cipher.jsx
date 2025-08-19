@@ -18,13 +18,13 @@ const CoreMixingVisualizer = ({ currentStep, roundType, currentRoundNum, highlig
   const roundName = roundType.charAt(0).toUpperCase() + roundType.slice(1);
   return (
     <div>
-      <h3 className="text-lg font-semibold text-cyan-400 mb-4">Core Mixing Pattern</h3>
-      <div className="bg-slate-900/50 p-4 rounded-lg">
-        <p className="text-center font-mono mb-3 text-orange-300">Round {currentRoundNum}/10: {roundName} Round</p>
+      <h3 className="text-lg font-semibold text-chacha-accent mb-4">Core Mixing Pattern</h3>
+      <div className="bg-chacha-accent/5 p-4 rounded-lg">
+        <p className="text-center font-mono mb-3 text-chacha-primary">Round {currentRoundNum}/10: {roundName} Round</p>
         <div className="grid grid-cols-4 gap-2 w-full max-w-xs mx-auto">
           {Array.from({ length: 16 }).map((_, i) => {
             const isHighlighted = highlightedIndices.includes(i);
-            return <div key={i} className={`aspect-square rounded-md transition-all duration-100 ease-in-out ${isHighlighted ? 'bg-orange-500/80 animate-pulse' : 'bg-slate-700'}`}></div>;
+            return <div key={i} className={`aspect-square rounded-md transition-all duration-100 ease-in-out ${isHighlighted ? 'bg-chacha-primary/80 animate-pulse' : 'bg-chacha-accent/10'}`}></div>;
           })}
         </div>
       </div>
@@ -34,10 +34,10 @@ const CoreMixingVisualizer = ({ currentStep, roundType, currentRoundNum, highlig
 
 const MatrixDisplay = ({ matrix, title }) => (
   <div className="text-center">
-    <p className="font-mono text-sm text-slate-400 mb-2">{title}</p>
-    <div className="grid grid-cols-4 gap-1 bg-slate-800 p-2 rounded-md">
+    <p className="font-mono text-sm text-chacha-accent mb-2">{title}</p>
+    <div className="grid grid-cols-4 gap-1 bg-chacha-accent/5 p-2 rounded-md">
       {(matrix.length > 0 ? matrix : Array(16).fill(0)).map((val, i) => (
-        <div key={i} className="bg-slate-700 rounded p-1 text-xs break-all">
+        <div key={i} className="bg-chacha-accent/10 rounded p-1 text-xs break-all text-chacha-accent">
           {val.toString(16).padStart(8, '0')}
         </div>
       ))}
@@ -49,12 +49,12 @@ const AdditionVisualizer = ({ currentStep, mixedState, initialState, resultState
   if (currentStep !== 2) return null;
   return (
     <div>
-      <h3 className="text-lg font-semibold text-cyan-400 mb-4">State Addition</h3>
-      <div className="bg-slate-900/50 p-4 rounded-lg flex items-center justify-around gap-2 animate-fade-in">
+      <h3 className="text-lg font-semibold text-chacha-accent mb-4">State Addition</h3>
+      <div className="bg-chacha-accent/5 p-4 rounded-lg flex items-center justify-around gap-2 animate-fade-in">
         <MatrixDisplay matrix={mixedState} title="Mixed State" />
-        <Plus className="text-orange-400 w-6 h-6 flex-shrink-0" />
+        <Plus className="text-chacha-primary w-6 h-6 flex-shrink-0" />
         <MatrixDisplay matrix={initialState} title="Initial State" />
-        <Equal className="text-green-400 w-6 h-6 flex-shrink-0" />
+        <Equal className="text-chacha-accent w-6 h-6 flex-shrink-0" />
         <MatrixDisplay matrix={resultState} title="Result State" />
       </div>
     </div>
@@ -64,12 +64,12 @@ const AdditionVisualizer = ({ currentStep, mixedState, initialState, resultState
 const KeystreamVisualizer = ({ currentStep, keystreamBytes }) => {
   if (currentStep < 3) return null;
   return (
-    <div className={`transition-opacity duration-500 ${currentStep >= 3 ? 'opacity-100' : 'opacity-0'}`}>
-      <h3 className="text-lg font-semibold text-cyan-400 mb-4">Serialization to Keystream</h3>
-      <div className="bg-slate-900/50 p-3 rounded-lg font-mono text-xs text-slate-300">
+  <div className={`transition-opacity duration-500 ${currentStep >= 3 ? 'opacity-100' : 'opacity-0'}`}>
+      <h3 className="text-lg font-semibold text-chacha-accent mb-4">Serialization to Keystream</h3>
+      <div className="bg-chacha-accent/5 p-3 rounded-lg font-mono text-xs text-chacha-accent">
         <div className="grid grid-cols-16 gap-1">
           {(keystreamBytes.length > 0 ? keystreamBytes : Array(64).fill(0)).map((byte, i) => (
-            <span key={i} className={`p-1 rounded transition-colors duration-300 ${currentStep === 3 ? 'bg-blue-800/80 animate-pulse' : 'bg-blue-800/80'}`}>
+            <span key={i} className={`p-1 rounded transition-colors duration-300 ${currentStep === 3 ? 'bg-chacha-primary/80 animate-pulse' : 'bg-chacha-primary/80'}`}>
               {byte.toString(16).padStart(2, '0')}
             </span>
           ))}
@@ -83,26 +83,26 @@ const XorVisualizer = ({ currentStep, keystreamBytes, plaintextBytes, ciphertext
   if (currentStep !== 4) return null;
   return (
     <div className="animate-fade-in">
-      <h3 className="text-lg font-semibold text-cyan-400 mb-4">XOR Operation</h3>
+      <h3 className="text-lg font-semibold text-chacha-accent mb-4">XOR Operation</h3>
       <div className="space-y-4 font-mono text-xs">
         <div>
-          <p className="text-slate-400 mb-2">{isDecrypting ? "Ciphertext Bytes" : "Plaintext Bytes"}</p>
-          <div className="bg-slate-900/50 p-2 rounded-lg grid grid-cols-16 gap-1">
-            {plaintextBytes.map((b, i) => <span key={i} className="p-1 rounded bg-purple-800/80">{b.toString(16).padStart(2, '0')}</span>)}
+          <p className="text-chacha-accent mb-2">{isDecrypting ? "Ciphertext Bytes" : "Plaintext Bytes"}</p>
+          <div className="bg-chacha-accent/5 p-2 rounded-lg grid grid-cols-16 gap-1">
+            {plaintextBytes.map((b, i) => <span key={i} className="p-1 rounded bg-chacha-accent/10 text-chacha-accent">{b.toString(16).padStart(2, '0')}</span>)}
           </div>
         </div>
-        <div className="flex justify-center text-green-400 font-bold text-2xl">⊕</div>
+        <div className="flex justify-center text-chacha-primary font-bold text-2xl">⊕</div>
         <div>
-          <p className="text-slate-400 mb-2">Keystream Bytes</p>
-          <div className="bg-slate-900/50 p-2 rounded-lg grid grid-cols-16 gap-1">
-            {keystreamBytes.map((b, i) => <span key={i} className="p-1 rounded bg-blue-800/80">{b.toString(16).padStart(2, '0')}</span>)}
+          <p className="text-chacha-accent mb-2">Keystream Bytes</p>
+          <div className="bg-chacha-accent/5 p-2 rounded-lg grid grid-cols-16 gap-1">
+            {keystreamBytes.map((b, i) => <span key={i} className="p-1 rounded bg-chacha-primary/80 text-chacha-alt">{b.toString(16).padStart(2, '0')}</span>)}
           </div>
         </div>
-        <div className="flex justify-center text-green-400 font-bold text-2xl">=</div>
+        <div className="flex justify-center text-chacha-primary font-bold text-2xl">=</div>
         <div>
-          <p className="text-green-400 mb-2">{isDecrypting ? "Plaintext Bytes" : "Ciphertext Bytes"}</p>
-          <div className="bg-slate-900/50 p-2 rounded-lg grid grid-cols-16 gap-1">
-            {ciphertextBytes.map((b, i) => <span key={i} className="p-1 rounded bg-green-800/80 animate-pulse">{b.toString(16).padStart(2, '0')}</span>)}
+          <p className="text-chacha-primary mb-2">{isDecrypting ? "Plaintext Bytes" : "Ciphertext Bytes"}</p>
+          <div className="bg-chacha-accent/5 p-2 rounded-lg grid grid-cols-16 gap-1">
+            {ciphertextBytes.map((b, i) => <span key={i} className="p-1 rounded bg-chacha-accent/10 animate-pulse text-chacha-accent">{b.toString(16).padStart(2, '0')}</span>)}
           </div>
         </div>
       </div>
@@ -113,11 +113,11 @@ const XorVisualizer = ({ currentStep, keystreamBytes, plaintextBytes, ciphertext
 // --- Theory Components ---
 const TheoryTab = () => (
   <div className="space-y-6 animate-fade-in">
-    <div className="bg-slate-800/50 rounded-lg p-6">
-      <h2 className="text-2xl font-bold mb-4 text-purple-400 flex items-center">
-        <BookOpen className="w-6 h-6 mr-3" /> What is ChaCha20?
+    <div className="bg-chacha-accent/5 rounded-lg p-6">
+      <h2 className="text-2xl font-bold mb-4 text-chacha-accent flex items-center">
+        <BookOpen className="w-6 h-6 mr-3 text-chacha-primary" /> What is ChaCha20?
       </h2>
-      <div className="space-y-4 text-slate-300">
+      <div className="space-y-4 text-chacha-accent">
         <p>
           ChaCha20 is a modern stream cipher developed by Daniel J. Bernstein. It's designed to be fast, secure, and resistant to timing attacks. 
           It's widely used in protocols like TLS, SSH, and VPNs.
@@ -131,12 +131,12 @@ const TheoryTab = () => (
       </div>
     </div>
 
-    <div className="bg-slate-800/50 rounded-lg p-6">
-      <h2 className="text-2xl font-bold mb-4 text-blue-400 flex items-center">
-        <Code className="w-6 h-6 mr-3" /> How It Works
+    <div className="bg-chacha-accent/5 rounded-lg p-6">
+      <h2 className="text-2xl font-bold mb-4 text-chacha-accent flex items-center">
+        <Code className="w-6 h-6 mr-3 text-chacha-primary" /> How It Works
       </h2>
-      <div className="space-y-4 text-slate-300">
-        <h3 className="font-semibold text-green-400">1. Initialization</h3>
+      <div className="space-y-4 text-chacha-accent">
+        <h3 className="font-semibold text-chacha-primary">1. Initialization</h3>
         <p>
           The cipher starts with a 4×4 matrix of 32-bit words (16 words total). This includes:
         </p>
@@ -147,32 +147,32 @@ const TheoryTab = () => (
           <li>3 words (96 bits) of nonce</li>
         </ul>
 
-        <h3 className="font-semibold text-green-400">2. The Quarter Round</h3>
+  <h3 className="font-semibold text-chacha-primary">2. The Quarter Round</h3>
         <p>
           The core operation is the quarter round, which mixes four 32-bit words (a, b, c, d) using ARX (Add-Rotate-XOR) operations:
         </p>
-        <pre className="bg-slate-900 p-3 rounded-md text-xs font-mono overflow-x-auto">
+  <pre className="bg-chacha-alt p-3 rounded-md text-xs font-mono overflow-x-auto">
           {`a += b; d ^= a; d <<<= 16;
 c += d; b ^= c; b <<<= 12;
 a += b; d ^= a; d <<<= 8;
 c += d; b ^= c; b <<<= 7;`}
         </pre>
 
-        <h3 className="font-semibold text-green-400">3. The ChaCha Block Function</h3>
+  <h3 className="font-semibold text-chacha-primary">3. The ChaCha Block Function</h3>
         <p>
           The block function performs 20 rounds of mixing (10 column rounds and 10 diagonal rounds), then adds the result to the original matrix.
         </p>
 
-        <h3 className="font-semibold text-green-400">4. Generating the Keystream</h3>
+  <h3 className="font-semibold text-chacha-primary">4. Generating the Keystream</h3>
         <p>
           The final matrix is serialized into a 64-byte keystream block. This is XORed with the plaintext to produce ciphertext.
         </p>
       </div>
     </div>
 
-    <div className="bg-slate-800/50 rounded-lg p-6">
-      <h2 className="text-2xl font-bold mb-4 text-orange-400">Security Properties</h2>
-      <div className="space-y-4 text-slate-300">
+    <div className="bg-chacha-accent/5 rounded-lg p-6">
+      <h2 className="text-2xl font-bold mb-4 text-chacha-primary">Security Properties</h2>
+      <div className="space-y-4 text-chacha-accent">
         <p>
           ChaCha20 is designed to be:
         </p>
@@ -193,21 +193,21 @@ c += d; b ^= c; b <<<= 7;`}
 // --- Example Tab ---
 const ExampleTab = () => (
   <div className="space-y-6 animate-fade-in">
-    <div className="bg-slate-800/50 rounded-lg p-6">
-      <h2 className="text-2xl font-bold mb-4 text-purple-400">Standard Test Vectors</h2>
-      <div className="space-y-4 text-slate-300">
+    <div className="bg-chacha-accent/5 rounded-lg p-6">
+      <h2 className="text-2xl font-bold mb-4 text-chacha-accent">Standard Test Vectors</h2>
+      <div className="space-y-4 text-chacha-accent">
         <p>Here are some standard test vectors from RFC 7539:</p>
         
-        <div className="bg-slate-900/70 p-4 rounded-md">
-          <h3 className="font-semibold text-blue-400 mb-2">Test Vector #1</h3>
+        <div className="bg-chacha-accent/5 p-4 rounded-md">
+          <h3 className="font-semibold text-chacha-primary mb-2">Test Vector #1</h3>
           <p><strong>Key:</strong> 000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f</p>
           <p><strong>Nonce:</strong> 000000000000004a00000000</p>
           <p><strong>Block Counter:</strong> 1</p>
           <p><strong>Keystream:</strong> 10f1e7e4d13b5915500fdd1fa32071c4c7d1f4c733c068030422aa9ac3d46c4ed2826446079faa0914c2d705d98b02a2b5129cd1de164eb9cbd083e8a2503c4e</p>
         </div>
 
-        <div className="bg-slate-900/70 p-4 rounded-md">
-          <h3 className="font-semibold text-blue-400 mb-2">Test Vector #2</h3>
+        <div className="bg-chacha-accent/5 p-4 rounded-md">
+          <h3 className="font-semibold text-chacha-primary mb-2">Test Vector #2</h3>
           <p><strong>Plaintext:</strong> "Ladies and Gentlemen of the class of '99: If I could offer you only one tip for the future, sunscreen would be it."</p>
           <p><strong>Key:</strong> 000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f</p>
           <p><strong>Nonce:</strong> 000000000000000000000002</p>
@@ -216,9 +216,9 @@ const ExampleTab = () => (
       </div>
     </div>
 
-    <div className="bg-slate-800/50 rounded-lg p-6">
-      <h2 className="text-2xl font-bold mb-4 text-green-400">Common Uses</h2>
-      <div className="space-y-4 text-slate-300">
+    <div className="bg-chacha-accent/5 rounded-lg p-6">
+      <h2 className="text-2xl font-bold mb-4 text-chacha-primary">Common Uses</h2>
+      <div className="space-y-4 text-chacha-accent">
         <p>ChaCha20 is widely used in modern cryptographic protocols:</p>
         <ul className="list-disc pl-5 space-y-1">
           <li>TLS 1.2 and 1.3 (as part of the ChaCha20-Poly1305 cipher suite)</li>
@@ -417,19 +417,19 @@ const ChaCha20Interactive = () => {
 
   // --- Render Method ---
   return (
-    <div className="min-h-screen bg-slate-900 text-white font-sans">
-      <div className="container mx-auto px-4 py-12">
+    <div className="bg-chacha-bg min-h-screen py-12">
+      <div className="container mx-auto px-4">
         <header className="text-center mb-10">
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent mb-3">ChaCha20 Stream Cipher</h1>
-          <p className="text-lg text-slate-400">An Interactive Guide to a Modern Stream Cipher</p>
+          <h1 className="text-4xl font-bold mb-6 text-chacha-accent">ChaCha20 Cipher Interactive</h1>
+          <p className="text-lg text-chacha-accent mb-8">Learn and visualize the ChaCha20 stream cipher</p>
         </header>
         <nav className="flex justify-center mb-8">
-          <div className="bg-slate-800 rounded-lg p-1 flex space-x-1 shadow-md">
-            {["cipher", "theory", "example"].map((tab) => (
+          <div className="bg-chacha-accent/10 rounded-lg p-1 flex space-x-1 shadow-md">
+            {["theory", "example", "cipher"].map((tab) => (
               <button 
                 key={tab} 
                 onClick={() => setActiveTab(tab)} 
-                className={`px-4 py-2 md:px-6 md:py-3 rounded-md font-medium transition-all text-sm md:text-base ${activeTab === tab ? "bg-purple-600 text-white shadow-lg" : "text-slate-300 hover:text-white hover:bg-slate-700"}`}
+                className={`px-4 py-2 md:px-6 md:py-3 rounded-md font-medium transition-all text-sm md:text-base ${activeTab === tab ? "bg-chacha-primary text-chacha-alt shadow-lg" : "text-chacha-accent hover:text-chacha-alt hover:bg-chacha-accent/20"}`}
               >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
               </button>
@@ -440,46 +440,47 @@ const ChaCha20Interactive = () => {
           {activeTab === "cipher" && (
             <section className="max-w-7xl mx-auto animate-fade-in">
               <div className="grid lg:grid-cols-5 gap-8">
-                <div className="lg:col-span-2 bg-slate-800 rounded-lg p-6 shadow-2xl">
-                  <h2 className="text-2xl font-bold mb-6 text-purple-400 flex items-center">
-                    <Lock className="w-6 h-6 mr-3" />
+                {/* Encryption Controls Card */}
+                <div className="lg:col-span-2 bg-chacha-alt text-chacha-accent rounded-xl shadow-md p-8 mb-8">
+                  <h2 className="text-2xl font-bold mb-6 text-chacha-accent flex items-center">
+                    <Lock className="w-6 h-6 mr-3 text-chacha-primary" />
                     {isDecrypting ? "Decryption Controls" : "Encryption Controls"}
                   </h2>
                   <div className="space-y-5">
                     <div>
-                      <label className="block text-sm font-medium text-slate-300 mb-2">
+                      <label className="block text-sm font-medium text-chacha-accent mb-2">
                         {isDecrypting ? "Ciphertext (Hex)" : "Plaintext Message"}
                       </label>
                       <textarea 
                         value={input} 
                         onChange={(e) => setInput(e.target.value)} 
-                        className="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition" 
+                        className="w-full bg-chacha-bg border border-chacha-accent rounded-lg px-4 py-3 text-chacha-accent focus:outline-none focus:ring-2 focus:ring-chacha-primary transition" 
                         rows="4" 
                         placeholder={isDecrypting ? "Enter hex ciphertext..." : "Enter your message..."}
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-300 mb-2">256-bit Key (64 hex chars)</label>
+                      <label className="block text-sm font-medium text-chacha-accent mb-2">256-bit Key (64 hex chars)</label>
                       <input 
                         type="text" 
                         value={key} 
                         onChange={(e) => setKey(e.target.value)} 
-                        className="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 transition" 
+                        className="w-full bg-chacha-bg border border-chacha-accent rounded-lg px-4 py-3 text-chacha-accent font-mono text-sm focus:outline-none focus:ring-2 focus:ring-chacha-primary transition" 
                         maxLength="64" 
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-300 mb-2">96-bit Nonce (24 hex chars)</label>
+                      <label className="block text-sm font-medium text-chacha-accent mb-2">96-bit Nonce (24 hex chars)</label>
                       <input 
                         type="text" 
                         value={nonce} 
                         onChange={(e) => setNonce(e.target.value)} 
-                        className="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 transition" 
+                        className="w-full bg-chacha-bg border border-chacha-accent rounded-lg px-4 py-3 text-chacha-accent font-mono text-sm focus:outline-none focus:ring-2 focus:ring-chacha-primary transition" 
                         maxLength="24" 
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-300 mb-2">Animation Speed</label>
+                      <label className="block text-sm font-medium text-chacha-accent mb-2">Animation Speed</label>
                       <input 
                         type="range" 
                         min="200" 
@@ -487,22 +488,22 @@ const ChaCha20Interactive = () => {
                         step="100" 
                         value={animationSpeed} 
                         onChange={(e) => setAnimationSpeed(parseInt(e.target.value))} 
-                        className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-purple-500" 
+                        className="w-full h-2 bg-chacha-accent/20 rounded-lg appearance-none cursor-pointer accent-chacha-primary" 
                       />
-                      <div className="text-xs text-slate-400 text-center mt-1">{animationSpeed}ms</div>
+                      <div className="text-xs text-chacha-accent text-center mt-1">{animationSpeed}ms</div>
                     </div>
                     <div className="flex gap-3 pt-2">
                       <button 
                         onClick={() => animateProcess(false)} 
                         disabled={isAnimating || isDecrypting} 
-                        className={`flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-lg transition-all flex items-center justify-center shadow-lg hover:shadow-purple-500/20 ${isDecrypting ? 'opacity-50' : ''}`}
+                        className={`flex-1 bg-chacha-primary disabled:opacity-50 disabled:cursor-not-allowed text-chacha-alt font-bold py-3 px-4 rounded-lg transition-all flex items-center justify-center shadow-lg ${isDecrypting ? 'opacity-50' : ''}`}
                       >
                         {isAnimating && !isDecrypting ? <><Pause className="w-5 h-5 mr-2" /> Animating...</> : <><Play className="w-5 h-5 mr-2" /> Encrypt</>}
                       </button>
                       <button 
                         onClick={() => animateProcess(true)} 
                         disabled={isAnimating || !isDecrypting} 
-                        className={`flex-1 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-lg transition-all flex items-center justify-center shadow-lg hover:shadow-blue-500/20 ${!isDecrypting ? 'opacity-50' : ''}`}
+                        className={`flex-1 bg-chacha-accent/20 disabled:opacity-50 disabled:cursor-not-allowed text-chacha-accent font-bold py-3 px-4 rounded-lg transition-all flex items-center justify-center shadow-lg ${!isDecrypting ? 'opacity-50' : ''}`}
                       >
                         {isAnimating && isDecrypting ? <><Pause className="w-5 h-5 mr-2" /> Animating...</> : <><Play className="w-5 h-5 mr-2" /> Decrypt</>}
                       </button>
@@ -511,7 +512,7 @@ const ChaCha20Interactive = () => {
                           setIsDecrypting(!isDecrypting);
                           resetVisualization(true);
                         }} 
-                        className="bg-slate-700 hover:bg-slate-600 text-white font-medium p-3 rounded-lg transition-all flex items-center justify-center"
+                        className="bg-chacha-accent/20 hover:bg-chacha-accent/30 text-chacha-accent font-medium p-3 rounded-lg transition-all flex items-center justify-center"
                         title={isDecrypting ? "Switch to Encryption" : "Switch to Decryption"}
                       >
                         <ArrowRight className="w-5 h-5" />
@@ -519,31 +520,32 @@ const ChaCha20Interactive = () => {
                       <button 
                         onClick={() => resetVisualization(true)} 
                         title="Reset" 
-                        className="bg-slate-700 hover:bg-slate-600 text-white font-medium p-3 rounded-lg transition-all"
+                        className="bg-chacha-accent/20 hover:bg-chacha-accent/30 text-chacha-accent font-medium p-3 rounded-lg transition-all"
                       >
                         <RotateCcw className="w-5 h-5" />
                       </button>
                     </div>
                   </div>
                 </div>
-                <div className="lg:col-span-3 bg-slate-800 rounded-lg p-6 shadow-2xl">
-                  <h2 className="text-2xl font-bold mb-6 text-green-400 flex items-center">
+                {/* Visualization & Output Card */}
+                <div style={{ background: '#fff', borderRadius: '1rem', boxShadow: '0 2px 8px rgba(0,86,179,0.08)', padding: '2rem', color: '#0056b3' }} className="lg:col-span-3">
+                  <h2 className="text-2xl font-bold mb-6 text-chacha-primary flex items-center">
                     <Unlock className="w-6 h-6 mr-3" />
                     Visualization & Output
                   </h2>
                   <div className="space-y-6">
                     <div className="grid md:grid-cols-2 gap-6">
                       <div>
-                        <h3 className="text-lg font-semibold text-blue-400 mb-3">State Matrix</h3>
-                        <div className="bg-slate-900/50 p-4 rounded-lg">
+                        <h3 className="text-lg font-semibold text-chacha-accent mb-3">State Matrix</h3>
+                        <div className="bg-chacha-accent/10 p-4 rounded-lg">
                           <div className="grid grid-cols-4 gap-2 text-center font-mono text-xs">
                             {formatMatrixForDisplay(matrix).map((row, i) => row.map((val, j) => {
                               const index = i * 4 + j;
-                              let bgColor = "bg-slate-700";
-                              if (index < 4) bgColor = "bg-purple-800/80"; 
-                              else if (index < 12) bgColor = "bg-yellow-800/80"; 
-                              else if (index < 13) bgColor = "bg-green-800/80"; 
-                              else bgColor = "bg-blue-800/80";
+                              let bgColor = "bg-chacha-accent/10";
+                              if (index < 4) bgColor = "bg-chacha-primary/80"; 
+                              else if (index < 12) bgColor = "bg-chacha-accent/30"; 
+                              else if (index < 13) bgColor = "bg-chacha-primary/60"; 
+                              else bgColor = "bg-chacha-accent/80";
                               return (
                                 <div 
                                   key={`${i}-${j}`} 
@@ -557,22 +559,22 @@ const ChaCha20Interactive = () => {
                         </div>
                       </div>
                       <div>
-                        <h3 className="text-lg font-semibold text-orange-400 mb-3">Algorithm Steps</h3>
+                        <h3 className="text-lg font-semibold text-chacha-accent mb-3">Algorithm Steps</h3>
                         <div className="space-y-2">
                           {steps.map((step, index) => (
                             <div 
                               key={index} 
-                              className={`p-3 rounded-lg border-l-4 transition-all duration-300 text-sm ${currentStep >= index ? "bg-slate-700/80 border-purple-400 text-white" : "bg-slate-700/30 border-slate-600 text-slate-400"} ${currentStep === index ? "scale-105 shadow-lg shadow-purple-500/10" : ""}`}
+                              className={`p-3 rounded-lg border-l-4 transition-all duration-300 text-sm ${currentStep >= index ? "bg-chacha-accent/80 border-chacha-primary text-chacha-alt" : "bg-chacha-accent/30 border-chacha-accent text-chacha-accent"} ${currentStep === index ? "scale-105 shadow-lg" : ""}`}
                             >
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center">
-                                  <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs mr-3 flex-shrink-0 ${currentStep >= index ? "bg-purple-600 text-white" : "bg-slate-600 text-slate-300"}`}>
+                                  <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs mr-3 flex-shrink-0 ${currentStep >= index ? "bg-chacha-primary text-chacha-alt" : "bg-chacha-accent/30 text-chacha-accent"}`}>
                                     {index + 1}
                                   </div>
                                   <span>{step}</span>
                                 </div>
                                 {currentStep === index && isAnimating && (
-                                  <div className="ml-3 w-3 h-3 bg-green-400 rounded-full animate-ping"></div>
+                                  <div className="ml-3 w-3 h-3 bg-chacha-primary rounded-full animate-ping"></div>
                                 )}
                               </div>
                             </div>
@@ -604,20 +606,20 @@ const ChaCha20Interactive = () => {
                       isDecrypting={isDecrypting}
                     />
                     <div className={`transition-opacity duration-500 ${currentStep >= 4 ? 'opacity-100' : 'opacity-0'}`}>
-                      <h3 className="text-lg font-semibold text-cyan-400 mb-4">
+                        <h3 className="text-lg font-semibold text-chacha-accent mb-4">
                         {isDecrypting ? "Decrypted Plaintext" : "Encrypted Ciphertext"}
                       </h3>
-                      <div className="bg-slate-900/50 p-4 rounded-lg">
+                      <div className="bg-chacha-accent/10 p-4 rounded-lg">
                         {output ? (
                           <div className="font-mono text-sm break-all">
                             {isDecrypting ? (
-                              <div className="text-green-400">{output}</div>
+                              <div className="text-chacha-primary">{output}</div>
                             ) : (
-                              <div className="text-blue-400">{output}</div>
+                              <div className="text-chacha-accent">{output}</div>
                             )}
                           </div>
                         ) : (
-                          <p className="text-slate-500 text-center italic">
+                          <p className="text-chacha-accent text-center italic">
                             {isDecrypting 
                               ? "Decrypted message will appear here..." 
                               : "Encrypted ciphertext will appear here..."}
@@ -633,7 +635,7 @@ const ChaCha20Interactive = () => {
           {activeTab === "theory" && <TheoryTab />}
           {activeTab === "example" && <ExampleTab />}
         </main>
-        <footer className="mt-16 text-center text-sm text-slate-500">
+  <footer className="mt-16 text-center text-sm text-chacha-accent">
           <p>An interactive visualization of the ChaCha20 stream cipher algorithm</p>
           <p className="mt-2">Based on RFC 7539 - ChaCha20 and Poly1305 for IETF Protocols</p>
         </footer>
