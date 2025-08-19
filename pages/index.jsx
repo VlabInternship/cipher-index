@@ -70,7 +70,7 @@ const PAGES = {
                 <li><a href="/feistel-cipher" className="text-[#0056b3] hover:underline">6. Feistel Cipher Structure: A Foundational Blueprint</a></li>
                 <li><a href="/des-cipher" className="text-[#0056b3] hover:underline">7. Data Encryption Standard (DES): A Pioneer with a Feistel Core</a></li>
                 <li><a href="/aes-cipher" className="text-[#0056b3] hover:underline">8. Advanced Encryption Standard (AES): The Global Standard</a></li>
-                <li><a href="/threefish" className="text-[#0056b3] hover:underline">9. Threefish: A Tweakable and S-Box-Free Design</a></li>
+                <li><a href="/threefish-cipher" className="text-[#0056b3] hover:underline">9. Threefish: A Tweakable and S-Box-Free Design</a></li>
                 <li><a href="/present-cipher" className="text-[#0056b3] hover:underline">10. PRESENT: The Lightweight Champion for IoT</a></li>
                 <li><a href="/idea-cipher" className="text-[#0056b3] hover:underline">11. International Data Encryption Algorithm (IDEA)</a></li>
                 <li><a href="/speck-cipher" className="text-[#0056b3] hover:underline">12. SPECK: The Software-Optimized Lightweight Contender</a></li>
@@ -86,7 +86,7 @@ const PAGES = {
 
               <h3 className="font-semibold mt-6">Part IV: The Asymmetric Revolution and Authentication</h3>
               <ul className="list-none p-0 mt-3 space-y-2">
-                <li><a href="/rsa" className="text-[#0056b3] hover:underline">17. RSA: The Cornerstone of Public-Key Cryptography</a></li>
+                <li><a href="/rsa-cipher" className="text-[#0056b3] hover:underline">17. RSA: The Cornerstone of Public-Key Cryptography</a></li>
                 <li><a href="/hmac-cipher" className="text-[#0056b3] hover:underline">18. HMAC: The Guardian of Integrity and Authenticity</a></li>
               </ul>
             </div>
