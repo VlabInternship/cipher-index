@@ -1,633 +1,418 @@
-import React, { useState, useEffect } from 'react';
-import { Lock, Unlock, BookOpen, Code, Play, Pause, RotateCcw } from 'lucide-react';
+import React, { useState } from 'react';
+import { Lock, Unlock, BookOpen, Code, RotateCcw } from 'lucide-react';
 
-const CryptoVisualizer = () => {
-  // Color scheme constants
+const VigenereCipher = () => {
+  // Color scheme
   const colors = {
-    background: '#f5f5f5',
-    primary: '#0056b3',
-    primaryLight: '#007bff',
-    secondary: '#f9f9f9',
+    background: '#f8f9fa',
+    primary: '#4a6fa5',
+    primaryLight: '#6e9ccc',
+    secondary: '#ffffff',
     accentGreen: '#28a745',
     accentYellow: '#ffc107',
     accentRed: '#dc3545',
-    textDark: '#212529',
-    textLight: '#6c757d'
+    textDark: '#2d3a4a',
+    textLight: '#6c757d',
+    border: '#dee2e6'
   };
 
   // State management
-  const [userInput, setUserInput] = useState('HELLO');
-  const [cipherKey, setCipherKey] = useState('KEY');
-  const [processedOutput, setProcessedOutput] = useState('');
-  const [activeMode, setActiveMode] = useState('encrypt');
-  const [currentView, setCurrentView] = useState('theory');
-  const [showViz, setShowViz] = useState(false);
-  const [vizStep, setVizStep] = useState(0);
-  const [autoPlay, setAutoPlay] = useState(false);
-  const [stepData, setStepData] = useState([]);
+  const [activeTab, setActiveTab] = useState('theory');
+  const [plaintext, setPlaintext] = useState('attackatdawn');
+  const [key, setKey] = useState('LEMON');
+  const [ciphertext, setCiphertext] = useState('LXFOPVEFRNHR');
+  const [mode, setMode] = useState('encrypt');
 
-  const buildCipherSteps = (text, keyValue, shouldEncrypt = true) => {
-    if (!text || !keyValue) return [];
-    
+  // Vigenère cipher implementation
+  const processVigenere = (text, key, encrypt = true) => {
+    // Clean the input text and key
     const cleanText = text.toUpperCase().replace(/[^A-Z]/g, '');
-    const cleanKey = keyValue.toUpperCase().replace(/[^A-Z]/g, '');
+    const cleanKey = key.toUpperCase().replace(/[^A-Z]/g, '');
     
-    if (cleanKey.length === 0) return [];
+    if (cleanKey.length === 0) return '';
     
-    const stepsLog = [];
-    let resultText = '';
-    
-    stepsLog.push({
-      action: 'init',
-      note: `Starting ${shouldEncrypt ? 'encryption' : 'decryption'}`,
-      input: cleanText,
-      key: cleanKey,
-      fullKey: '',
-      currentChar: '',
-      currentKey: '',
-      calculation: '',
-      result: '',
-      position: -1
-    });
-    
-    const fullKey = cleanKey.repeat(Math.ceil(cleanText.length / cleanKey.length)).substring(0, cleanText.length);
-    stepsLog.push({
-      action: 'extend_key',
-      note: 'Matching key length to text',
-      input: cleanText,
-      key: cleanKey,
-      fullKey: fullKey,
-      currentChar: '',
-      currentKey: '',
-      calculation: '',
-      result: '',
-      position: -1
-    });
+    let result = '';
     
     for (let i = 0; i < cleanText.length; i++) {
-      const char = cleanText[i];
-      const keyChar = fullKey[i];
-      const charValue = char.charCodeAt(0) - 65;
-      const keyValue = keyChar.charCodeAt(0) - 65;
+      const textChar = cleanText[i];
+      const keyChar = cleanKey[i % cleanKey.length];
       
-      let newValue;
-      let mathExplanation;
+      const textCode = textChar.charCodeAt(0) - 65;
+      const keyCode = keyChar.charCodeAt(0) - 65;
       
-      if (shouldEncrypt) {
-        newValue = (charValue + keyValue) % 26;
-        mathExplanation = `(${char}=${charValue}) + (${keyChar}=${keyValue}) = ${charValue + keyValue} mod 26 → ${newValue}`;
+      let resultCode;
+      if (encrypt) {
+        resultCode = (textCode + keyCode) % 26;
       } else {
-        newValue = (charValue - keyValue + 26) % 26;
-        mathExplanation = `(${char}=${charValue}) - (${keyChar}=${keyValue}) = ${charValue - keyValue} + 26 → ${(charValue - keyValue + 26)} mod 26 → ${newValue}`;
+        resultCode = (textCode - keyCode + 26) % 26;
       }
       
-      const resultChar = String.fromCharCode(newValue + 65);
-      resultText += resultChar;
+      result += String.fromCharCode(resultCode + 65);
       
-      stepsLog.push({
-        action: 'process_char',
-        note: `Processing position ${i + 1}`,
-        input: cleanText,
-        key: cleanKey,
-        fullKey: fullKey,
-        currentChar: char,
-        currentKey: keyChar,
-        calculation: mathExplanation,
-        result: resultText,
-        position: i
-      });
-    }
-    
-    stepsLog.push({
-      action: 'complete',
-      note: `Finished ${shouldEncrypt ? 'encryption' : 'decryption'}`,
-      input: cleanText,
-      key: cleanKey,
-      fullKey: fullKey,
-      currentChar: '',
-      currentKey: '',
-      calculation: '',
-      result: resultText,
-      position: -1
-    });
-    
-    return stepsLog;
-  };
-
-  const processCipher = (text, key, shouldEncrypt = true) => {
-    if (!text || !key) return '';
-    
-    const cleanKey = key.toUpperCase().replace(/[^A-Z]/g, '');
-    if (cleanKey.length === 0) return text;
-    
-    let output = '';
-    let keyPosition = 0;
-    
-    for (let i = 0; i < text.length; i++) {
-      const char = text[i].toUpperCase();
-      
-      if (char >= 'A' && char <= 'Z') {
-        const charCode = char.charCodeAt(0) - 65;
-        const keyCode = cleanKey[keyPosition % cleanKey.length].charCodeAt(0) - 65;
-        
-        let resultCode;
-        if (shouldEncrypt) {
-          resultCode = (charCode + keyCode) % 26;
-        } else {
-          resultCode = (charCode - keyCode + 26) % 26;
-        }
-        
-        const resultChar = String.fromCharCode(resultCode + 65);
-        output += text[i] === text[i].toLowerCase() ? resultChar.toLowerCase() : resultChar;
-        keyPosition++;
-      } else {
-        output += text[i];
+      // Add space every 5 characters for better readability
+      if ((i + 1) % 5 === 0 && (i + 1) < cleanText.length) {
+        result += ' ';
       }
     }
     
-    return output;
+    return result;
   };
 
-  const handleCipherAction = () => {
-    const result = processCipher(userInput, cipherKey, activeMode === 'encrypt');
-    setProcessedOutput(result);
-  };
-
-  const startViz = () => {
-    const vizSteps = buildCipherSteps(userInput, cipherKey, activeMode === 'encrypt');
-    setStepData(vizSteps);
-    setVizStep(0);
-    setShowViz(true);
-    setAutoPlay(false);
-  };
-
-  const resetViz = () => {
-    setShowViz(false);
-    setVizStep(0);
-    setAutoPlay(false);
-    setStepData([]);
-  };
-
-  const playViz = () => {
-    setAutoPlay(true);
-  };
-
-  const pauseViz = () => {
-    setAutoPlay(false);
-  };
-
-  const jumpToStep = (stepIndex) => {
-    setVizStep(stepIndex);
-  };
-
-  useEffect(() => {
-    if (autoPlay && vizStep < stepData.length - 1) {
-      const timer = setTimeout(() => {
-        setVizStep(prev => prev + 1);
-      }, 2000);
-      return () => clearTimeout(timer);
-    } else if (vizStep >= stepData.length - 1) {
-      setAutoPlay(false);
+  // Process the text based on mode
+  const processText = () => {
+    if (mode === 'encrypt') {
+      const result = processVigenere(plaintext, key, true);
+      setCiphertext(result);
+    } else {
+      const result = processVigenere(ciphertext, key, false);
+      setPlaintext(result);
     }
-  }, [autoPlay, vizStep, stepData.length]);
+  };
 
-  const currentStepInfo = stepData[vizStep] || {};
-
-  const demoSteps = [
-    { step: 1, desc: "Original message", value: "HELLO" },
-    { step: 2, desc: "Secret key", value: "KEY" },
-    { step: 3, desc: "Extended key pattern", value: "KEYKE" },
-    { step: 4, desc: "Letter to number conversion", 
-      input: "H=7, E=4, L=11, L=11, O=14", key: "K=10, E=4, Y=24, K=10, E=4" },
-    { step: 5, desc: "Math operations", 
-      calc: "(7+10)%26=17→R, (4+4)%26=8→I, (11+24)%26=9→J, (11+10)%26=21→V, (14+4)%26=18→S" },
-    { step: 6, desc: "Final output", value: "RIJVS" }
-  ];
-
-  const VizPanel = () => (
-    <div className="rounded-xl shadow-lg p-6 mt-6" style={{ backgroundColor: colors.secondary }}>
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-xl font-bold" style={{ color: colors.textDark }}>Step-by-Step Walkthrough</h3>
-        <div className="flex gap-2">
-          {!showViz ? (
-            <button
-              onClick={startViz}
-              disabled={!userInput || !cipherKey}
-              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-2 ${
-                !userInput || !cipherKey 
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
-                  : `bg-[${colors.primary}] hover:bg-[${colors.primaryLight}] text-white`
-              }`}
-              style={{ backgroundColor: !userInput || !cipherKey ? undefined : colors.primary }}
-            >
-              <Play size={18} />
-              Start Visualization
-            </button>
-          ) : (
-            <>
-              {!autoPlay ? (
-                <button
-                  onClick={playViz}
-                  className="px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-2"
-                  style={{ backgroundColor: colors.accentGreen, color: 'white' }}
-                >
-                  <Play size={18} />
-                  Play
-                </button>
-              ) : (
-                <button
-                  onClick={pauseViz}
-                  className="px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-2"
-                  style={{ backgroundColor: colors.accentYellow, color: colors.textDark }}
-                >
-                  <Pause size={18} />
-                  Pause
-                </button>
-              )}
-              <button
-                onClick={resetViz}
-                className="px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-2"
-                style={{ backgroundColor: colors.accentRed, color: 'white' }}
-              >
-                <RotateCcw size={18} />
-                Reset
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-      
-      {showViz && stepData.length > 0 && (
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <span className="text-sm" style={{ color: colors.textLight }}>
-              Step {vizStep + 1} of {stepData.length}
-            </span>
-            <div className="flex-1 mx-4">
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="h-2 rounded-full transition-all duration-300"
-                  style={{ 
-                    width: `${((vizStep + 1) / stepData.length) * 100}%`,
-                    backgroundColor: colors.primary 
-                  }}
-                ></div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="flex flex-wrap gap-2 justify-center">
-            {stepData.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => jumpToStep(index)}
-                className={`w-8 h-8 rounded-full text-sm font-medium transition-all duration-200 ${
-                  index === vizStep
-                    ? 'text-white'
-                    : index < vizStep
-                    ? 'text-white'
-                    : 'text-gray-600 hover:bg-gray-300'
-                }`}
-                style={{
-                  backgroundColor: index === vizStep 
-                    ? colors.primary 
-                    : index < vizStep
-                    ? colors.accentGreen
-                    : colors.secondary
-                }}
-              >
-                {index + 1}
-              </button>
-            ))}
-          </div>
-          
-          <div className="rounded-lg p-6" style={{ backgroundColor: colors.background }}>
-            <h4 className="text-lg font-semibold mb-4" style={{ color: colors.textDark }}>
-              {currentStepInfo.note}
-            </h4>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: colors.textLight }}>Input Text</label>
-                  <div className="font-mono text-lg p-3 rounded border" style={{ backgroundColor: 'white' }}>
-                    {currentStepInfo.input?.split('').map((char, index) => (
-                      <span 
-                        key={index}
-                        className={`px-1 py-0.5 rounded ${
-                          currentStepInfo.position === index 
-                            ? 'text-yellow-800' 
-                            : 'text-gray-800'
-                        }`}
-                        style={{
-                          backgroundColor: currentStepInfo.position === index 
-                            ? '#fff3cd' 
-                            : 'transparent'
-                        }}
-                      >
-                        {char}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: colors.textLight }}>Cipher Key</label>
-                  <div className="font-mono text-lg p-3 rounded border" style={{ backgroundColor: 'white' }}>
-                    {currentStepInfo.key}
-                  </div>
-                </div>
-                
-                {currentStepInfo.fullKey && (
-                  <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: colors.textLight }}>Full Key</label>
-                    <div className="font-mono text-lg p-3 rounded border" style={{ backgroundColor: 'white' }}>
-                      {currentStepInfo.fullKey?.split('').map((char, index) => (
-                        <span 
-                          key={index}
-                          className={`px-1 py-0.5 rounded ${
-                            currentStepInfo.position === index 
-                              ? 'text-blue-800' 
-                              : 'text-gray-800'
-                          }`}
-                          style={{
-                            backgroundColor: currentStepInfo.position === index 
-                              ? '#cfe2ff' 
-                              : 'transparent'
-                          }}
-                        >
-                          {char}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-              
-              <div className="space-y-4">
-                {currentStepInfo.currentChar && (
-                  <div className="p-4 rounded-lg" style={{ backgroundColor: '#e7f1ff' }}>
-                    <h5 className="font-semibold mb-2" style={{ color: colors.primary }}>Current Operation</h5>
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span>Text character:</span>
-                        <span className="font-mono font-bold" style={{ color: '#996500' }}>{currentStepInfo.currentChar}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Key character:</span>
-                        <span className="font-mono font-bold" style={{ color: colors.primary }}>{currentStepInfo.currentKey}</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                
-                {currentStepInfo.calculation && (
-                  <div className="p-4 rounded-lg" style={{ backgroundColor: '#e8f7ee' }}>
-                    <h5 className="font-semibold mb-2" style={{ color: colors.accentGreen }}>Math Steps</h5>
-                    <div className="font-mono text-sm break-words" style={{ color: '#0f5132' }}>
-                      {currentStepInfo.calculation}
-                    </div>
-                  </div>
-                )}
-                
-                {currentStepInfo.result && (
-                  <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: colors.textLight }}>Current Result</label>
-                    <div className="font-mono text-lg p-3 rounded border" style={{ backgroundColor: 'white' }}>
-                      {currentStepInfo.result?.split('').map((char, index) => (
-                        <span 
-                          key={index}
-                          className={`px-1 py-0.5 rounded ${
-                            index === currentStepInfo.result.length - 1 && currentStepInfo.action === 'process_char'
-                              ? 'text-green-800' 
-                              : 'text-gray-800'
-                          }`}
-                          style={{
-                            backgroundColor: index === currentStepInfo.result.length - 1 && currentStepInfo.action === 'process_char'
-                              ? '#d1e7dd' 
-                              : 'transparent'
-                          }}
-                        >
-                          {char}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+  // Reset function
+  const resetForm = () => {
+    setPlaintext('attackatdawn');
+    setKey('LEMON');
+    setCiphertext('LXFOPVEFRNHR');
+  };
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: colors.background }}>
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-2" style={{ color: colors.textDark }}>Vigenère Cipher Explorer</h1>
-          <p style={{ color: colors.textLight }}>Interactive tool for learning polyalphabetic substitution</p>
+      <div className="container mx-auto px-4 py-6 max-w-4xl">
+        <div className="text-center mb-6">
+          <h1 className="text-3xl font-bold mb-2" style={{ color: colors.textDark }}>Vigenère Cipher</h1>
+          <p className="text-sm" style={{ color: colors.textLight }}>Learn, simulate, and understand the encryption and decryption process</p>
         </div>
 
-        <div className="flex justify-center mb-8">
-          <div className="rounded-lg shadow-lg p-1" style={{ backgroundColor: 'white' }}>
+        {/* Navigation Tabs - Compact Layout */}
+        <div className="flex mb-6 justify-center">
+          <div className="flex rounded-md shadow-sm overflow-hidden">
             <button
-              onClick={() => setCurrentView('theory')}
-              className={`px-6 py-3 rounded-md font-medium transition-all duration-200 flex items-center gap-2 ${
-                currentView === 'theory' 
-                  ? 'text-white shadow-md' 
+              onClick={() => setActiveTab('theory')}
+              className={`px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center gap-1 ${
+                activeTab === 'theory' 
+                  ? 'text-white' 
                   : 'text-gray-600 hover:text-blue-500'
               }`}
               style={{
-                backgroundColor: currentView === 'theory' ? colors.primary : 'transparent'
+                backgroundColor: activeTab === 'theory' ? colors.primary : colors.secondary,
+                border: `1px solid ${colors.border}`
               }}
             >
-              <BookOpen size={20} />
+              <BookOpen size={16} />
               Theory
             </button>
             <button
-              onClick={() => setCurrentView('cipher')}
-              className={`px-6 py-3 rounded-md font-medium transition-all duration-200 flex items-center gap-2 ${
-                currentView === 'cipher' 
-                  ? 'text-white shadow-md' 
+              onClick={() => setActiveTab('example')}
+              className={`px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center gap-1 ${
+                activeTab === 'example' 
+                  ? 'text-white' 
                   : 'text-gray-600 hover:text-blue-500'
               }`}
               style={{
-                backgroundColor: currentView === 'cipher' ? colors.primary : 'transparent'
+                backgroundColor: activeTab === 'example' ? colors.primary : colors.secondary,
+                border: `1px solid ${colors.border}`
               }}
             >
-              <Code size={20} />
-              Cipher Tool
+              <Code size={16} />
+              Example
+            </button>
+            <button
+              onClick={() => setActiveTab('simulation')}
+              className={`px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center gap-1 ${
+                activeTab === 'simulation' 
+                  ? 'text-white' 
+                  : 'text-gray-600 hover:text-blue-500'
+              }`}
+              style={{
+                backgroundColor: activeTab === 'simulation' ? colors.primary : colors.secondary,
+                border: `1px solid ${colors.border}`
+              }}
+            >
+              <Lock size={16} />
+              Simulation
             </button>
           </div>
         </div>
 
-        {currentView === 'theory' && (
-          <div className="max-w-4xl mx-auto">
-            <div className="rounded-xl shadow-lg p-8 mb-8" style={{ backgroundColor: 'white' }}>
-              <h2 className="text-2xl font-bold mb-6" style={{ color: colors.textDark }}>Understanding the Vigenère Cipher</h2>
+        {/* Content Area */}
+        <div className="bg-white rounded-lg shadow-md p-6" style={{ border: `1px solid ${colors.border}` }}>
+          {/* Theory Section */}
+          {activeTab === 'theory' && (
+            <div className="space-y-4">
+              <h2 className="text-xl font-bold" style={{ color: colors.textDark }}>Introduction</h2>
+              <p className="text-sm" style={{ color: colors.textDark }}>
+                The <span className="font-bold" style={{ color: colors.primary }}>Vigenère cipher</span> is a method for encrypting text that uses a series of different Caesar ciphers. It stands out from simpler substitution ciphers by using a polyalphabetic approach, where the substitution alphabet for each letter of the plaintext is determined by a corresponding letter from a keyword. This technique was a significant advancement because it interfered with a straightforward application of frequency analysis, which had proven effective against simpler ciphers.
+              </p>
               
-              <div className="prose prose-lg max-w-none">
-                <p className="mb-4" style={{ color: colors.textDark }}>
-                  This cipher uses multiple Caesar shifts based on a keyword, making it much stronger than simple substitution. 
-                  Developed in the 16th century, it remained unbroken for centuries until methods like frequency analysis 
-                  were developed against it.
+              <h2 className="text-xl font-bold mt-6" style={{ color: colors.textDark }}>Origin Story</h2>
+              <p className="text-sm" style={{ color: colors.textDark }}>
+                While the cipher is named after Blaise de Vigenère, its invention is more complex. The concept evolved from earlier polyalphabetic ciphers, but Vigenère is often credited with a strong, definitive formulation. It was first described in a book by Giovan Battista Bellaso in 1553, but Vigenère's later work and popularization led to the cipher being named in his honor.
+              </p>
+              
+              <h2 className="text-xl font-bold mt-6" style={{ color: colors.textDark }}>Core Idea</h2>
+              <p className="text-sm" style={{ color: colors.textDark }}>
+                The core principle of the Vigenère cipher is to disguise the natural frequency of letters in the plaintext. In a simple substitution cipher, a letter like 'E' will always map to the same ciphertext letter. The Vigenère cipher, however, uses a repeating keyword to apply a different shift to each plaintext letter. This ensures that the same plaintext letter can be encrypted as different ciphertext letters at various points in a message, thereby defeating simple frequency analysis.
+              </p>
+              
+              <h2 className="text-xl font-bold mt-6" style={{ color: colors.textDark }}>Technical Blueprint</h2>
+              <p className="text-sm" style={{ color: colors.textDark }}>
+                The Vigenère cipher is often implemented using a Vigenère square or <span className="font-bold" style={{ color: colors.primary }}>tabula recta</span>, which is a table of 26 alphabets, each shifted cyclically to the left compared to the previous one.
+              </p>
+              <p className="text-sm" style={{ color: colors.textDark }}>
+                To encrypt, a keyword is chosen and repeated to match the length of the plaintext message. Each plaintext letter is then paired with the corresponding key letter. To find the ciphertext letter, the sender locates the row that begins with the key letter and the column that corresponds to the plaintext letter. The letter at their intersection is the encrypted letter.
+              </p>
+              <p className="text-sm" style={{ color: colors.textDark }}>
+                The process can also be described algebraically. If the alphabet A-Z is mapped to numbers 0-25, encryption can be expressed using modular arithmetic: <code className="bg-gray-100 p-1 rounded text-xs">C_i = (P_i + K_i) mod 26</code>. Decryption reverses this process using subtraction modulo 26: <code className="bg-gray-100 p-1 rounded text-xs">P_i = (C_i - K_i) mod 26</code>.
+              </p>
+              
+              <h2 className="text-xl font-bold mt-6" style={{ color: colors.textDark }}>Security Scorecard</h2>
+              <div className="inline-block px-3 py-1 mb-2 rounded-full text-xs text-white font-semibold" style={{ backgroundColor: colors.accentRed }}>
+                Insecure - Obsolete
+              </div>
+              <p className="text-sm" style={{ color: colors.textDark }}>
+                The Vigenère cipher's strength lies in its ability to resist simple frequency analysis. However, its primary weakness stems from the repeating nature of its key. If a cryptanalyst can determine the length of the key, they can break the ciphertext into several smaller ciphertexts, each of which is essentially a simple Caesar cipher that can be easily broken. Methods like the <span className="font-bold" style={{ color: colors.primary }}>Kasiski examination</span> and the <span className="font-bold" style={{ color: colors.primary }}>Friedman test</span> exploit the repeating key to find its length by identifying repeated ciphertext segments and analyzing the distance between them.
+              </p>
+              
+              <h2 className="text-xl font-bold mt-6" style={{ color: colors.textDark }}>Real-World Usage</h2>
+              <p className="text-sm" style={{ color: colors.textDark }}>
+                The Vigenère cipher was simple enough to be used as a "field cipher" and was famously employed by the Confederate States of America during the American Civil War, using a brass cipher disk to facilitate its implementation. The cipher's historical significance is that a version with a random, non-reusable key as long as the message becomes a one-time pad, which is a theoretically unbreakable cipher.
+              </p>
+            </div>
+          )}
+
+          {/* Example Section */}
+          {activeTab === 'example' && (
+            <div>
+              <h2 className="text-xl font-bold mb-4" style={{ color: colors.textDark }}>Solved Example: Vigenère Cipher</h2>
+              
+              <div className="mb-4">
+                <p className="text-sm mb-1" style={{ color: colors.textDark }}><strong>Plaintext:</strong> <span className="font-bold" style={{ color: colors.primary }}>attackatdawn</span></p>
+                <p className="text-sm" style={{ color: colors.textDark }}><strong>Keyword:</strong> <span className="font-bold" style={{ color: colors.primary }}>LEMON</span></p>
+              </div>
+              
+              <div className="mb-4">
+                <h4 className="text-sm font-semibold mb-2" style={{ color: colors.textDark }}>Step 1: Align Plaintext and Key</h4>
+                <p className="text-sm mb-2" style={{ color: colors.textDark }}>The keyword is repeated to match the length of the plaintext.</p>
+                <pre className="bg-gray-100 p-3 rounded text-xs overflow-x-auto" style={{ color: colors.textDark }}>
+                  Plaintext: attackatdawn<br />
+                  Key:       LEMONLEMONLE
+                </pre>
+              </div>
+              
+              <div className="mb-4">
+                <h4 className="text-sm font-semibold mb-2" style={{ color: colors.textDark }}>Step 2: Encrypt Letter by Letter</h4>
+                <p className="text-sm mb-2" style={{ color: colors.textDark }}>The encryption is performed using the Vigenère square (or algebraic calculation).</p>
+                <pre className="bg-gray-100 p-3 rounded text-xs overflow-x-auto" style={{ color: colors.textDark }}>
+                  A (plaintext) + L (key) = L<br />
+                  T (plaintext) + E (key) = X<br />
+                  T (plaintext) + M (key) = F<br />
+                  A (plaintext) + O (key) = O<br />
+                  C (plaintext) + N (key) = P<br />
+                  K (plaintext) + L (key) = V<br />
+                  A (plaintext) + E (key) = E<br />
+                  T (plaintext) + M (key) = F<br />
+                  D (plaintext) + O (key) = R<br />
+                  A (plaintext) + N (key) = N<br />
+                  W (plaintext) + L (key) = H<br />
+                  N (plaintext) + E (key) = R
+                </pre>
+              </div>
+              
+              <div>
+                <p className="text-sm mb-1" style={{ color: colors.textDark }}><strong>Ciphertext:</strong> <span className="font-bold" style={{ color: colors.primary }}>LXFOPVEFRNHR</span></p>
+                <p className="text-xs" style={{ color: colors.textLight }}>
+                  Note: Spaces are added for readability but are not part of the actual ciphertext
                 </p>
-                
-                <h3 className="text-xl font-semibold mb-3" style={{ color: colors.textDark }}>Key Concepts:</h3>
-                <ul className="list-disc list-inside mb-6 space-y-2" style={{ color: colors.textDark }}>
-                  <li>Uses a keyword to determine shift amounts</li>
-                  <li>Each letter in the key shifts corresponding text letter</li>
-                  <li>The key repeats to cover the entire message</li>
-                  <li>Modular arithmetic wraps around the alphabet</li>
-                </ul>
               </div>
             </div>
+          )}
 
-            <div className="rounded-xl shadow-lg p-8" style={{ backgroundColor: 'white' }}>
-              <h3 className="text-2xl font-bold mb-6" style={{ color: colors.textDark }}>Example Walkthrough</h3>
+          {/* Simulation Section */}
+          {activeTab === 'simulation' && (
+            <div>
+              <h2 className="text-xl font-bold mb-4 text-center" style={{ color: colors.textDark }}>Interactive Simulation</h2>
               
-              <div className="space-y-4">
-                {demoSteps.map((step, index) => (
-                  <div key={index} className="border-l-4 pl-4 py-2" style={{ borderColor: colors.primary }}>
-                    <div className="flex items-start gap-3">
-                      <span className="rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold"
-                        style={{ backgroundColor: colors.primary, color: 'white' }}>
-                        {step.step}
-                      </span>
-                      <div>
-                        <p className="font-medium" style={{ color: colors.textDark }}>{step.desc}</p>
-                        {step.value && (
-                          <p className="font-mono text-lg" style={{ color: colors.primary }}>{step.value}</p>
-                        )}
-                        {step.input && (
-                          <div className="mt-2">
-                            <p className="text-sm" style={{ color: colors.textLight }}>Input: <span className="font-mono">{step.input}</span></p>
-                            <p className="text-sm" style={{ color: colors.textLight }}>Key: <span className="font-mono">{step.key}</span></p>
-                          </div>
-                        )}
-                        {step.calc && (
-                          <p className="text-sm font-mono mt-2" style={{ color: colors.textLight }}>{step.calc}</p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {currentView === 'cipher' && (
-          <div className="max-w-4xl mx-auto">
-            <div className="rounded-xl shadow-lg p-8" style={{ backgroundColor: 'white' }}>
-              <h2 className="text-2xl font-bold mb-6 text-center" style={{ color: colors.textDark }}>Cipher Processor</h2>
-              
-              <div className="flex justify-center mb-6">
-                <div className="rounded-lg p-1" style={{ backgroundColor: colors.background }}>
+              <div className="flex justify-center mb-4">
+                <div className="rounded-md p-1 flex" style={{ backgroundColor: colors.background }}>
                   <button
-                    onClick={() => setActiveMode('encrypt')}
-                    className={`px-4 py-2 rounded-md font-medium transition-all duration-200 flex items-center gap-2 ${
-                      activeMode === 'encrypt' 
-                        ? 'text-white shadow-md' 
+                    onClick={() => setMode('encrypt')}
+                    className={`px-3 py-1 rounded text-xs font-medium transition-all duration-200 flex items-center gap-1 ${
+                      mode === 'encrypt' 
+                        ? 'text-white' 
                         : 'text-gray-600 hover:text-green-500'
                     }`}
                     style={{
-                      backgroundColor: activeMode === 'encrypt' ? colors.accentGreen : 'transparent'
+                      backgroundColor: mode === 'encrypt' ? colors.accentGreen : 'transparent'
                     }}
                   >
-                    <Lock size={18} />
+                    <Lock size={14} />
                     Encrypt
                   </button>
                   <button
-                    onClick={() => setActiveMode('decrypt')}
-                    className={`px-4 py-2 rounded-md font-medium transition-all duration-200 flex items-center gap-2 ${
-                      activeMode === 'decrypt' 
-                        ? 'text-white shadow-md' 
+                    onClick={() => setMode('decrypt')}
+                    className={`px-3 py-1 rounded text-xs font-medium transition-all duration-200 flex items-center gap-1 ${
+                      mode === 'decrypt' 
+                        ? 'text-white' 
                         : 'text-gray-600 hover:text-red-500'
                     }`}
                     style={{
-                      backgroundColor: activeMode === 'decrypt' ? colors.accentRed : 'transparent'
+                      backgroundColor: mode === 'decrypt' ? colors.accentRed : 'transparent'
                     }}
                   >
-                    <Unlock size={18} />
+                    <Unlock size={14} />
                     Decrypt
                   </button>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: colors.textLight }}>
-                    {activeMode === 'encrypt' ? 'Original Text' : 'Encrypted Text'}
-                  </label>
-                  <textarea
-                    value={userInput}
-                    onChange={(e) => setUserInput(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    rows="3"
-                    placeholder={activeMode === 'encrypt' ? 'Type message to encrypt...' : 'Paste ciphertext to decrypt...'}
-                    style={{ backgroundColor: colors.secondary }}
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: colors.textLight }}>
-                    Secret Key
-                  </label>
-                  <input
-                    type="text"
-                    value={cipherKey}
-                    onChange={(e) => setCipherKey(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Enter your secret key..."
-                    style={{ backgroundColor: colors.secondary }}
-                  />
-                </div>
+              <div className="grid grid-cols-1 gap-3 mb-4">
+                {/* In decryption mode, show ciphertext first, then plaintext */}
+                {mode === 'decrypt' ? (
+                  <>
+                    <div>
+                      <label className="block text-xs font-medium mb-1" style={{ color: colors.textLight }}>
+                        Ciphertext
+                      </label>
+                      <input
+                        type="text"
+                        value={ciphertext}
+                        onChange={(e) => setCiphertext(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent text-sm"
+                        placeholder="e.g., LXFOPVEFRNHR"
+                        style={{ backgroundColor: colors.secondary }}
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-xs font-medium mb-1" style={{ color: colors.textLight }}>
+                        Key
+                      </label>
+                      <input
+                        type="text"
+                        value={key}
+                        onChange={(e) => setKey(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent text-sm"
+                        placeholder="e.g., LEMON"
+                        style={{ backgroundColor: colors.secondary }}
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-xs font-medium mb-1" style={{ color: colors.textLight }}>
+                        Plaintext
+                      </label>
+                      <input
+                        type="text"
+                        value={plaintext}
+                        onChange={(e) => setPlaintext(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent text-sm"
+                        placeholder="e.g., attackatdawn"
+                        style={{ backgroundColor: colors.secondary }}
+                        readOnly
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div>
+                      <label className="block text-xs font-medium mb-1" style={{ color: colors.textLight }}>
+                        Plaintext
+                      </label>
+                      <input
+                        type="text"
+                        value={plaintext}
+                        onChange={(e) => setPlaintext(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent text-sm"
+                        placeholder="e.g., attackatdawn"
+                        style={{ backgroundColor: colors.secondary }}
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-xs font-medium mb-1" style={{ color: colors.textLight }}>
+                        Key
+                      </label>
+                      <input
+                        type="text"
+                        value={key}
+                        onChange={(e) => setKey(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent text-sm"
+                        placeholder="e.g., LEMON"
+                        style={{ backgroundColor: colors.secondary }}
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-xs font-medium mb-1" style={{ color: colors.textLight }}>
+                        Ciphertext
+                      </label>
+                      <input
+                        type="text"
+                        value={ciphertext}
+                        onChange={(e) => setCiphertext(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent text-sm"
+                        placeholder="e.g., LXFOPVEFRNHR"
+                        style={{ backgroundColor: colors.secondary }}
+                        readOnly
+                      />
+                    </div>
+                  </>
+                )}
               </div>
 
-              <div className="flex justify-center mb-6">
+              <div className="flex justify-center gap-3 mb-4">
                 <button
-                  onClick={handleCipherAction}
-                  disabled={!userInput || !cipherKey}
-                  className={`px-8 py-3 rounded-lg font-medium transition-all duration-200 ${
-                    !userInput || !cipherKey 
+                  onClick={processText}
+                  disabled={mode === 'encrypt' ? !plaintext || !key : !ciphertext || !key}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                    (mode === 'encrypt' ? !plaintext || !key : !ciphertext || !key)
                       ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
-                      : activeMode === 'encrypt'
-                      ? 'hover:shadow-xl text-white shadow-lg'
-                      : 'hover:shadow-xl text-white shadow-lg'
+                      : mode === 'encrypt'
+                      ? 'hover:shadow text-white'
+                      : 'hover:shadow text-white'
                   }`}
                   style={{
-                    backgroundColor: !userInput || !cipherKey 
+                    backgroundColor: (mode === 'encrypt' ? !plaintext || !key : !ciphertext || !key)
                       ? undefined 
-                      : activeMode === 'encrypt'
+                      : mode === 'encrypt'
                       ? colors.accentGreen
                       : colors.accentRed
                   }}
                 >
-                  {activeMode === 'encrypt' ? 'Encrypt Message' : 'Decrypt Message'}
+                  {mode === 'encrypt' ? 'Encrypt' : 'Decrypt'}
+                </button>
+                
+                <button
+                  onClick={resetForm}
+                  className="px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-1"
+                  style={{ backgroundColor: colors.textLight, color: 'white' }}
+                >
+                  <RotateCcw size={14} />
+                  Reset
                 </button>
               </div>
 
-              {processedOutput && (
-                <div className="mb-6">
-                  <label className="block text-sm font-medium mb-2" style={{ color: colors.textLight }}>
-                    {activeMode === 'encrypt' ? 'Encrypted Result' : 'Decrypted Message'}
-                  </label>
-                  <div className="border border-gray-300 rounded-lg p-4" style={{ backgroundColor: colors.secondary }}>
-                    <p className="font-mono text-lg break-words" style={{ color: colors.textDark }}>{processedOutput}</p>
-                  </div>
-                </div>
-              )}
+              <div className="p-3 rounded-md text-center text-xs" style={{ backgroundColor: colors.background }}>
+                <p className="font-medium mb-1" style={{ color: colors.textLight }}>
+                  {mode === 'encrypt' ? 'Encryption Formula' : 'Decryption Formula'}
+                </p>
+                <p className="font-mono" style={{ color: colors.textDark }}>
+                  {mode === 'encrypt' 
+                    ? 'Ciphertext = (Plaintext + Key) mod 26' 
+                    : 'Plaintext = (Ciphertext - Key + 26) mod 26'}
+                </p>
+              </div>
             </div>
+          )}
+        </div>
 
-            <VizPanel />
-          </div>
-        )}
+        <div className="text-center mt-6 text-xs" style={{ color: colors.textLight }}>
+          <p>Vigenère Cipher Simulation Tool © 2025</p>
+        </div>
       </div>
     </div>
   );
 };
 
-export default CryptoVisualizer;
+export default VigenereCipher;
