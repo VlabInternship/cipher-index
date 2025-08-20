@@ -521,7 +521,7 @@ const ChaCha20Interactive = () => {
                         disabled={isAnimating || isDecrypting} 
                         className={`flex-1 bg-chacha-primary disabled:opacity-50 disabled:cursor-not-allowed text-chacha-alt font-bold py-3 px-4 rounded-lg transition-all flex items-center justify-center shadow-lg ${isDecrypting ? 'opacity-50' : ''}`}
                       >
-                        {isAnimating && !isDecrypting ? <><Pause className="w-5 h-5 mr-2" /> Animating...</> : <><Play className="w-5 h-5 mr-2" /> Encrypt</>}
+                        {isAnimating && !isDecrypting ? <><Pause className="w-5 h-5 mr-2" /> Animating....</> : <><Play className="w-5 h-5 mr-2" /> Encrypt</>}
                       </button>
                       <button 
                         onClick={() => animateProcess(true)} 
