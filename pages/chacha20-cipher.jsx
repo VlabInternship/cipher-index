@@ -113,11 +113,11 @@ const XorVisualizer = ({ currentStep, keystreamBytes, plaintextBytes, ciphertext
 // --- Theory Components ---
 const TheoryTab = () => (
   <div className="space-y-6 animate-fade-in">
-    <div className="bg-chacha-accent/5 rounded-lg p-6">
-      <h2 className="text-2xl font-bold mb-4 text-chacha-accent flex items-center">
-        <BookOpen className="w-6 h-6 mr-3 text-chacha-accent" /> Introduction
+    <div className="bg-white shadow-lg rounded-lg p-6">
+      <h2 className="text-2xl font-bold mb-4 text-gray-800 flex items-center">
+        <BookOpen className="w-6 h-6 mr-3 text-gray-800" /> Introduction
       </h2>
-      <div className="space-y-4 text-chacha-accent">
+      <div className="space-y-4 text-gray-800">
         <p>
           ChaCha20 is a modern, symmetric stream cipher that was developed as a modification of the Salsa20 algorithm. 
           Designed by Daniel J. Bernstein, its purpose was to improve upon Salsa20's diffusion and performance on certain 
@@ -126,9 +126,9 @@ const TheoryTab = () => (
       </div>
     </div>
 
-    <div className="bg-chacha-accent/5 rounded-lg p-6">
-      <h2 className="text-2xl font-bold mb-4 text-chacha-accent">Origin Story</h2>
-      <div className="space-y-4 text-chacha-accent">
+    <div className="bg-white shadow-lg rounded-lg p-6">
+      <h2 className="text-2xl font-bold mb-4 text-gray-800">Origin Story</h2>
+      <div className="space-y-4 text-gray-800">
         <p>
           ChaCha20 was introduced in 2008 by Daniel J. Bernstein, three years after his original Salsa20 design. 
           The modifications were a response to the practicalities of software implementation on modern CPUs, particularly 
@@ -137,9 +137,9 @@ const TheoryTab = () => (
       </div>
     </div>
 
-    <div className="bg-chacha-accent/5 rounded-lg p-6">
-      <h2 className="text-2xl font-bold mb-4 text-chacha-accent">Core Idea</h2>
-      <div className="space-y-4 text-chacha-accent">
+    <div className="bg-white shadow-lg rounded-lg p-6">
+      <h2 className="text-2xl font-bold mb-4 text-gray-800">Core Idea</h2>
+      <div className="space-y-4 text-gray-800">
         <p>
           Like its predecessor, ChaCha20 is a stream cipher that generates a keystream by using an Add-Rotate-XOR (ARX) design. 
           It operates on a 512-bit state, which is initialized with a 256-bit key, a 96-bit nonce, and a counter. The core idea 
@@ -149,11 +149,11 @@ const TheoryTab = () => (
       </div>
     </div>
 
-    <div className="bg-chacha-accent/5 rounded-lg p-6">
-      <h2 className="text-2xl font-bold mb-4 text-chacha-accent flex items-center">
-        <Code className="w-6 h-6 mr-3 text-chacha-accent" /> Technical Blueprint
+    <div className="bg-white shadow-lg rounded-lg p-6">
+      <h2 className="text-2xl font-bold mb-4 text-gray-800 flex items-center">
+        <Code className="w-6 h-6 mr-3 text-gray-800" /> Technical Blueprint
       </h2>
-      <div className="space-y-4 text-chacha-accent">
+      <div className="space-y-4 text-gray-800">
         <p>
           ChaCha20 operates on a 4x4 matrix of sixteen 32-bit words. It uses a modified quarter-round function that, 
           unlike Salsa20, updates each word twice. This provides better diffusion per round, with each word having a 
@@ -168,9 +168,9 @@ const TheoryTab = () => (
       </div>
     </div>
 
-    <div className="bg-chacha-accent/5 rounded-lg p-6">
-      <h2 className="text-2xl font-bold mb-4 text-chacha-accent">Security Scorecard</h2>
-      <div className="space-y-4 text-chacha-accent">
+    <div className="bg-white shadow-lg rounded-lg p-6">
+      <h2 className="text-2xl font-bold mb-4 text-gray-800">Security Scorecard</h2>
+      <div className="space-y-4 text-gray-800">
         <p>
           ChaCha20 is considered highly secure and is designed to be resilient against known attacks, including differential 
           and linear cryptanalysis. The design, based on principles similar to Salsa20, has been extensively tested and is 
@@ -179,9 +179,9 @@ const TheoryTab = () => (
       </div>
     </div>
 
-    <div className="bg-chacha-accent/5 rounded-lg p-6">
-      <h2 className="text-2xl font-bold mb-4 text-chacha-accent">Real-World Usage</h2>
-      <div className="space-y-4 text-chacha-accent">
+    <div className="bg-white shadow-lg rounded-lg p-6">
+      <h2 className="text-2xl font-bold mb-4 text-gray-800">Real-World Usage</h2>
+      <div className="space-y-4 text-gray-800">
         <p>
           ChaCha20 has been widely adopted due to its combination of speed, security, and parallelizability. It is often 
           preferred over AES on systems that lack specialized hardware acceleration, such as mobile devices with ARM-based CPUs. 
@@ -199,20 +199,20 @@ const TheoryTab = () => (
 );// --- Example Tab ---
 const ExampleTab = () => (
   <div className="space-y-6 animate-fade-in">
-    <div className="bg-chacha-accent/5 rounded-lg p-6">
-      <h2 className="text-2xl font-bold mb-4 text-chacha-accent">ChaCha20 Quarter-Round Example</h2>
-      <div className="space-y-4 text-chacha-accent">
+    <div className="bg-white shadow-lg rounded-lg p-6">
+      <h2 className="text-2xl font-bold mb-4 text-gray-800">ChaCha20 Quarter-Round Example</h2>
+      <div className="space-y-4 text-gray-800">
         <p>
           The provided source materials describe the ChaCha20 quarter-round function but do not offer a full numerical walkthrough. 
           This conceptual example illustrates the flow of a single quarter-round on a set of four words.
         </p>
         
-        <div className="bg-chacha-accent/5 p-4 rounded-md">
-          <h3 className="font-semibold text-chacha-primary mb-2">Example: A conceptual quarter-round of ChaCha20</h3>
+        <div className="bg-gray-100 p-4 rounded-md">
+          <h3 className="font-semibold text-gray-800 mb-2">Example: A conceptual quarter-round of ChaCha20</h3>
           <p className="mb-3"><strong>Input Words:</strong> a, b, c, d (each a 32-bit word).</p>
           <p className="mb-3">The quarter-round function transforms the four words using a specific order of ARX operations:</p>
           
-          <div className="bg-chacha-accent/5 p-3 rounded-md font-mono text-sm space-y-1">
+          <div className="bg-white p-3 rounded-md font-mono text-sm space-y-1">
             <div>a = a + b</div>
             <div>d = d ⊕ a</div>
             <div>d = d ⋘ 16</div>
@@ -236,9 +236,9 @@ const ExampleTab = () => (
       </div>
     </div>
 
-    <div className="bg-chacha-accent/5 rounded-lg p-6">
-      <h2 className="text-2xl font-bold mb-4 text-chacha-primary">Common Uses</h2>
-      <div className="space-y-4 text-chacha-accent">
+    <div className="bg-white shadow-lg rounded-lg p-6">
+      <h2 className="text-2xl font-bold mb-4 text-gray-800">Common Uses</h2>
+      <div className="space-y-4 text-gray-800">
         <p>ChaCha20 is widely used in modern cryptographic protocols:</p>
         <ul className="list-disc pl-5 space-y-1">
           <li>TLS 1.2 and 1.3 (as part of the ChaCha20-Poly1305 cipher suite)</li>
@@ -440,8 +440,8 @@ const ChaCha20Interactive = () => {
     <div className="bg-chacha-bg min-h-screen py-12">
       <div className="container mx-auto px-4">
         <header className="text-center mb-10">
-          <h1 className="text-4xl font-bold mb-6 text-chacha-accent">ChaCha20 Cipher</h1>
-          <p className="text-lg text-chacha-accent mb-8">The Modern Successor to Salsa20</p>
+          <h1 className="text-4xl font-bold mb-6 text-gray-800">ChaCha20 Cipher</h1>
+          <p className="text-lg text-gray-600 mb-8">The Modern Successor to Salsa20</p>
         </header>
         <nav className="flex justify-center mb-8">
           <div className="bg-chacha-accent/10 rounded-lg p-1 flex space-x-1 shadow-md">
@@ -465,7 +465,7 @@ const ChaCha20Interactive = () => {
               <div className="grid lg:grid-cols-5 gap-8">
                 {/* Encryption Controls Card */}
                 <div className="lg:col-span-2 bg-chacha-alt text-chacha-accent rounded-xl shadow-md p-8 mb-8">
-                  <h2 className="text-2xl font-bold mb-6 text-chacha-accent flex items-center">
+                  <h2 className="text-2xl font-bold mb-6 text-gray-800 flex items-center">
                     <Lock className="w-6 h-6 mr-3 text-chacha-primary" />
                     {isDecrypting ? "Decryption Controls" : "Encryption Controls"}
                   </h2>
@@ -552,7 +552,7 @@ const ChaCha20Interactive = () => {
                 </div>
                 {/* Visualization & Output Card */}
                 <div style={{ background: '#fff', borderRadius: '1rem', boxShadow: '0 2px 8px rgba(0,86,179,0.08)', padding: '2rem', color: '#0056b3' }} className="lg:col-span-3">
-                  <h2 className="text-2xl font-bold mb-6 text-chacha-primary flex items-center">
+                  <h2 className="text-2xl font-bold mb-6 text-gray-800 flex items-center">
                     <Unlock className="w-6 h-6 mr-3" />
                     Visualization & Output
                   </h2>
