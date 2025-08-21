@@ -373,7 +373,7 @@ const RC4Visualizer = () => {
               </div>
             </div>
 
-            <div className="bg-chacha-alt p-6 rounded-lg shadow-lg">
+            <div className="bg-chacha-accent/5 rounded-lg p-6">
               <h2 className="text-2xl font-bold mb-4 text-chacha-accent">Security Scorecard</h2>
               <div className="space-y-4 text-chacha-accent">
                 <p>
@@ -386,7 +386,7 @@ const RC4Visualizer = () => {
               </div>
             </div>
 
-            <div className="bg-chacha-alt p-6 rounded-lg shadow-lg">
+            <div className="bg-chacha-accent/5 rounded-lg p-6">
               <h2 className="text-2xl font-bold mb-4 text-chacha-accent">Real-World Usage</h2>
               <div className="space-y-4 text-chacha-accent">
                 <p>
