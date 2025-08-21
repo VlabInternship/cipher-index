@@ -287,57 +287,105 @@ const SpeckCipherVisualizer = () => {
   <div className="flex justify-center mb-8"><div className="rounded-lg shadow-lg p-1 flex bg-white"><button onClick={() => setCurrentView('theory')} className={`px-6 py-3 rounded-md font-medium transition-all duration-200 flex items-center gap-2 ${currentView === 'theory' ? 'text-white shadow-md' : 'text-gray-600'}`} style={{ backgroundColor: currentView === 'theory' ? colors.primary : 'transparent' }}><BookOpen size={20} /> Theory</button><button onClick={() => setCurrentView('example')} className={`px-6 py-3 rounded-md font-medium transition-all duration-200 flex items-center gap-2 ${currentView === 'example' ? 'text-white shadow-md' : 'text-gray-600'}`} style={{ backgroundColor: currentView === 'example' ? colors.primary : 'transparent' }}><Play size={18} /> Example</button><button onClick={() => setCurrentView('cipher')} className={`px-6 py-3 rounded-md font-medium transition-all duration-200 flex items-center gap-2 ${currentView === 'cipher' ? 'text-white shadow-md' : 'text-gray-600'}`} style={{ backgroundColor: currentView === 'cipher' ? colors.primary : 'transparent' }}><Code size={20} /> Cipher Tool</button></div></div>
         {currentView === 'theory' && (
            <div className="max-w-4xl mx-auto">
-            <div className="rounded-xl shadow-lg p-8 mb-8 bg-white"><h2 className="text-2xl font-bold mb-6" style={{ color: colors.textDark }}>Understanding the Speck Cipher</h2><div className="prose prose-lg max-w-none text-justify"><p className="mb-4" style={{ color: colors.textDark }}>Speck is a family of lightweight block ciphers notable for its high performance in software. It was designed by the U.S. National Security Agency (NSA). Its design philosophy is based on an Add-Rotate-XOR (ARX) structure, which uses operations that are fast on modern CPUs.</p></div></div>
-            <div className="rounded-xl shadow-lg p-8 mb-8 bg-white"><h3 className="text-2xl font-bold mb-6" style={{ color: colors.textDark }}>The Math Behind Speck</h3><div className="prose prose-lg max-w-none space-y-4">
-                <div>
-                    <h4 className="text-xl font-semibold">Encryption Round Function</h4>
-                    <p>The plaintext is split into two words, x and y. For each round, they are updated using the round key k<sub>i</sub> as follows:</p>
-                    <div className='p-2 bg-gray-100 rounded my-2 font-mono'>x<sub>new</sub> = (ROTR<sup>α</sup>(x<sub>old</sub>) + y<sub>old</sub>) ⊕ k<sub>i</sub></div>
-                    <div className='p-2 bg-gray-100 rounded my-2 font-mono'>y<sub>new</sub> = ROTL<sup>β</sup>(y<sub>old</sub>) ⊕ x<sub>new</sub></div>
-                    <ul className="text-base">
-                        <li><b>ROTR<sup>α</sup>(x)</b>: Rotates the bits of x to the right by α positions. For Speck 32/64, α=7.</li>
-                        <li><b>ROTL<sup>β</sup>(y)</b>: Rotates the bits of y to the left by β positions. For Speck 32/64, β=2.</li>
-                        <li><b>+</b>: Is addition modulo 2<sup>n</sup>, where n is the word size (16 bits here).</li>
-                        <li><b>⊕</b>: Is the bitwise XOR operation.</li>
-                    </ul>
-                </div>
-                 <div>
-                    <h4 className="text-xl font-semibold">Decryption Round Function</h4>
-                    <p>Decryption reverses the encryption steps in the opposite order:</p>
-                    <div className='p-2 bg-gray-100 rounded my-2 font-mono'>y<sub>old</sub> = ROTR<sup>β</sup>(y<sub>new</sub> ⊕ x<sub>new</sub>)</div>
-                    <div className='p-2 bg-gray-100 rounded my-2 font-mono'>x<sub>old</sub> = ROTL<sup>α</sup>((x<sub>new</sub> ⊕ k<sub>i</sub>) - y<sub>old</sub>)</div>
-                </div>
-                <div>
-                    <h4 className="text-xl font-semibold">Key Schedule</h4>
-                    <p>The key schedule expands the master key into the series of round keys (k<sub>0</sub>, k<sub>1</sub>, ...). For Speck 32/64, the master key has 4 words (m=4). Let the key be (l<sub>2</sub>, l<sub>1</sub>, l<sub>0</sub>, k<sub>0</sub>). The schedule is:</p>
-                    <div className='p-2 bg-gray-100 rounded my-2 font-mono'>l<sub>i+m-1</sub> = (k<sub>i</sub> + ROTR<sup>α</sup>(l<sub>i</sub>)) ⊕ i</div>
-                    <div className='p-2 bg-gray-100 rounded my-2 font-mono'>k<sub>i+1</sub> = ROTL<sup>β</sup>(k<sub>i</sub>) ⊕ l<sub>i+m-1</sub></div>
-                    <p className="text-base">This process is repeated for i = 0, 1, ..., T-2 to generate all 22 round keys (k<sub>0</sub> to k<sub>21</sub>).</p>
-                </div>
-            </div></div>
+            <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
+              <h2 className="text-2xl font-bold mb-4 text-gray-800">Introduction</h2>
+              <div className="space-y-4 text-gray-800">
+                <p>
+                  SPECK is a family of lightweight block ciphers developed by the U.S. National Security Agency (NSA) in 2013.32 It was designed with a specific focus on achieving high performance in software implementations, making it an attractive choice for resource-constrained devices like microcontrollers and IoT sensors that lack specialized hardware for encryption.24
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
+              <h2 className="text-2xl font-bold mb-4 text-gray-800">Origin Story</h2>
+              <div className="space-y-4 text-gray-800">
+                <p>
+                  The NSA publicly released SPECK and its sister algorithm, SIMON, in 2013 as part of an effort to standardize lightweight ciphers for modern applications.37 This was a unique move for an organization with a history of secrecy surrounding its cryptographic research. The design was published with a formal rationale, unlike previous NSA-designed standards, which was a point of both intrigue and controversy within the cryptographic community.32
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
+              <h2 className="text-2xl font-bold mb-4 text-gray-800">Core Idea</h2>
+              <div className="space-y-4 text-gray-800">
+                <p>
+                  The core idea behind SPECK is an Add-Rotate-XOR (ARX) design.24 This structure, which relies solely on simple bitwise operations, modular addition, and rotation, avoids the use of lookup tables (S-boxes) and other complex operations.32 The absence of S-boxes and table lookups makes SPECK inherently resistant to timing side-channel attacks and allows for a remarkably compact and fast implementation in software.24
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
+              <h2 className="text-2xl font-bold mb-4 text-gray-800">Technical Blueprint</h2>
+              <div className="space-y-4 text-gray-800">
+                <p>
+                  SPECK operates on words of varying sizes, with its design based on a simple two-word structure.39 The encryption process consists of a fixed number of rounds, with each round applying the ARX operations to a pair of words.38 For example, the SPECK128/256 variant operates on two 64-bit words, where one word is rotated, added to the second, and then XORed with a round key.39 A notable feature is that the key schedule is directly based on the cipher's round function, which simplifies the design and implementation.39
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
+              <h2 className="text-2xl font-bold mb-4 text-gray-800">Security Scorecard</h2>
+              <div className="space-y-4 text-gray-800">
+                <p>
+                  The transparent and simple design of SPECK has been a subject of intense scrutiny, but it is considered a mainstream design that is unlikely to harbor backdoors.32 Its security has been validated through extensive cryptanalysis, and it has proven resilient against various attacks.24 The absence of large-leakage non-linear operations like S-boxes makes it particularly difficult to break using deep learning-based side-channel attacks.38
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
+              <h2 className="text-2xl font-bold mb-4 text-gray-800">Real-World Usage</h2>
+              <div className="space-y-4 text-gray-800">
+                <p>
+                  SPECK is a prime candidate for IoT and other embedded systems where computational resources are extremely limited.24 For these devices, which often have underpowered CPUs and minimal memory, standard algorithms like AES are too resource-intensive. SPECK fills this void, offering a secure alternative to the practice of using no encryption at all, which is a common vulnerability in these environments.24 The controversy surrounding its NSA origin highlights a larger debate about trust and open standards in modern cryptography. The community's response was to scrutinize the cipher's design, demonstrating a shift towards relying on peer-reviewed transparency rather than blind trust in any single entity.32
+                </p>
+              </div>
+            </div>
             </div>
         )}
         {currentView === 'example' && (
            <div className="max-w-4xl mx-auto">
-            <div className="rounded-xl shadow-lg p-8 mb-8 bg-white">
-              <h2 className="text-2xl font-bold mb-4" style={{ color: colors.textDark }}>Speck 32/64 Example</h2>
-              <p className="mb-4" style={{ color: colors.textDark }}>This example encrypts the 32-bit plaintext 6574694C (ASCII 'Lite') with the 64-bit key 0F0E0D0C0B0A0908 using Speck 32/64.</p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: colors.textLight }}>Plaintext (32-bit Hex)</label>
-                  <input value={plaintext} onChange={(e) => setPlaintext(e.target.value)} className="w-full font-mono px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2" style={{borderColor: colors.primary, backgroundColor: colors.secondary}} />
+            <div className="bg-white shadow-lg rounded-lg p-6">
+              <h2 className="text-2xl font-bold mb-4 text-gray-800">Solved Example: SPECK</h2>
+              <div className="space-y-4 text-gray-800">
+                <p className="mb-4">
+                  A full numerical walkthrough of SPECK is complex and not provided in the source material. However, a conceptual example can illustrate the core operations of a single round.
+                </p>
+                
+                <div className="bg-gray-50 p-4 rounded-md">
+                  <h3 className="font-semibold text-gray-800 mb-3">Example: A single round of SPECK128/256 encryption.</h3>
+                  <div className="space-y-2 font-mono text-sm">
+                    <p><strong>Plaintext Block:</strong> A 128-bit block, split into two 64-bit words: x and y.</p>
+                    <p><strong>Round Key:</strong> A 64-bit round key, ki​.</p>
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: colors.textLight }}>Key (64-bit Hex)</label>
-                  <input type="text" value={key} onChange={(e) => setKey(e.target.value)} className="w-full font-mono px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2" style={{borderColor: colors.primary, backgroundColor: colors.secondary}} />
+
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2">Step 1: The ARX Operations</h3>
+                    <div className="ml-4 space-y-2">
+                      <p>
+                        A single round of SPECK applies the ARX operations to the two data words, x and y.24 The source material provides a pseudo-C code to describe the round function 39:
+                      </p>
+                      <div className="bg-gray-50 p-3 rounded-md">
+                        <div className="font-mono text-sm space-y-1">
+                          <p>x=(ROTR64(x,8)+y)⊕ki​</p>
+                          <p>y=(ROTL64(y,3))⊕x</p>
+                        </div>
+                      </div>
+                      <p>Let's trace the flow conceptually:</p>
+                      <ul className="ml-4 space-y-1">
+                        <li>The value of x is bitwise rotated to the right by 8 positions.</li>
+                        <li>The rotated x is then added to the value of y.</li>
+                        <li>The result of the addition is XORed with the round key ki​. This final value becomes the new x.</li>
+                        <li>The old value of y is bitwise rotated to the left by 3 positions.</li>
+                        <li>The rotated y is then XORed with the newly computed value of x. This final value becomes the new y.</li>
+                      </ul>
+                      <p>
+                        These two simple equations complete a single round. This process is repeated for all 34 rounds of SPECK128/256, with a new round key applied in each iteration.39 The key schedule for SPECK also uses a similar ARX process, which simplifies its implementation.39
+                      </p>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div className="flex gap-3">
-                <button onClick={() => { setPlaintext('6574694C'); setKey('0F0E0D0C0B0A0908'); setTimeout(() => { handleCipherAction(); }, 50); }} className="px-4 py-2 rounded bg-chacha-primary text-white">Run Example</button>
-                <button onClick={() => { setPlaintext('6574694C'); setKey('0F0E0D0C0B0A0908'); }} className="px-4 py-2 rounded bg-chacha-accent/20 text-chacha-accent">Load Inputs</button>
-              </div>
-              <div className="mt-6">
-                <p className="text-sm text-chacha-accent">Expected behavior: the page will compute the ciphertext and populate the visualization steps. The output ciphertext will appear in the Cipher Tool view when you run the example.</p>
               </div>
             </div>
            </div>
