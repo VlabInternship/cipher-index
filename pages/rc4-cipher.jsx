@@ -1,11 +1,33 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-
+import { BookOpen, Play, Code } from 'lucide-react';
 // --- Helper Components ---
 
 // A single cell in the visualization grid
 const Cell = ({ value, isHighlightedI, isHighlightedJ, isSwap }) => (
   <div
-    className={`w-12 h-12 sm:w-14 sm:h-14 border border-chacha-accent/30 flex items-center justify-center text-sm font-mono transition-all duration-300
+    className={`w-12 h-12 s            <div className="bg-white shadow-lg rounded-lg p-6">
+              <h2 className="text-2xl font-bold mb-4 text-gray-800 flex items-center">
+                <BookOpen className="w-6 h-6 mr-3 text-gray-800" /> Introduction
+              </h2>
+              <div className="space-y-4 text-gray-800">
+                <p>
+                  RC4, or Rivest Cipher 4, is a stream cipher that was once one of the most widely used encryption algorithms in the world. 
+                  It is known for its remarkable simplicity and speed, which made it ideal for many applications that required efficient 
+                  encryption and decryption of large amounts of data.
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-white shadow-lg rounded-lg p-6">
+              <h2 className="text-2xl font-bold mb-4 text-gray-800">Origin Story</h2>
+              <div className="space-y-4 text-gray-800">order border-chacha-accent/30 flex items-center justify-center text-sm font-mono transit            <d            <div className="bg-chacha-accent/5 rounded-lg p-6">
+                                </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>)}assName="text-2xl font-bold mb-4 text-chacha-primary">Real-World Usage</h2> className="bg-chacha-accent/5 rounded-lg p-6">
+              <h2 className="text-2xl font-bold mb-4 text-chacha-primary">Security Scorecard</h2>n-all duration-300
       ${isHighlightedI ? 'bg-chacha-accent text-chacha-alt ring-2 ring-chacha-accent/30' : ''}
       ${isHighlightedJ ? 'bg-chacha-primary text-chacha-alt ring-2 ring-chacha-primary/30' : ''}
       ${isSwap ? 'bg-chacha-accent/70 text-chacha-alt transform scale-110' : ''}
@@ -49,7 +71,7 @@ const StateDisplay = ({ title, values }) => (
 // --- Main RC4 Visualizer Component ---
 
 const RC4Visualizer = () => {
-  const [activeTab, setActiveTab] = useState('cipher');
+  const [activeTab, setActiveTab] = useState('theory');
   const [key, setKey] = useState('Key');
   const [plaintext, setPlaintext] = useState('Plaintext');
   const [s, setS] = useState(Array.from({ length: 256 }, (_, i) => i));
@@ -179,8 +201,8 @@ const RC4Visualizer = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl sm:text-5xl font-bold text-chacha-accent">RC4 Cipher Visualizer</h1>
-          <p className="mt-2 text-lg text-chacha-accent">An interactive look into the RC4 stream cipher algorithm.</p>
+          <h1 className="text-4xl font-bold mb-6 text-gray-800">RC4 Cipher </h1>
+          <p className="text-lg text-gray-600 mb-8">The Once-Ubiquitous Stream Cipher</p>
         </div>
 
         {/* Navbar */}
@@ -190,8 +212,11 @@ const RC4Visualizer = () => {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2 md:px-6 md:py-3 rounded-md font-medium transition-all text-sm md:text-base ${activeTab === tab ? 'bg-chacha-primary text-chacha-alt shadow-lg' : 'text-chacha-accent hover:text-chacha-alt hover:bg-chacha-accent/20'}`}
+                className={`px-4 py-2 md:px-6 md:py-3 rounded-md font-medium transition-all text-sm md:text-base flex items-center gap-2 ${activeTab === tab ? 'bg-chacha-accent text-chacha-alt shadow-lg' : 'text-chacha-accent hover:text-chacha-alt hover:bg-chacha-accent/20'}`}
               >
+                {tab === "theory" && <BookOpen className="w-4 h-4 md:w-5 md:h-5" />}
+                {tab === "example" && <Play className="w-4 h-4 md:w-5 md:h-5" />}
+                {tab === "cipher" && <Code className="w-4 h-4 md:w-5 md:h-5" />}
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
               </button>
             ))}
@@ -282,7 +307,7 @@ const RC4Visualizer = () => {
                 </div>
               </div>
 
-              <h2 className="text-2xl font-bold mb-2 text-center text-chacha-accent">S-Array State</h2>
+              <h2 className="text-2xl font-bold mb-2 text-center text-gray-800">S-Array State</h2>
               <div className="overflow-x-auto">
                 <SArrayGrid s={s} i={i} j={j} swapIndices={swapIndices} />
               </div>
@@ -298,17 +323,93 @@ const RC4Visualizer = () => {
         {/* Theory and Example tabs */}
         {activeTab === 'theory' && (
         <div className="mt-8">
-          <div className="bg-chacha-alt p-6 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-bold mb-4 text-chacha-accent">How RC4 Works</h2>
-            <div className="space-y-4 text-chacha-accent">
-              <p>RC4 is a stream cipher, meaning it encrypts data one byte at a time. It was designed by Ron Rivest in 1987. The algorithm has two main phases:</p>
-              <div>
-                <h3 className="text-lg font-semibold">1. Key-Scheduling Algorithm (KSA)</h3>
-                <p>This phase initializes a 256-byte state array, typically called 'S'. First, 'S' is filled with values from 0 to 255. Then, it's permuted using the secret key. The longer and more complex the key, the more random the final permutation of 'S' will be. This visualizer shows this permutation process step-by-step.</p>
+          <div className="space-y-6 animate-fade-in">
+            <div className="bg-white shadow-lg rounded-lg p-6">
+              <h2 className="text-2xl font-bold mb-4 text-gray-800 flex items-center">
+                <BookOpen className="w-6 h-6 mr-3 text-gray-800" /> Introduction
+              </h2>
+              <div className="space-y-4 text-gray-800">
+                <p>
+                  RC4, or Rivest Cipher 4, is a stream cipher that was once one of the most widely used encryption algorithms in the world. 
+                  It is known for its remarkable simplicity and speed, which made it ideal for many applications that required efficient 
+                  encryption and decryption of large amounts of data.
+                </p>
               </div>
-              <div>
-                <h3 className="text-lg font-semibold">2. Pseudo-Random Generation Algorithm (PRGA)</h3>
-                <p>Once the KSA is complete, this phase generates a "keystream" of pseudo-random bytes from the permuted S-array. For each byte of plaintext, one byte of the keystream is generated. This keystream byte is then combined with the plaintext byte using an XOR operation to produce the ciphertext byte.</p>
+            </div>
+
+            <div className="bg-white shadow-lg rounded-lg p-6">
+              <h2 className="text-2xl font-bold mb-4 text-gray-800">Origin Story</h2>
+              <div className="space-y-4 text-gray-800">
+                <p>
+                  RC4 was developed by Ron Rivest in 1987 while he was working for RSA Security. The algorithm was initially a trade secret, 
+                  and its rules were intended to be kept confidential. However, in 1994, an anonymous person posted an intricate description 
+                  of the cipher's design on a public mailing list, revealing its inner workings to the world.
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-white shadow-lg rounded-lg p-6">
+              <h2 className="text-2xl font-bold mb-4 text-gray-800">Core Idea</h2>
+              <div className="space-y-4 text-gray-800">
+                <p>
+                  The fundamental concept behind RC4 is to generate a pseudo-random stream of bits, known as a keystream. This keystream 
+                  is then combined with the plaintext using a simple bitwise XOR operation to produce the ciphertext. Decryption is the 
+                  exact same process, as XORing the ciphertext with the same keystream restores the original plaintext. This design mimics 
+                  the one-time pad but relies on a pseudo-random keystream rather than a truly random one.
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-white shadow-lg rounded-lg p-6">
+              <h2 className="text-2xl font-bold mb-4 text-gray-800">Technical Blueprint</h2>
+              <div className="space-y-4 text-gray-800">
+                <p>
+                  RC4's operation is based on a secret internal state consisting of two parts: a permutation of all 256 possible bytes 
+                  in an array, denoted as S, and two 8-bit index pointers, i and j. The process has two distinct phases:
+                </p>
+                <div className="ml-4 space-y-3">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800">Key-Scheduling Algorithm (KSA):</h3>
+                    <p>
+                      This algorithm is used to initialize the S array. The array is first initialized to an identity permutation 
+                      (where S[i] = i). It is then processed through 256 iterations, mixing in bytes from the secret key to create 
+                      a pseudo-random permutation.
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800">Pseudo-Random Generation Algorithm (PRGA):</h3>
+                    <p>
+                      After the KSA is complete, the PRGA generates the keystream byte by byte. In each step, the index pointers i 
+                      and j are updated, and the S array is permuted. A value is then selected from the S array based on the values 
+                      of i and j to produce the keystream byte.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white shadow-lg rounded-lg p-6">
+              <h2 className="text-2xl font-bold mb-4 text-gray-800">Security Scorecard</h2>
+              <div className="space-y-4 text-gray-800">
+                <p>
+                  Although fast and simple to implement, the public exposure of RC4's design revealed significant security flaws. 
+                  The cipher is particularly vulnerable if the same key is used repeatedly, as this can lead to predictable keystream 
+                  bits and allow an attacker to easily compromise the security of all messages encrypted with that key. Furthermore, 
+                  several attacks have been developed that can distinguish the output of RC4 from a truly random sequence, and its 
+                  use is now explicitly banned in some security standards.
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-white shadow-lg rounded-lg p-6">
+              <h2 className="text-2xl font-bold mb-4 text-gray-800">Real-World Usage</h2>
+              <div className="space-y-4 text-gray-800">
+                <p>
+                  RC4 was once a workhorse for many protocols, including SSL/TLS for web security and WEP for wireless security. 
+                  However, due to its known vulnerabilities, it has been largely deprecated in favor of more robust and modern 
+                  algorithms like AES and ChaCha20. The history of RC4 serves as a cautionary tale about the dangers of security 
+                  through obscurity and underscores the critical importance of public, peer-reviewed cryptographic design.
+                </p>
               </div>
             </div>
           </div>
@@ -316,23 +417,72 @@ const RC4Visualizer = () => {
 
         {activeTab === 'example' && (
         <div className="mt-8">
-          <div className="bg-chacha-alt p-6 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-bold mb-4 text-chacha-accent">Static Example</h2>
-            <p className="mb-4 text-chacha-accent">Let's encrypt the plaintext "Test" with the key "Wiki".</p>
-            <div className="space-y-2 text-sm font-mono text-chacha-accent">
-              <p><span className="font-bold">Key:</span> Wiki</p>
-              <p><span className="font-bold">Plaintext:</span> Test</p>
-              <p className="break-all"><span className="font-bold">Plaintext (ASCII Hex):</span> 54 65 73 74</p>
-              <p className="mt-4 font-bold">After KSA, the S-array is permuted.</p>
-              <p className="mt-4 font-bold">PRGA generates the keystream:</p>
-              <p className="break-all"><span className="font-bold">Keystream (Hex):</span> BB F3 16 E8</p>
-              <p className="mt-4 font-bold">Encryption (Plaintext XOR Keystream):</p>
-              <p className="break-all">54 ⊕ BB = EF</p>
-              <p className="break-all">65 ⊕ F3 = 96</p>
-              <p className="break-all">73 ⊕ 16 = 65</p>
-              <p className="break-all">74 ⊕ E8 = 9C</p>
-              <p className="mt-4 font-bold text-base">Final Ciphertext (Hex): <span className="text-chacha-primary">EF96659C</span></p>
-              <p className="mt-2 text-xs text-chacha-accent">(You can verify this by running the example in the visualizer above)</p>
+          <div className="space-y-6 animate-fade-in">
+            <div className="bg-white shadow-lg rounded-lg p-6">
+              <h2 className="text-2xl font-bold mb-4 text-gray-800">Solved Example: RC4</h2>
+            <div className="space-y-4 text-gray-800">
+              <p className="mb-4">
+                The provided sources offer a simplified example of RC4 operating on 3-bit chunks instead of bytes. 
+                This conceptual walkthrough demonstrates the core logic of the KSA and PRGA.
+              </p>
+              
+              <div className="bg-gray-50 p-4 rounded-md">
+                <h3 className="font-semibold text-gray-800 mb-3">Example: Simplified RC4 with 3-bit chunks</h3>
+                <div className="space-y-2 font-mono text-sm">
+                  <p><strong>Key:</strong> [1 2 3 6] (a 4×3-bit key)</p>
+                  <p><strong>Plaintext:</strong> [1 2 2 2] (a stream of 3-bit chunks)</p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Step 1: Key-Scheduling Algorithm (KSA)</h3>
+                  <div className="ml-4 space-y-2">
+                    <p>
+                      <strong>Initialization:</strong> The state vector S is initialized to the identity permutation: 
+                      S = [0 1 2 3 4 5 6 7]. The temporary vector T is filled with the key, repeated as necessary: 
+                      T = [1 2 3 6 1 2 3 6].
+                    </p>
+                    <p>
+                      <strong>Initial Permutation:</strong> The S array is permuted. The source material walks through 
+                      8 iterations to produce the final S state: S = [2 3 7 4 6 0 1 5].
+                    </p>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Step 2: Pseudo-Random Generation Algorithm (PRGA)</h3>
+                  <p className="mb-3">The PRGA now generates a keystream, one 3-bit chunk at a time, for encryption.</p>
+                  
+                  <div className="ml-4 space-y-3">
+                    <div className="bg-gray-50 p-3 rounded-md">
+                      <h4 className="font-semibold text-gray-800 mb-2">Iteration 1:</h4>
+                      <div className="space-y-1 text-sm">
+                        <p>i = 1, j = 3.</p>
+                        <p>S is swapped, resulting in S = [2 4 7 3 6 0 1 5].</p>
+                        <p>A value t is computed, and a keystream value k is selected from S[t]. The first keystream value is k = S = 5.</p>
+                        <p>The first plaintext chunk 1 is XORed with the keystream chunk 5: 1⊕5=4. The first ciphertext chunk is 4.</p>
+                      </div>
+                    </div>
+
+                    <div className="bg-gray-50 p-3 rounded-md">
+                      <h4 className="font-semibold text-gray-800 mb-2">Iteration 2:</h4>
+                      <div className="space-y-1 text-sm">
+                        <p>i = 2, j = 2.</p>
+                        <p>S is swapped (or remains the same if the indices are equal), and S remains [2 4 7 3 6 0 1 5].</p>
+                        <p>A keystream value k is generated. The second keystream value is k = S = 1.</p>
+                        <p>The second plaintext chunk 2 is XORed with 1: 2⊕1=3. The second ciphertext chunk is 3.</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <p className="mt-4">
+                    The process continues for the remaining plaintext chunks, generating the ciphertext [4 3 2 3]. 
+                    Decryption reverses this process by using the same keystream and XORing it with the ciphertext.
+                  </p>
+                </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>)}

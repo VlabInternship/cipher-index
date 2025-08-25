@@ -382,37 +382,170 @@ const App = () => {
     };
     // UI components for each section
     const renderTheory = () => (
-        <div className="p-6 bg-[#f9f9f9] rounded-2xl shadow-inner">
-            <h3 className="text-xl font-semibold mb-4 text-[#0056b3]">Theory of the Playfair Cipher</h3>
-            <p className="text-gray-700 leading-relaxed">
-                The Playfair cipher is a manual symmetric encryption technique invented by Charles Wheatstone in 1854. Unlike modern ciphers that encrypt single letters, Playfair encrypts pairs of letters (digraphs), making it significantly more difficult to break than simple substitution ciphers.
-            </p>
-            <h4 className="text-lg font-medium mt-4 text-[#0056b3]">Key Square Creation</h4>
-            <ul className="list-disc list-inside text-gray-700 mt-2">
-                <li>A 5x5 matrix is created using a keyword.</li>
-                <li>The keyword is placed in the matrix, with duplicate letters removed.</li>
-                <li>The remaining squares are filled with the rest of the alphabet, in order. (Note: 'J' is typically omitted and treated as 'I').</li>
-            </ul>
-            <h4 className="text-lg font-medium mt-4 text-[#0056b3]">Encryption Rules</h4>
-            <p className="text-gray-700 mt-2">
-                The plaintext is broken into digraphs. If a pair has two identical letters, an 'X' (or another filler letter) is inserted. The following rules are applied to each digraph:
-            </p>
-            <ol className="list-decimal list-inside text-gray-700 mt-2">
-                <li>If the letters are in the same row, each letter is replaced by the letter to its immediate right (wrapping around).</li>
-                <li>If the letters are in the same column, each letter is replaced by the one immediately below it (wrapping around).</li>
-                <li>If the letters form a rectangle, each letter is replaced by the letter on the same row but at the other corner of the rectangle.</li>
-            </ol>
-            <h4 className="text-lg font-medium mt-4 text-[#0056b3]">Decryption Rules</h4>
-            <p className="text-gray-700 mt-2">
-                The decryption process is the reverse of encryption, but the digraphs are processed in the same way. The rules for converting a ciphertext digraph back to a plaintext digraph are:
-            </p>
-            <ol className="list-decimal list-inside text-gray-700 mt-2">
-                <li>If the letters are in the same row, each letter is replaced by the one to its immediate left (wrapping around).</li>
-                <li>If the letters are in the same column, each letter is replaced by the one immediately above it (wrapping around).</li>
-                <li>If the letters form a rectangle, each letter is replaced by the one on the same row but at the other corner of the rectangle.</li>
-            </ol>
+         <div className="p-6 bg-[#f9f9f9] rounded-2xl shadow-inner space-y-6">
+            {/* Introduction Section */}
+            <div className="bg-white rounded-xl p-6 shadow-sm">
+                <h3 className="text-2xl font-bold mb-4 text-[#0056b3] border-b-2 border-[#007bff] pb-2">Introduction</h3>
+                <p className="text-gray-700 leading-relaxed">
+                    The <span className="font-semibold text-[#007bff]">Playfair cipher</span>, also known as the Wheatstone-Playfair cipher, 
+                    is a manual symmetric encryption technique distinguished as the first literal digram substitution cipher. Unlike simpler 
+                    substitution ciphers that encrypt single letters, Playfair operates on pairs of letters, known as bigrams or digrams. 
+                    This innovation makes it significantly harder to break using simple frequency analysis, which was the primary attack 
+                    vector against monoalphabetic ciphers of the time.
+                </p>
+            </div>
+
+            {/* Origin Story Section */}
+            <div className="bg-white rounded-xl p-6 shadow-sm">
+                <h3 className="text-2xl font-bold mb-4 text-[#0056b3] border-b-2 border-[#007bff] pb-2">Origin Story</h3>
+                <p className="text-gray-700 leading-relaxed">
+                    The cipher's history is often confused, as it was invented by <span className="font-semibold text-[#007bff]">Charles Wheatstone</span> in 1854. 
+                    However, it became famous and was widely promoted by <span className="font-semibold text-[#007bff]">Lord Playfair</span>, after whom it was named. 
+                    This cipher marked a major step forward from the simple Caesar cipher and more complex Vigenère systems then in use, 
+                    as it provided a greater level of security with a simple, easy-to-implement method.
+                </p>
+            </div>
+
+            {/* Core Idea Section */}
+            <div className="bg-white rounded-xl p-6 shadow-sm">
+                <h3 className="text-2xl font-bold mb-4 text-[#0056b3] border-b-2 border-[#007bff] pb-2">Core Idea</h3>
+                <p className="text-gray-700 leading-relaxed">
+                    The core idea behind the Playfair cipher is <span className="font-semibold text-[#007bff]">polygraphic substitution</span>. 
+                    By encrypting pairs of letters, it hides the frequency of individual letters in the plaintext. For example, the common 
+                    letter "E" might be paired with different letters to form various digrams, which would then be encrypted into completely 
+                    different ciphertext digrams. While bigram frequency analysis is still possible, it is considerably more difficult than 
+                    single-letter analysis.
+                </p>
+            </div>
+
+            {/* Technical Blueprint Section */}
+            <div className="bg-white rounded-xl p-6 shadow-sm">
+                <h3 className="text-2xl font-bold mb-4 text-[#0056b3] border-b-2 border-[#007bff] pb-2">Technical Blueprint</h3>
+                <p className="text-gray-700 leading-relaxed mb-4">
+                    The Playfair cipher uses a 5x5 grid of letters as its key. This grid is constructed from a secret keyword or phrase 
+                    with all duplicate letters removed, followed by the remaining letters of the alphabet. The letter 'J' is typically 
+                    omitted and combined with 'I' to fit the 25-letter grid.
+                </p>
+                <p className="text-gray-700 leading-relaxed mb-4">
+                    To encrypt a message, the plaintext is first prepared by breaking it into digrams. If a digram contains two identical 
+                    letters (e.g., 'LL'), an 'X' is inserted between them. If the message has an odd number of letters, an 'X' is appended 
+                    to the end to complete the final digram. Each prepared digram is then encrypted using one of three rules based on the 
+                    positions of its two letters in the 5x5 grid:
+                </p>
+                <div className="bg-[#f9f9f9] rounded-lg p-4 space-y-3">
+                    <div className="flex items-start space-x-3">
+                        <span className="bg-[#007bff] text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">1</span>
+                        <div>
+                            <span className="font-semibold text-[#0056b3]">Same Row:</span>
+                            <span className="text-gray-700"> If the letters are on the same row, each is replaced by the letter to its immediate right, wrapping around if necessary.</span>
+                        </div>
+                    </div>
+                    <div className="flex items-start space-x-3">
+                        <span className="bg-[#007bff] text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">2</span>
+                        <div>
+                            <span className="font-semibold text-[#0056b3]">Same Column:</span>
+                            <span className="text-gray-700"> If the letters are in the same column, each is replaced by the letter immediately below it, also wrapping around.</span>
+                        </div>
+                    </div>
+                    <div className="flex items-start space-x-3">
+                        <span className="bg-[#007bff] text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">3</span>
+                        <div>
+                            <span className="font-semibold text-[#0056b3]">Different Row and Column:</span>
+                            <span className="text-gray-700"> If the letters form a rectangle, each is replaced by the letter in its own row but in the column of the other letter of the digram.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Security Scorecard Section */}
+            <div className="bg-white rounded-xl p-6 shadow-sm">
+                <h3 className="text-2xl font-bold mb-4 text-[#0056b3] border-b-2 border-[#007bff] pb-2">Security Scorecard</h3>
+                <div className="bg-red-100 border-l-4 border-red-500 p-4 rounded-lg mb-4">
+                    <div className="flex items-center">
+                        <div className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold mr-3">
+                            INSECURE - OBSOLETE
+                        </div>
+                    </div>
+                </div>
+                <p className="text-gray-700 leading-relaxed">
+                    The Playfair cipher provided a significant security enhancement over its predecessors, but it is now regarded as insecure. 
+                    Its vulnerability to bigram frequency analysis and other sophisticated cryptanalytic techniques, which were developed before 
+                    World War I, led to its military deprecation. A notable vulnerability is that a digram and its reverse (e.g., 'AB' and 'BA') 
+                    will decrypt to a plaintext pattern that is also reversed (e.g., 'RE' and 'ER'). This is particularly problematic in English, 
+                    which contains many words with reversed digrams (e.g., 'receiver').
+                </p>
+            </div>
+
+            {/* Real-World Usage Section */}
+            <div className="bg-white rounded-xl p-6 shadow-sm">
+                <h3 className="text-2xl font-bold mb-4 text-[#0056b3] border-b-2 border-[#007bff] pb-2">Real-World Usage</h3>
+                <p className="text-gray-700 leading-relaxed">
+                    The Playfair cipher was employed by military forces for tactical field communications during combat. A typical use case 
+                    was to protect important but non-critical information, such as an order for an artillery barrage to cover an advance. 
+                    Its simplicity and the ability to perform the encryption manually in the field made it an attractive option until the 
+                    advent of automated encryption devices rendered it obsolete.
+                </p>
+            </div>
+
+            {/* Solved Example Section */}
+            <div className="bg-white rounded-xl p-6 shadow-sm">
+                <h3 className="text-2xl font-bold mb-4 text-[#0056b3] border-b-2 border-[#007bff] pb-2">Solved Example</h3>
+                <div className="bg-[#f9f9f9] rounded-lg p-6">
+                    <p className="text-gray-700 mb-4">
+                        <strong>Plaintext:</strong> <span className="font-mono text-[#007bff] bg-white px-2 py-1 rounded">HELLO WORLD</span>
+                    </p>
+                    <p className="text-gray-700 mb-4">
+                        <strong>Keyword:</strong> <span className="font-mono text-[#007bff] bg-white px-2 py-1 rounded">KEYWORD</span>
+                    </p>
+                    
+                    <div className="space-y-4">
+                        <div>
+                            <h4 className="font-semibold text-[#0056b3] mb-2">Step 1: Construct the Key Matrix</h4>
+                            <div className="bg-white p-4 rounded-lg">
+                                <table className="mx-auto border-collapse">
+                                    <tbody>
+                                        {['KEYWO', 'RDABC', 'FGHIL', 'MNPQS', 'TUVXZ'].map((row, i) => (
+                                            <tr key={i}>
+                                                {row.split('').map((cell, j) => (
+                                                    <td key={j} className="border border-gray-400 p-3 text-center font-mono text-gray-700 w-12 h-12">{cell}</td>
+                                                ))}
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 className="font-semibold text-[#0056b3] mb-2">Step 2: Prepare the Plaintext</h4>
+                            <p className="text-gray-700 mb-2">The plaintext is broken into digrams, and an 'X' is inserted to handle repeated letters or an odd-length message.</p>
+                            <p className="font-mono bg-white p-2 rounded">
+                                <span className="text-gray-600">HELLO WORLD</span> becomes <span className="text-[#007bff]">HE LX LO WO RL DX</span>
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h4 className="font-semibold text-[#0056b3] mb-2">Step 3: Encrypt Each Digram</h4>
+                            <p className="text-gray-700 mb-2">The encryption rules are applied to each digram using the key matrix.</p>
+                            <div className="bg-white p-4 rounded-lg font-mono text-sm space-y-1">
+                                <div>HE → EH</div>
+                                <div>LX → VS</div>
+                                <div>LO → SC</div>
+                                <div>WO → NY</div>
+                                <div>RL → GC</div>
+                                <div>DX → BT</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p className="text-gray-700 mt-4">
+                        <strong>Ciphertext:</strong> <span className="font-mono text-green-600 bg-white px-2 py-1 rounded font-bold">EHVSSCNYGCBT</span>
+                    </p>
+                </div>
+            </div>
         </div>
     );
+    
     const renderExample = () => (
         <div className="p-6 bg-[#f9f9f9] rounded-2xl shadow-inner">
             <h3 className="text-xl font-semibold mb-4 text-[#0056b3]">Example of Playfair Encryption</h3>
