@@ -1,66 +1,88 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, Lock, Unlock, Play, RotateCcw } from 'lucide-react';
 
-const TheoryTab = () => (
-    <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">What is Rail Fence Cipher?</h2>
-      
-      <div className="prose max-w-none">
-        <p className="text-gray-700 mb-4">
-          The Rail Fence Cipher is a form of transposition cipher that gets its name from the way it's encoded. 
-          The plaintext is written in a zigzag pattern across multiple "rails" (rows), then read off in rows to create the ciphertext.
-        </p>
-
-        <h3 className="text-xl font-semibold text-gray-800 mb-3">How it works:</h3>
-        <ol className="list-decimal list-inside text-gray-700 mb-6 space-y-2">
-          <li>Choose the number of rails (rows)</li>
-          <li>Write the message in a zigzag pattern across the rails</li>
-          <li>Read the characters from each rail sequentially to form the cipher</li>
-        </ol>
-
-        <h3 className="text-xl font-semibold text-gray-800 mb-3">Example:</h3>
-        <div className="bg-gray-50 p-4 rounded-lg mb-4">
-          <p className="font-mono text-sm mb-2">Plaintext: "HELLO WORLD" with 3 rails</p>
-          <div className="font-mono text-sm space-y-1">
-            <div>Rail 1: H . . . O . . . R . .</div>
-            <div>Rail 2: . E . L . W . . L .</div>
-            <div>Rail 3: . . L . . . . O . . D</div>
-          </div>
-          <p className="font-mono text-sm mt-2">Reading the rails yields the ciphertext: "HORELWLLOD"</p>
+// Component for a single theory block
+const TheoryBlock = ({ title, children }) => (
+    <div className="bg-[#f9f9f9] rounded-lg border border-gray-200 shadow-lg p-6 mb-6">
+        <h3 className="text-2xl font-bold text-[#0056b3] mb-4">{title}</h3>
+        <div className="prose max-w-none">
+            {children}
         </div>
+    </div>
+);
 
-        <h3 className="text-xl font-semibold text-gray-800 mb-3">Properties:</h3>
-        <ul className="list-disc list-inside text-gray-700 space-y-1">
-          <li>Easy to implement and understand</li>
-          <li>Relatively weak security (can be broken with frequency analysis)</li>
-          <li>Preserves character frequency distribution</li>
-          <li>Historically used for simple message concealment</li>
-        </ul>
-      </div>
+const TheoryTab = () => (
+    <div className="space-y-6">
+        <TheoryBlock title="Introduction to Rail Fence Cipher">
+            <p className="text-gray-700">
+                The Rail Fence cipher is a classic example of a **transposition cipher** that rearranges the order of the characters in the plaintext. The process is simple, yet the resulting ciphertext can be unintelligible at a glance.
+            </p>
+        </TheoryBlock>
+
+        <TheoryBlock title="Origin Story">
+            <p className="text-gray-700">
+                The Rail Fence cipher is an old and simple method used for quick, manual encryption. It has no single inventor attributed to it, as similar ciphers likely emerged independently in various contexts due to the simplicity of the underlying concept.
+            </p>
+        </TheoryBlock>
+
+        <TheoryBlock title="Core Idea">
+            <p className="text-gray-700">
+                The core idea is to scramble the plaintext by writing it in a zig-zag pattern across a number of imaginary "rails". The ciphertext is then formed by reading the characters off each rail sequentially, from top to bottom. The key to the cipher is the number of rails used in the zig-zag pattern.
+            </p>
+        </TheoryBlock>
+
+        <TheoryBlock title="Technical Blueprint">
+            <p className="text-gray-700">
+                To encrypt a message, the sender first chooses a number of "rails." The plaintext is then written on these rails in a descending and then ascending zig-zag pattern. For example, with three rails, the letters would be placed on rails 1, 2, 3, 2, 1, 2, 3, etc. The ciphertext is then formed by concatenating the contents of each rail, starting with the top rail and working down. Decryption reverses this process: the ciphertext is first divided into segments that correspond to the length of each rail, and then the letters are placed back onto the rails in the correct order to reconstruct the original zig-zag pattern. The plaintext is then read by following the zig-zag path.
+            </p>
+        </TheoryBlock>
+
+        <TheoryBlock title="Security Scorecard">
+            <p className="text-gray-700">
+                The security of the Rail Fence cipher is entirely dependent on the secrecy of the number of rails used. However, with modern computational power, an attacker can easily break the cipher by trying a small number of possible rail counts through brute force. As such, it is not a secure method for protecting sensitive information.
+            </p>
+        </TheoryBlock>
+
+        <TheoryBlock title="Real-World Usage">
+            <p className="text-gray-700">
+                Due to its simplicity and known vulnerabilities, the Rail Fence cipher is not used for any serious security purposes today. It is primarily a pedagogical tool used to introduce the concept of transposition ciphers and to contrast them with substitution ciphers.
+            </p>
+        </TheoryBlock>
     </div>
 );
 
 const ExampleTab = () => (
-    <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Standard Test Vector Example</h2>
+    <div className="bg-[#f9f9f9] rounded-lg shadow-lg border border-gray-200 p-6 mb-6">
+      <h2 className="text-2xl font-bold text-[#0056b3] mb-4">Solved Example</h2>
       
       <div className="prose max-w-none">
-        <p className="text-gray-700 mb-4">
-          This section demonstrates a concrete example of encryption and decryption using a standard test case.
-        </p>
-
-        <div className="bg-gray-50 p-4 rounded-lg mb-6">
-          <h3 className="text-xl font-semibold text-blue-700 mb-3">Encryption Example</h3>
-          <p className="font-mono text-sm mb-2"><b>Plaintext:</b> "WE ARE DISCOVERED FLEE AT ONCE"</p>
-          <p className="font-mono text-sm mb-2"><b>Number of Rails:</b> 3</p>
-          <p className="font-mono text-sm"><b>Expected Ciphertext:</b> "WECRLTEERDSOEEFEAOCAIVDEN"</p>
+        <div className="bg-white p-4 rounded-lg border border-gray-200 mb-6">
+          <h3 className="text-xl font-semibold text-[#0056b3] mb-3">Encryption</h3>
+          <p className="font-mono text-sm mb-2"><b>Plaintext:</b> WE ARE DISCOVERED FLEE AT ONCE</p>
+          <p className="font-mono text-sm mb-2"><b>Key:</b> 3 rails</p>
+          <p className="font-mono text-sm mb-2"><b>Step 1:</b> Write the Plaintext in a Zig-Zag Pattern</p>
+          <div className="font-mono text-sm space-y-1">
+            <p>Rail 1: WECRLTE</p>
+            <p>Rail 2: ERSODEFETN</p>
+            <p>Rail 3: ADISCVERAOE</p>
+          </div>
+          <p className="font-mono text-sm mt-2">
+            The ciphertext is formed by reading off the characters from each rail sequentially.
+          </p>
+          <p className="font-mono text-sm mt-2"><b>Ciphertext:</b> WECRLTEERSODEFETNADS CVERAOE</p>
         </div>
 
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <h3 className="text-xl font-semibold text-green-700 mb-3">Decryption Example</h3>
-          <p className="font-mono text-sm mb-2"><b>Ciphertext:</b> "WECRLTEERDSOEEFEAOCAIVDEN"</p>
-          <p className="font-mono text-sm mb-2"><b>Number of Rails:</b> 3</p>
-          <p className="font-mono text-sm"><b>Expected Plaintext:</b> "WEAREDISCOVEREDFLEEATONCE"</p>
+        <div className="bg-white p-4 rounded-lg border border-gray-200">
+          <h3 className="text-xl font-semibold text-green-700 mb-3">Decryption</h3>
+          <p className="font-mono text-sm mb-2"><b>Ciphertext:</b> WECRLTEERSODEFETNADS CVERAOE</p>
+          <p className="font-mono text-sm mb-2"><b>Key:</b> 3 rails</p>
+          <p className="font-mono text-sm mb-2"><b>Step 1:</b> Calculate the Length of Each Rail</p>
+          <p className="text-sm">The plaintext has 26 characters. The rails will have 7, 10, and 9 letters respectively.</p>
+          <p className="font-mono text-sm mb-2"><b>Step 2:</b> Reconstruct the Empty Rail Fence and Fill</p>
+          <p className="text-sm">The ciphertext is filled into the grid sequentially, rail by rail, based on the lengths calculated above.</p>
+          <p className="font-mono text-sm mb-2"><b>Step 3:</b> Read the Plaintext from the Zig-Zag Pattern</p>
+          <p className="text-sm">By following the zig-zag path, the original plaintext is reconstructed.</p>
+          <p className="font-mono text-sm mt-2"><b>Plaintext:</b> WEAREDISCOVEREDFLEEATONCE</p>
         </div>
       </div>
     </div>
@@ -85,22 +107,28 @@ const SimulationTab = ({
 }) => (
     <div className="space-y-6">
       {/* Controls */}
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">Interactive Rail Fence Tool</h2>
+      <div className="bg-[#f9f9f9] rounded-lg shadow-lg border border-gray-200 p-6">
+        <h2 className="text-2xl font-bold text-[#0056b3] mb-4">Interactive Rail Fence Tool</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Mode
             </label>
-            <select
-              value={mode}
-              onChange={(e) => setMode(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="encrypt">Encrypt</option>
-              <option value="decrypt">Decrypt</option>
-            </select>
+            <div className="flex rounded-lg border border-gray-300 overflow-hidden">
+              <button
+                onClick={() => setMode('encrypt')}
+                className={`flex-1 px-3 py-2 font-medium text-sm transition-colors flex items-center justify-center gap-2 ${mode === 'encrypt' ? 'bg-[#007bff] text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
+              >
+                <Lock size={14} /> Encrypt
+              </button>
+              <button
+                onClick={() => setMode('decrypt')}
+                className={`flex-1 px-3 py-2 font-medium text-sm transition-colors flex items-center justify-center gap-2 ${mode === 'decrypt' ? 'bg-[#007bff] text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
+              >
+                <Unlock size={14} /> Decrypt
+              </button>
+            </div>
           </div>
 
           <div>
@@ -113,7 +141,7 @@ const SimulationTab = ({
               max="10"
               value={rails}
               onChange={(e) => setRails(parseInt(e.target.value))}
-              className="w-full"
+              className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-200"
             />
           </div>
 
@@ -125,7 +153,7 @@ const SimulationTab = ({
               type="text"
               value={mode === 'encrypt' ? plaintext : ciphertext}
               onChange={(e) => mode === 'encrypt' ? setPlaintext(e.target.value) : setCiphertext(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full p-3 border border-gray-300 rounded-lg bg-[#f9f9f9] font-mono text-sm focus:ring-2 focus:ring-[#007bff] focus:border-transparent"
               placeholder="Enter your message..."
             />
           </div>
@@ -138,7 +166,7 @@ const SimulationTab = ({
               type="text"
               value={mode === 'encrypt' ? ciphertext : plaintext}
               readOnly
-              className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50"
+              className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 font-mono text-sm"
               placeholder="Result will appear here..."
             />
           </div>
@@ -148,7 +176,7 @@ const SimulationTab = ({
           <button
             onClick={runAnimation}
             disabled={isAnimating}
-            className="flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-[#007bff] text-white rounded-lg font-semibold hover:bg-[#0056b3] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg"
           >
             <Play size={18} />
             {isAnimating ? 'Visualizing...' : 'Explain'}
@@ -156,7 +184,7 @@ const SimulationTab = ({
           
           <button
             onClick={handleProcess}
-            className="flex items-center gap-2 px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition-all shadow-md hover:shadow-lg"
           >
             {mode === 'encrypt' ? <Lock size={18} /> : <Unlock size={18} />}
             {mode === 'encrypt' ? 'Encrypt' : 'Decrypt'}
@@ -164,7 +192,7 @@ const SimulationTab = ({
 
           <button
             onClick={resetAnimation}
-            className="flex items-center gap-2 px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-gray-600 text-white rounded-lg font-medium hover:bg-gray-700 transition-all shadow-md hover:shadow-lg"
           >
             <RotateCcw size={18} />
             Reset
@@ -174,8 +202,8 @@ const SimulationTab = ({
 
       {/* Visualization */}
       {(railPattern.length > 0 || animationStep > 0) && (
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">Rail Pattern Visualization</h3>
+        <div className="bg-[#f9f9f9] rounded-lg shadow-lg border border-gray-200 p-6">
+          <h3 className="text-xl font-bold text-[#0056b3] mb-4">Rail Pattern Visualization</h3>
           
           <div className="overflow-x-auto">
             <div className="min-w-max">
@@ -191,11 +219,11 @@ const SimulationTab = ({
                         className={`w-8 h-8 border-2 rounded flex items-center justify-center text-sm font-mono transition-all duration-300 ${
                           cell 
                             ? currentChar === cell.index
-                              ? 'border-red-500 bg-red-100 text-red-700 transform scale-110'
+                              ? 'border-amber-500 bg-amber-100 text-amber-700 transform scale-110'
                               : currentChar > cell.index || !isAnimating
                               ? 'border-blue-500 bg-blue-100 text-blue-700'
                               : 'border-gray-300 bg-gray-50 text-gray-400'
-                            : 'border-gray-200 bg-gray-50'
+                            : 'border-gray-200 bg-white'
                         }`}
                       >
                         {cell && (currentChar >= cell.index || !isAnimating) ? cell.char : ''}
@@ -208,10 +236,10 @@ const SimulationTab = ({
           </div>
 
           {isAnimating && (
-            <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-              <div className="flex items-center gap-2 text-blue-700">
-                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                <span className="text-sm">
+            <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <div className="flex items-center gap-2 text-[#0056b3]">
+                <div className="w-2 h-2 bg-[#007bff] rounded-full animate-pulse"></div>
+                <span className="text-sm font-medium">
                   {currentChar >= 0 && currentChar < (mode === 'encrypt' ? plaintext : ciphertext).length
                     ? mode === 'encrypt' 
                       ? `Placing character '${plaintext[currentChar]}' in zigzag pattern at position ${currentChar + 1}`
@@ -219,7 +247,7 @@ const SimulationTab = ({
                     : 'Processing...'}
                 </span>
               </div>
-              <div className="text-xs text-blue-600 mt-1">
+              <div className="text-xs text-gray-600 mt-1">
                 {mode === 'encrypt' 
                   ? 'Encryption: Writing text in zigzag pattern across rails'
                   : 'Decryption: Filling ciphertext into rails row by row, then reading diagonally'}
@@ -431,42 +459,42 @@ const RailFenceCipher = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <div className="max-w-6xl mx-auto">
-        <header className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">Rail Fence Cipher</h1>
-          <p className="text-gray-600">Learn and visualize the Rail Fence encryption technique</p>
+    <div className="min-h-screen bg-[#f5f5f5] font-sans text-gray-800">
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <header className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold mb-2 text-[#0056b3]">Rail Fence Cipher</h1>
+          <p className="text-gray-600 text-lg">Learn and visualize the Rail Fence encryption technique</p>
         </header>
 
         {/* Navigation Tabs */}
-        <div className="flex justify-center mb-8">
-          <div className="bg-white rounded-lg shadow-md p-1">
+        <div className="flex justify-center mb-6">
+          <div className="flex rounded-xl bg-white p-1 shadow-lg border border-gray-200">
             <button
               onClick={() => setActiveTab('theory')}
-              className={`px-6 py-2 rounded-md transition-colors ${
+              className={`px-6 py-2 rounded-lg font-medium transition-colors ${
                 activeTab === 'theory' 
-                  ? 'bg-blue-500 text-white' 
-                  : 'text-gray-600 hover:bg-gray-100'
+                  ? 'bg-[#007bff] text-white shadow' 
+                  : 'text-gray-700 hover:bg-gray-100'
               }`}
             >
               Theory
             </button>
             <button
               onClick={() => setActiveTab('example')}
-              className={`px-6 py-2 rounded-md transition-colors ${
+              className={`px-6 py-2 rounded-lg font-medium transition-colors ${
                 activeTab === 'example' 
-                  ? 'bg-blue-500 text-white' 
-                  : 'text-gray-600 hover:bg-gray-100'
+                  ? 'bg-[#007bff] text-white shadow' 
+                  : 'text-gray-700 hover:bg-gray-100'
               }`}
             >
               Example
             </button>
             <button
               onClick={() => setActiveTab('simulation')}
-              className={`px-6 py-2 rounded-md transition-colors ${
+              className={`px-6 py-2 rounded-lg font-medium transition-colors ${
                 activeTab === 'simulation' 
-                  ? 'bg-blue-500 text-white' 
-                  : 'text-gray-600 hover:bg-gray-100'
+                  ? 'bg-[#007bff] text-white shadow' 
+                  : 'text-gray-700 hover:bg-gray-100'
               }`}
             >
               Simulation

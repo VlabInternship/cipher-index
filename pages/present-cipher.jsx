@@ -4,7 +4,7 @@ import { Play, Pause, RotateCcw, Lock, Unlock, Cpu, StepBack, StepForward } from
 const App = () => {
   // Configuration
   const S_BOX = [0xC, 0x5, 0x6, 0xB, 0x9, 0x0, 0xA, 0xD, 0x3, 0xE, 0xF, 0x8, 0x4, 0x7, 0x1, 0x2];
-  const INVERSE_S_BOX = [0x5, 0xE, 0xF, 0x8, 0xC, 0x1, 0x2, 0xD, 0xB, 0x4, 0x6, 0x3, 0x0, 0x7, 0xA, 0x9, 0xA];
+  const INVERSE_S_BOX = [0x5, 0xE, 0xF, 0x8, 0xC, 0x1, 0x2, 0xD, 0xB, 0x4, 0x6, 0x3, 0x0, 0x7, 0xA, 0x9];
 
   // State Hooks
   const [formData, setFormData] = useState({
@@ -298,7 +298,7 @@ const App = () => {
             <div className="bg-[#f9f9f9] rounded-lg p-4 border border-gray-200">
               <h3 className="font-semibold text-[#0056b3] mb-2">What is PRESENT?</h3>
               <p className="text-sm text-gray-700">
-                PRESENT is a lightweight block cipher designed to be efficient in terms of hardware and software resources. It's particularly useful for devices with limited processing power, such as RFID tags, sensors, and Internet of Things (IoT) devices. It has a **64-bit block size** and supports either an **80-bit or 128-bit key**.
+                PRESENT is a lightweight block cipher designed to be efficient in terms of hardware and software resources. It's particularly useful for devices with limited processing power, such as RFID tags, sensors, and Internet of Things (IoT) devices. It has a <strong>64-bit block size</strong> and supports either an <strong>80-bit or 128-bit key</strong>.
               </p>
             </div>
             <div className="bg-[#f9f9f9] rounded-lg p-4 border border-gray-200">
@@ -311,10 +311,10 @@ const App = () => {
                   <strong>AddRoundKey:</strong> This is a simple XOR operation where the current state (plaintext or intermediate state) is XORed with a subkey derived from the master key.
                 </li>
                 <li>
-                  <strong>S-box Layer (Substitution):</strong> The 64-bit state is broken into 16 nibbles (4-bit chunks), and each nibble is independently substituted using a 4x4 S-box. This non-linear operation is crucial for providing **confusion**, making the relationship between the key and the ciphertext complex.
+                  <strong>S-box Layer (Substitution):</strong> The 64-bit state is broken into 16 nibbles (4-bit chunks), and each nibble is independently substituted using a 4x4 S-box. This non-linear operation is crucial for providing <strong>confusion</strong>, making the relationship between the key and the ciphertext complex.
                 </li>
                 <li>
-                  <strong>P-layer (Permutation):</strong> The bits of the 64-bit state are permuted (rearranged) according to a fixed pattern. This operation provides **diffusion**, spreading the influence of a single plaintext bit across the entire ciphertext.
+                  <strong>P-layer (Permutation):</strong> The bits of the 64-bit state are permuted (rearranged) according to a fixed pattern. This operation provides <strong>diffusion</strong>, spreading the influence of a single plaintext bit across the entire ciphertext.
                 </li>
               </ul>
             </div>
@@ -327,6 +327,62 @@ const App = () => {
                 <li><strong>Purpose:</strong> Designed for constrained environments (RFID, IoT).</li>
                 <li><strong>Standardization:</strong> ISO/IEC 29192-2:2019</li>
               </ul>
+            </div>
+            {/* New Theory Section Divided into Boxes */}
+            <div className="bg-[#f9f9f9] rounded-lg p-4 border border-gray-200">
+              <h3 className="font-semibold text-[#0056b3] mb-2">PRESENT: The Lightweight Champion for IoT</h3>
+              <p className="text-sm text-gray-700">
+                PRESENT is a lightweight block cipher designed specifically for resource-constrained environments, such as RFID tags and wireless sensor networks. It is a 31-round Substitution-Permutation Network (SPN) with a 64-bit block size and a simple S-box layer. Its design prioritizes a small footprint and low power consumption over raw speed, making it suitable for a niche but growing market.
+              </p>
+            </div>
+            <div className="bg-[#f9f9f9] rounded-lg p-4 border border-gray-200">
+              <h3 className="font-semibold text-[#0056b3] mb-2">Origin Story</h3>
+              <p className="text-sm text-gray-700">
+                The PRESENT cipher was presented at the Workshop on Cryptographic Hardware and Embedded Systems (CHES) in 2007. The design team's goal was to create a secure algorithm that could be implemented in the smallest possible hardware area, a need that was not being met by mainstream ciphers like AES. Its success led to its selection as an ISO standard in 2012.
+              </p>
+            </div>
+            <div className="bg-[#f9f9f9] rounded-lg p-4 border border-gray-200">
+              <h3 className="font-semibold text-[#0056b3] mb-2">Core Idea</h3>
+              <p className="text-sm text-gray-700">
+                The core idea is to provide robust cryptographic security in a compact and efficient form. The cipher's simple design, which uses a straightforward S-box and a simple bit permutation, minimizes the hardware gates and code lines required for implementation. The cipher's resistance to differential cryptanalysis comes from a specific property of its S-box.
+              </p>
+            </div>
+            <div className="bg-[#f9f9f9] rounded-lg p-4 border border-gray-200">
+              <h3 className="font-semibold text-[#0056b3] mb-2">Technical Blueprint</h3>
+              <p className="text-sm text-gray-700">
+                PRESENT is an SPN that supports an 80-bit or 128-bit key. It operates over 31 rounds, with each round consisting of a key-mixing step, an S-box substitution layer, and a bit permutation layer. The key-mixing step simply XORs the current data block with a round key. The S-box layer applies a non-linear substitution using a 16-value S-box. The bit permutation layer rearranges the bits according to a fixed pattern.
+              </p>
+            </div>
+            <div className="bg-[#f9f9f9] rounded-lg p-4 border border-gray-200">
+              <h3 className="font-semibold text-[#0056b3] mb-2">Security Scorecard</h3>
+              <p className="text-sm text-gray-700">
+                PRESENT's simple design makes it a good choice for hardware, but it has known weaknesses. Its S-box, while effective against differential cryptanalysis, makes it more vulnerable to linear cryptanalysis. The cipher is being superseded by newer lightweight ciphers like GIFT, which have improved designs. However, the cipher's simplicity and transparency make it a difficult target for a backdoor attack, as its design is easily scrutinized.
+              </p>
+            </div>
+            <div className="bg-[#f9f9f9] rounded-lg p-4 border border-gray-200">
+              <h3 className="font-semibold text-[#0056b3] mb-2">Real-World Usage</h3>
+              <p className="text-sm text-gray-700">
+                PRESENT was designed for and is used in a variety of resource-constrained systems, particularly in IoT devices and microcontrollers where CPU power and memory are severely limited. It is often seen as a practical alternative to rolling your own proprietary, and therefore insecure, algorithm in these environments.
+              </p>
+            </div>
+            <div className="bg-[#f9f9f9] rounded-lg p-4 border border-gray-200">
+              <h3 className="font-semibold text-[#0056b3] mb-2">Solved Example: PRESENT</h3>
+              <div className="space-y-4 text-sm text-gray-700">
+                <p>A full numerical walkthrough of PRESENT is beyond the scope of this report. However, a conceptual example can illustrate the process of a single round.</p>
+                <p>Example: A single round of PRESENT encryption.</p>
+                <p>Plaintext block: A 64-bit block of data, represented as P.</p>
+                <p>Key: An 80-bit or 128-bit key.</p>
+                <p><strong>Step 1: Key Mixing</strong></p>
+                <p>The 64-bit plaintext is XORed with a 64-bit round key, which is derived from the main key.</p>
+                <p className="font-mono bg-gray-100 p-2 rounded">
+                  state1 = P XOR Kround
+                </p>
+                <p><strong>Step 2: S-Box Layer</strong></p>
+                <p>The resulting state is divided into 16 4-bit chunks. Each 4-bit chunk is fed into the PRESENT S-box, which substitutes it with a new 4-bit value. This is the cipher's only non-linear component.</p>
+                <p><strong>Step 3: Bit Permutation</strong></p>
+                <p>The 64 bits from the S-box layer are then permuted according to a fixed, hard-wired pattern. The bits are rearranged to ensure that changes in a few input bits are spread across the entire block in subsequent rounds, providing diffusion.</p>
+                <p>These three steps constitute a single round of PRESENT. This process is repeated 31 times to produce the final ciphertext. The decryption process applies the inverse of these steps in reverse order.</p>
+              </div>
             </div>
           </div>
         );
