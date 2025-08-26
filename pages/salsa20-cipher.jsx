@@ -42,8 +42,8 @@ const CoreMixingVisualizer = ({
 
   return (
     <div>
-      <h3 className="text-lg font-semibold text-cyan-600 mb-4">Core Mixing Pattern</h3>
-      <div className="bg-gray-50 border border-gray-200 p-4 rounded-lg">
+      <h3 className="text-lg font-semibold text-[#007bff] mb-4">Core Mixing Pattern</h3>
+      <div className="bg-[#f9f9f9] border border-gray-200 p-4 rounded-lg">
         <p className="text-center font-mono mb-3 text-orange-600 h-6">{displayText}</p>
         <div className="grid grid-cols-4 gap-3 w-full max-w-xs mx-auto">
           {Array.from({ length: 16 }).map((_, i) => {
@@ -91,8 +91,8 @@ const AdditionVisualizer = ({ currentStep, mixedState, initialState, resultState
   if (currentStep !== 2) return null;
   return (
     <div>
-      <h3 className="text-lg font-semibold text-cyan-600 mb-4">State Addition</h3>
-      <div className="bg-gray-50 border border-gray-200 p-4 rounded-lg flex items-center justify-around gap-2 animate-fade-in">
+      <h3 className="text-lg font-semibold text-[#007bff] mb-4">State Addition</h3>
+      <div className="bg-[#f9f9f9] border border-gray-200 p-4 rounded-lg flex items-center justify-around gap-2 animate-fade-in">
         <MatrixDisplay matrix={mixedState} title="Mixed State" />
         <Plus className="text-orange-500 w-6 h-6 flex-shrink-0" />
         <MatrixDisplay matrix={initialState} title="Initial State" />
@@ -107,8 +107,8 @@ const KeystreamVisualizer = ({ currentStep, keystreamBytes }) => {
   if (currentStep < 3) return null;
   return (
     <div className={`transition-opacity duration-500 ${currentStep >= 3 ? 'opacity-100' : 'opacity-0'}`}>
-      <h3 className="text-lg font-semibold text-cyan-600 mb-4">Serialization to Keystream</h3>
-      <div className="bg-gray-50 border border-gray-200 p-3 rounded-lg font-mono text-xs text-gray-700">
+      <h3 className="text-lg font-semibold text-[#007bff] mb-4">Serialization to Keystream</h3>
+      <div className="bg-[#f9f9f9] border border-gray-200 p-3 rounded-lg font-mono text-xs text-gray-700">
         <div className="grid grid-cols-16 gap-1">
           {(keystreamBytes.length > 0 ? keystreamBytes : Array(64).fill(0)).map((byte, i) => (
             <span key={i} className={`p-1 rounded transition-colors duration-300 ${currentStep === 3 ? 'bg-blue-300 animate-pulse' : 'bg-blue-200'} text-gray-800`}>
@@ -125,25 +125,25 @@ const XorVisualizer = ({ currentStep, keystreamBytes, plaintextBytes, ciphertext
   if (currentStep !== 4) return null;
   return (
     <div className="animate-fade-in">
-      <h3 className="text-lg font-semibold text-cyan-600 mb-4">XOR Operation</h3>
+      <h3 className="text-lg font-semibold text-[#007bff] mb-4">XOR Operation</h3>
       <div className="space-y-4 font-mono text-xs">
         <div>
           <p className="text-gray-600 mb-2">{isDecrypting ? "Ciphertext Bytes" : "Plaintext Bytes"}</p>
-          <div className="bg-gray-50 border border-gray-200 p-2 rounded-lg grid grid-cols-16 gap-1">
+          <div className="bg-[#f9f9f9] border border-gray-200 p-2 rounded-lg grid grid-cols-16 gap-1">
             {plaintextBytes.map((b, i) => <span key={i} className="p-1 rounded bg-purple-200 text-gray-800">{b.toString(16).padStart(2, '0')}</span>)}
           </div>
         </div>
         <div className="flex justify-center text-green-500 font-bold text-2xl">⊕</div>
         <div>
           <p className="text-gray-600 mb-2">Keystream Bytes</p>
-          <div className="bg-gray-50 border border-gray-200 p-2 rounded-lg grid grid-cols-16 gap-1">
+          <div className="bg-[#f9f9f9] border border-gray-200 p-2 rounded-lg grid grid-cols-16 gap-1">
             {keystreamBytes.map((b, i) => <span key={i} className="p-1 rounded bg-blue-200 text-gray-800">{b.toString(16).padStart(2, '0')}</span>)}
           </div>
         </div>
         <div className="flex justify-center text-green-500 font-bold text-2xl">=</div>
         <div>
           <p className="text-green-600 mb-2">{isDecrypting ? "Plaintext Bytes" : "Ciphertext Bytes"}</p>
-          <div className="bg-gray-50 border border-gray-200 p-2 rounded-lg grid grid-cols-16 gap-1">
+          <div className="bg-[#f9f9f9] border border-gray-200 p-2 rounded-lg grid grid-cols-16 gap-1">
             {ciphertextBytes.map((b, i) => <span key={i} className="p-1 rounded bg-green-200 animate-pulse text-gray-800">{b.toString(16).padStart(2, '0')}</span>)}
           </div>
         </div>
@@ -155,31 +155,51 @@ const XorVisualizer = ({ currentStep, keystreamBytes, plaintextBytes, ciphertext
 // --- Theory & Example Tabs ---
 const TheoryTab = () => (
     <div className="space-y-6 animate-fade-in">
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
-            <h2 className="text-2xl font-bold mb-4 text-purple-600 flex items-center">
-                <BookOpen className="w-6 h-6 mr-3" /> What is Salsa20?
-            </h2>
+        <div className="bg-[#f9f9f9] border border-gray-200 rounded-lg p-6">
+            <h2 className="text-2xl font-bold mb-4 text-[#0056b3]">Introduction</h2>
             <div className="space-y-4 text-gray-700">
-                <p>
-                    Salsa20 is a stream cipher developed by Daniel J. Bernstein. It's designed to be fast, secure, and simple to implement.
-                    It's the predecessor to the ChaCha20 cipher and forms the foundation for many modern cryptographic protocols.
-                </p>
-                <p>
-                    The "20" in Salsa20 refers to the 20 rounds of mixing (10 column rounds and 10 diagonal rounds) performed on the internal state,
-                    similar to ChaCha20 but with different quarter round operations.
-                </p>
-                <p>
-                    Salsa20 was one of the finalists in the eSTREAM project and has been extensively analyzed by the cryptographic community.
-                </p>
+                <p>Salsa20 is a high-performance stream cipher developed by Daniel J. Bernstein. It is part of the add-rotate-XOR (ARX) family of ciphers, which are favored for their excellent performance in software implementations and their resistance to timing attacks. It was one of the most influential ciphers to emerge from the eSTREAM competition, which sought to identify modern stream cipher standards.</p>
             </div>
         </div>
-
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
-            <h2 className="text-2xl font-bold mb-4 text-blue-600 flex items-center">
-                <Code className="w-6 h-6 mr-3" /> How It Works
-            </h2>
+        <div className="bg-[#f9f9f9] border border-gray-200 rounded-lg p-6">
+            <h2 className="text-2xl font-bold mb-4 text-[#0056b3]">Origin Story</h2>
             <div className="space-y-4 text-gray-700">
-                <h3 className="font-semibold text-green-600">1. Initialization</h3>
+                <p>Salsa20 was designed by Daniel J. Bernstein in 2005 and submitted to the eSTREAM project, a European Union cryptographic validation process. Bernstein's design philosophy centered on using simple, fast operations (addition, rotation, and XOR) to create a highly efficient and secure cipher for software.</p>
+            </div>
+        </div>
+        <div className="bg-[#f9f9f9] border border-gray-200 rounded-lg p-6">
+            <h2 className="text-2xl font-bold mb-4 text-[#0056b3]">Core Idea</h2>
+            <div className="space-y-4 text-gray-700">
+                <p>The core idea of Salsa20 is to generate a continuous keystream using a pseudo-random function based on ARX operations. The keystream is produced in 64-byte blocks from a key, a nonce, and a counter. The use of only ARX operations provides two key benefits: it is fast on modern CPUs, and it is resistant to timing attacks, as all operations take a predictable amount of time.</p>
+            </div>
+        </div>
+        <div className="bg-[#f9f9f9] border border-gray-200 rounded-lg p-6">
+            <h2 className="text-2xl font-bold mb-4 text-[#0056b3]">Technical Blueprint</h2>
+            <div className="space-y-4 text-gray-700">
+                <p>The internal state of Salsa20 is a 4×4 matrix of sixteen 32-bit words. This state is initialized with a combination of key words, nonce words, counter words, and fixed words. The cipher's core is a quarter-round function that takes four words and transforms them using a series of additions, rotations, and XORs. Salsa20 applies 20 rounds of this quarter-round function, alternating between operations on the columns and rows of the state matrix. After all 20 rounds, the resulting array is added (XORed) to the original initial state to produce the final keystream block.</p>
+            </div>
+        </div>
+        <div className="bg-[#f9f9f9] border border-gray-200 rounded-lg p-6">
+            <h2 className="text-2xl font-bold mb-4 text-[#0056b3]">Security Scorecard</h2>
+            <div className="space-y-4 text-gray-700">
+                <p>Salsa20 is considered a very secure cipher. Its design has been extensively tested by the cryptographic community and has proven to be resilient against known attacks. While a brute-force attack is the most common vulnerability for most ciphers, Salsa20 is a strong cipher against this attack. Reduced-round versions like Salsa20/8 and Salsa20/12 have also been proposed to offer a balance between security and performance for applications that may not require the full 20 rounds.</p>
+            </div>
+        </div>
+        <div className="bg-[#f9f9f9] border border-gray-200 rounded-lg p-6">
+            <h2 className="text-2xl font-bold mb-4 text-[#0056b3]">Real-World Usage</h2>
+            <div className="space-y-4 text-gray-700">
+                <p>Salsa20 is known for its speed and has found a home in various software applications where high performance is critical. It is used in numerous password managers, such as KeePass, and is a component of many modern cryptographic libraries. Its straightforward design and provable security make it an excellent choice for a variety of use cases, although its successor, ChaCha20, has gained popularity in more recent applications.</p>
+            </div>
+        </div>
+    </div>
+);
+
+const ExampleTab = () => (
+    <div className="space-y-6 animate-fade-in">
+        <div className="bg-[#f9f9f9] border border-gray-200 rounded-lg p-6">
+            <h2 className="text-2xl font-bold mb-4 text-[#0056b3]">How It Works</h2>
+            <div className="space-y-4 text-gray-700">
+                <h3 className="font-semibold text-[#007bff]">1. Initialization</h3>
                 <p>
                     The cipher starts with a 4×4 matrix of 32-bit words (16 words total). This includes:
                 </p>
@@ -190,10 +210,9 @@ const TheoryTab = () => (
                     <li>2 words (64 bits) of block counter</li>
                 </ul>
 
-                <h3 className="font-semibold text-green-600">2. The Quarter Round</h3>
+                <h3 className="font-semibold text-[#007bff]">2. The Quarter Round</h3>
                 <p>
-                    The core operation is the quarter round, which mixes four 32-bit words (a, b, c, d) using ARX (Add-Rotate-XOR) operations.
-                    This differs from ChaCha20 in the rotation amounts:
+                    The core operation is the quarter round, which mixes four 32-bit words (a, b, c, d) using ARX (Add-Rotate-XOR) operations. This differs from ChaCha20 in the rotation amounts:
                 </p>
                 <pre className="bg-gray-100 border border-gray-200 p-3 rounded-md text-xs font-mono overflow-x-auto text-gray-800">
                     {`b ^= (a + d) <<< 7;
@@ -202,47 +221,24 @@ d ^= (c + b) <<< 13;
 a ^= (d + c) <<< 18;`}
                 </pre>
 
-                <h3 className="font-semibold text-green-600">3. The Salsa Block Function</h3>
+                <h3 className="font-semibold text-[#007bff]">3. The Salsa Block Function</h3>
                 <p>
                     The block function performs 20 rounds of mixing (10 column rounds and 10 diagonal rounds), then adds the result to the original matrix.
                 </p>
 
-                <h3 className="font-semibold text-green-600">4. Generating the Keystream</h3>
+                <h3 className="font-semibold text-[#007bff]">4. Generating the Keystream</h3>
                 <p>
                     The final matrix is serialized into a 64-byte keystream block. This is XORed with the plaintext to produce ciphertext.
                 </p>
             </div>
         </div>
-
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
-            <h2 className="text-2xl font-bold mb-4 text-orange-600">Security Properties</h2>
-            <div className="space-y-4 text-gray-700">
-                <p>
-                    Salsa20 is designed to be:
-                </p>
-                <ul className="list-disc pl-5 space-y-1">
-                    <li><strong>Secure</strong>: No practical attacks are known against the full 20-round version</li>
-                    <li><strong>Fast</strong>: Performs well on both hardware and software implementations</li>
-                    <li><strong>Simple</strong>: Easy to implement and understand</li>
-                    <li><strong>Flexible</strong>: Supports 256-bit keys and 64-bit nonces</li>
-                </ul>
-                <p>
-                    Salsa20 has been extensively analyzed and is considered secure. It served as the foundation for ChaCha20, which improved upon some aspects.
-                </p>
-            </div>
-        </div>
-    </div>
-);
-
-const ExampleTab = () => (
-    <div className="space-y-6 animate-fade-in">
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
-            <h2 className="text-2xl font-bold mb-4 text-purple-600">Standard Test Vectors</h2>
+        <div className="bg-[#f9f9f9] border border-gray-200 rounded-lg p-6">
+            <h2 className="text-2xl font-bold mb-4 text-[#0056b3]">Standard Test Vectors</h2>
             <div className="space-y-4 text-gray-700">
                 <p>Here are some standard test vectors for Salsa20:</p>
                 
                 <div className="bg-gray-50 border border-gray-200 p-4 rounded-md">
-                    <h3 className="font-semibold text-blue-600 mb-2">Test Vector #1</h3>
+                    <h3 className="font-semibold text-[#007bff] mb-2">Test Vector #1</h3>
                     <p><strong>Key:</strong> 000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f</p>
                     <p><strong>Nonce:</strong> 0000000000000000</p>
                     <p><strong>Block Counter:</strong> 0</p>
@@ -250,7 +246,7 @@ const ExampleTab = () => (
                 </div>
 
                 <div className="bg-gray-50 border border-gray-200 p-4 rounded-md">
-                    <h3 className="font-semibold text-blue-600 mb-2">Test Vector #2</h3>
+                    <h3 className="font-semibold text-[#007bff] mb-2">Test Vector #2</h3>
                     <p><strong>Key:</strong> 0f62b5085bae0154a7fa4da0f34699ec3f92e5388bde3184d72a7dd02376c91c</p>
                     <p><strong>Nonce:</strong> 288ff65dc42b92f9</p>
                     <p><strong>Plaintext:</strong> "Hello, World!"</p>
@@ -259,8 +255,8 @@ const ExampleTab = () => (
             </div>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
-            <h2 className="text-2xl font-bold mb-4 text-green-600">Common Uses</h2>
+        <div className="bg-[#f9f9f9] border border-gray-200 rounded-lg p-6">
+            <h2 className="text-2xl font-bold mb-4 text-[#0056b3]">Common Uses</h2>
             <div className="space-y-4 text-gray-700">
                 <p>Salsa20 has been used in various cryptographic applications:</p>
                 <ul className="list-disc pl-5 space-y-1">
@@ -271,6 +267,35 @@ const ExampleTab = () => (
                     <li>Academic research and education</li>
                 </ul>
                 <p>While ChaCha20 has largely superseded Salsa20 in modern applications, Salsa20 remains an important cipher for understanding stream cipher design principles.</p>
+            </div>
+        </div>
+
+        <div className="bg-[#f9f9f9] border border-gray-200 rounded-lg p-6">
+            <h2 className="text-2xl font-bold mb-4 text-[#0056b3]">Solved Example: Salsa20</h2>
+            <div className="space-y-4 text-gray-700">
+                <p>
+                    The provided sources describe the Salsa20 quarter-round function but do not offer a full numerical walkthrough. This conceptual example illustrates the flow of a single quarter-round on a set of four words.
+                </p>
+                <p>
+                    <strong>Example: A conceptual quarter-round of Salsa20.</strong>
+                    <br />
+                    Input Words: a, b, c, d (each a 32-bit word).
+                </p>
+                <div className="bg-gray-100 border border-gray-200 p-4 rounded-md">
+                    <h3 className="font-semibold text-[#007bff] mb-2">The Quarter-Round Function</h3>
+                    <p>
+                        The quarter-round function takes these four words and transforms them in place.
+                    </p>
+                    <pre className="mt-4 bg-gray-200 p-3 rounded-md text-sm font-mono overflow-x-auto text-gray-800">
+                        {`b ← b ⊕ ((a + d) ↶ ROTATE_LEFT 7)
+c ← c ⊕ ((b + a) ↶ ROTATE_LEFT 9)
+d ← d ⊕ ((c + b) ↶ ROTATE_LEFT 13)
+a ← a ⊕ ((d + c) ↶ ROTATE_LEFT 18)`}
+                    </pre>
+                </div>
+                <p>
+                    This series of operations is applied to the sixteen words of the Salsa20 state matrix in a structured way for a total of 20 rounds to produce the final keystream.
+                </p>
             </div>
         </div>
     </div>
@@ -699,20 +724,20 @@ const Salsa20Interactive = () => {
   const hasErrors = !!errors.key || !!errors.nonce;
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 font-sans">
+    <div className="min-h-screen bg-[#f5f5f5] text-gray-900 font-sans">
       <div className="container mx-auto px-4 py-12">
         <header className="text-center mb-10">
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent mb-3">Salsa20 Stream Cipher</h1>
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-[#007bff] to-[#0056b3] bg-clip-text text-transparent mb-3">Salsa20 Stream Cipher</h1>
           <p className="text-lg text-gray-600">An Interactive Guide to a Modern Stream Cipher</p>
         </header>
         <nav className="flex justify-center mb-8">
-          <div className="bg-white rounded-lg p-1 flex space-x-1 shadow-md border">
+          <div className="bg-[#f9f9f9] rounded-lg p-1 flex space-x-1 shadow-md border">
             {["theory", "example", "cipher"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 disabled={isAutoPlaying}
-                className={`px-4 py-2 md:px-6 md:py-3 rounded-md font-medium transition-all text-sm md:text-base disabled:opacity-50 ${activeTab === tab ? "bg-purple-600 text-white shadow-lg" : "text-gray-700 hover:text-gray-900 hover:bg-gray-100"}`}
+                className={`px-4 py-2 md:px-6 md:py-3 rounded-md font-medium transition-all text-sm md:text-base disabled:opacity-50 ${activeTab === tab ? "bg-[#0056b3] text-white shadow-lg" : "text-gray-700 hover:text-gray-900 hover:bg-gray-100"}`}
               >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
               </button>
@@ -725,8 +750,8 @@ const Salsa20Interactive = () => {
           {activeTab === "cipher" && (
             <section className="max-w-7xl mx-auto animate-fade-in">
               <div className="grid lg:grid-cols-5 gap-8">
-                <div className="lg:col-span-2 bg-white rounded-lg p-6 shadow-2xl border">
-                  <h2 className="text-2xl font-bold mb-6 text-purple-600 flex items-center">
+                <div className="lg:col-span-2 bg-[#f9f9f9] rounded-lg p-6 shadow-2xl border">
+                  <h2 className="text-2xl font-bold mb-6 text-[#0056b3] flex items-center">
                     <Lock className="w-6 h-6 mr-3" />
                     {isDecrypting ? "Decryption Controls" : "Encryption Controls"}
                   </h2>
@@ -739,7 +764,7 @@ const Salsa20Interactive = () => {
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         disabled={isAutoPlaying}
-                        className="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500 transition disabled:opacity-70"
+                        className="w-full bg-[#f5f5f5] border border-gray-300 rounded-lg px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#007bff] transition disabled:opacity-70"
                         rows="4"
                         placeholder={isDecrypting ? "Enter hex ciphertext..." : "Enter your message..."}
                       />
@@ -751,7 +776,7 @@ const Salsa20Interactive = () => {
                         value={key}
                         onChange={handleKeyChange}
                         disabled={isAutoPlaying}
-                        className={`w-full bg-gray-50 border rounded-lg px-4 py-3 text-gray-900 font-mono text-sm focus:outline-none focus:ring-2 transition disabled:opacity-70 ${errors.key ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-purple-500'}`}
+                        className={`w-full bg-[#f5f5f5] border rounded-lg px-4 py-3 text-gray-900 font-mono text-sm focus:outline-none focus:ring-2 transition disabled:opacity-70 ${errors.key ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-[#007bff]'}`}
                         maxLength="64"
                       />
                       {errors.key && <p className="text-red-600 text-xs mt-1 flex items-center"><AlertCircle className="w-4 h-4 mr-1"/>{errors.key}</p>}
@@ -763,7 +788,7 @@ const Salsa20Interactive = () => {
                         value={nonce}
                         onChange={handleNonceChange}
                         disabled={isAutoPlaying}
-                        className={`w-full bg-gray-50 border rounded-lg px-4 py-3 text-gray-900 font-mono text-sm focus:outline-none focus:ring-2 transition disabled:opacity-70 ${errors.nonce ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-purple-500'}`}
+                        className={`w-full bg-[#f5f5f5] border rounded-lg px-4 py-3 text-gray-900 font-mono text-sm focus:outline-none focus:ring-2 transition disabled:opacity-70 ${errors.nonce ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-[#007bff]'}`}
                         maxLength="16"
                       />
                       {errors.nonce && <p className="text-red-600 text-xs mt-1 flex items-center"><AlertCircle className="w-4 h-4 mr-1"/>{errors.nonce}</p>}
@@ -788,7 +813,7 @@ const Salsa20Interactive = () => {
                         <button
                           onClick={startAutoPlay}
                           disabled={hasErrors || isAutoPlaying}
-                          className="w-full bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-lg transition-all flex items-center justify-center shadow-lg hover:shadow-green-500/20"
+                          className="w-full bg-gradient-to-r from-[#007bff] to-[#0056b3] hover:from-[#0056b3] hover:to-[#007bff] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-lg transition-all flex items-center justify-center shadow-lg hover:shadow-[#007bff]/20"
                         >
                             {isAutoPlaying ? <PauseCircle className="w-5 h-5 mr-2 animate-spin"/> : <PlayCircle className="w-5 h-5 mr-2" />}
                             {isAutoPlaying ? 'Playing...' : 'Play Full Animation'}
@@ -797,14 +822,14 @@ const Salsa20Interactive = () => {
                            <button
                              onClick={() => startProcess(false)}
                              disabled={hasErrors || isAutoPlaying}
-                             className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-lg transition-all flex items-center justify-center shadow-lg hover:shadow-purple-500/20"
+                             className="flex-1 bg-[#007bff] hover:bg-[#0056b3] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-lg transition-all flex items-center justify-center shadow-lg hover:shadow-[#007bff]/20"
                            >
                              <Lock className="w-5 h-5 mr-2" /> Encrypt
                            </button>
                            <button
                              onClick={() => startProcess(true)}
                              disabled={hasErrors || isAutoPlaying}
-                             className="flex-1 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-lg transition-all flex items-center justify-center shadow-lg hover:shadow-blue-500/20"
+                             className="flex-1 bg-[#007bff] hover:bg-[#0056b3] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-lg transition-all flex items-center justify-center shadow-lg hover:shadow-[#007bff]/20"
                            >
                              <Unlock className="w-5 h-5 mr-2" /> Decrypt
                            </button>
@@ -833,10 +858,10 @@ const Salsa20Interactive = () => {
                   </div>
 
                   <div className={`mt-6 transition-opacity duration-500 ${currentStep >= 4 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-                    <h3 className="text-lg font-semibold text-cyan-600 mb-4">
+                    <h3 className="text-lg font-semibold text-[#007bff] mb-4">
                       {isDecrypting ? "Decrypted Plaintext" : "Encrypted Ciphertext"}
                     </h3>
-                    <div className="bg-gray-50 border border-gray-200 p-4 rounded-lg min-h-[80px]">
+                    <div className="bg-[#f9f9f9] border border-gray-200 p-4 rounded-lg min-h-[80px]">
                       {output ? (
                         <div className="font-mono text-sm break-all">
                           {isDecrypting ? (
@@ -855,16 +880,16 @@ const Salsa20Interactive = () => {
                     </div>
                   </div>
                 </div>
-                <div className="lg:col-span-3 bg-white rounded-lg p-6 shadow-2xl border">
-                  <h2 className="text-2xl font-bold mb-6 text-green-600 flex items-center">
+                <div className="lg:col-span-3 bg-[#f9f9f9] rounded-lg p-6 shadow-2xl border">
+                  <h2 className="text-2xl font-bold mb-6 text-[#0056b3] flex items-center">
                     <Zap className="w-6 h-6 mr-3" />
                     Visualization & Output
                   </h2>
                   <div className="space-y-6">
                     <div className="grid md:grid-cols-2 gap-6">
                       <div>
-                        <h3 className="text-lg font-semibold text-blue-600 mb-3">State Matrix</h3>
-                        <div className="bg-gray-50 border border-gray-200 p-4 rounded-lg">
+                        <h3 className="text-lg font-semibold text-[#007bff] mb-3">State Matrix</h3>
+                        <div className="bg-[#f5f5f5] border border-gray-200 p-4 rounded-lg">
                           <div className="grid grid-cols-4 gap-2 text-center font-mono text-xs">
                             {formatMatrixForDisplay(matrix).map((row, i) => row.map((val, j) => {
                               const index = i * 4 + j;
@@ -886,17 +911,17 @@ const Salsa20Interactive = () => {
                         </div>
                       </div>
                       <div>
-                        <h3 className="text-lg font-semibold text-orange-600 mb-3">Algorithm Steps</h3>
+                        <h3 className="text-lg font-semibold text-[#007bff] mb-3">Algorithm Steps</h3>
                         <div className="space-y-2">
                           {steps.map((step, index) => (
                             <div
                               key={index}
                               onClick={() => !isAutoPlaying && stepData.initialMatrix.length > 0 && navigateToStep(index)}
-                              className={`p-3 rounded-lg border-l-4 transition-all duration-300 text-sm ${isAutoPlaying ? 'cursor-not-allowed' : 'cursor-pointer hover:shadow-md'} ${currentStep >= index ? "bg-gray-100 border-purple-400 text-gray-900" : "bg-gray-50 border-gray-300 text-gray-600 hover:bg-gray-100"} ${currentStep === index ? "scale-105 shadow-lg shadow-purple-500/10 ring-2 ring-purple-200" : ""}`}
+                              className={`p-3 rounded-lg border-l-4 transition-all duration-300 text-sm ${isAutoPlaying ? 'cursor-not-allowed' : 'cursor-pointer hover:shadow-md'} ${currentStep >= index ? "bg-gray-100 border-[#007bff] text-gray-900" : "bg-[#f5f5f5] border-gray-300 text-gray-600 hover:bg-gray-100"} ${currentStep === index ? "scale-105 shadow-lg shadow-[#007bff]/10 ring-2 ring-[#007bff]/30" : ""}`}
                             >
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center">
-                                  <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs mr-3 flex-shrink-0 ${currentStep >= index ? "bg-purple-600 text-white" : "bg-gray-400 text-white"}`}>
+                                  <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs mr-3 flex-shrink-0 ${currentStep >= index ? "bg-[#007bff] text-white" : "bg-gray-400 text-white"}`}>
                                     {index + 1}
                                   </div>
                                   <span>{step}</span>
@@ -910,7 +935,7 @@ const Salsa20Interactive = () => {
                         </div>
                         {currentStep === 1 && stepData.mixingStates.length > 0 && (
                           <div className="mt-4">
-                            <h4 className="text-md font-semibold text-blue-600 mb-3">Mixing Rounds (Click to Animate)</h4>
+                            <h4 className="text-md font-semibold text-[#007bff] mb-3">Mixing Rounds (Click to Animate)</h4>
                             <div className="grid grid-cols-7 gap-1 text-xs">
                               {stepData.mixingStates.slice(0, 21).map((_, index) => {
                                 let roundLabel;
@@ -922,7 +947,7 @@ const Salsa20Interactive = () => {
                                     key={index}
                                     onClick={() => handleRoundClick(index)}
                                     disabled={isAutoPlaying || isAnimating}
-                                    className={`p-2 rounded text-xs font-medium transition-all disabled:opacity-50 ${currentMixingRound === index && !isAnimating ? "bg-purple-600 text-white shadow-md" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
+                                    className={`p-2 rounded text-xs font-medium transition-all disabled:opacity-50 ${currentMixingRound === index && !isAnimating ? "bg-[#007bff] text-white shadow-md" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
                                   >
                                     {roundLabel}
                                   </button>

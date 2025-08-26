@@ -74,7 +74,7 @@ const WordBlock = ({ word, index, highlight = false, label = '' }) => {
     
     return (
         <div className={`p-3 rounded-lg border-2 transition-all duration-300 transform ${
-            highlight ? 'border-teal-400 bg-teal-50 shadow-lg scale-105' : 'border-gray-300 bg-white'
+            highlight ? 'border-amber-400 bg-amber-50 shadow-lg scale-105' : 'border-gray-300 bg-white'
         } ${highlight ? 'animate-pulse' : ''}`}>
             <div className="text-xs text-gray-500 mb-1">{label || `Word ${index}`}</div>
             <div className="font-mono text-sm break-all">
@@ -86,7 +86,7 @@ const WordBlock = ({ word, index, highlight = false, label = '' }) => {
 
 // Main application component
 const App = () => {
-    const [activeTab, setActiveTab] = useState('simulation');
+    const [activeTab, setActiveTab] = useState('theory');
     const [plaintext, setPlaintext] = useState('hello world');
     const [key, setKey] = useState('0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef');
     const [encryptedOutput, setEncryptedOutput] = useState('');
@@ -494,99 +494,181 @@ const App = () => {
 
     const renderTheory = () => (
         <div className="max-w-4xl mx-auto space-y-6">
-            <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-sm">
-                <h3 className="text-2xl font-bold mb-4 text-indigo-700 flex items-center">
+            <div className="bg-[#f9f9f9] p-6 rounded-xl border border-gray-200 shadow-sm">
+                <h3 className="text-2xl font-bold mb-4 text-[#0056b3] flex items-center">
                     <Lock className="mr-2" size={24} />
-                    Theory of the Threefish Cipher
+                    Threefish: A Tweakable and S-Box-Free Design
                 </h3>
                 <p className="text-gray-700 leading-relaxed mb-4">
-                    Threefish is a tweakable block cipher designed as part of the Skein hash function. It's based on the ARX (Addition, Rotation, XOR) construction, making it both secure and efficient for modern processors.
+                    Threefish is a symmetric-key tweakable block cipher that was designed as a component of the Skein hash function, which was a finalist in the NIST hash function competition. Its design is notable for its avoidance of S-boxes and its use of a public "tweak" value to alter the encryption process.
                 </p>
                 
-                <div className="grid md:grid-cols-2 gap-6 mt-6">
-                    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-                        <h4 className="text-lg font-semibold text-indigo-600 mb-3">Key Features</h4>
-                        <ul className="space-y-2 text-sm text-gray-600">
-                            <li className="flex items-start"><ChevronRight size={16} className="mr-1 mt-0.5 text-teal-500" />Tweakable design for enhanced security</li>
-                            <li className="flex items-start"><ChevronRight size={16} className="mr-1 mt-0.5 text-teal-500" />Large block sizes: 256, 512, 1024 bits</li>
-                            <li className="flex items-start"><ChevronRight size={16} className="mr-1 mt-0.5 text-teal-500" />No lookup tables or S-boxes</li>
-                            <li className="flex items-start"><ChevronRight size={16} className="mr-1 mt-0.5 text-teal-500" />Designed for both hardware and software</li>
-                        </ul>
-                    </div>
-                    
-                    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-                        <h4 className="text-lg font-semibold text-indigo-600 mb-3">Core Operations</h4>
-                        <ul className="space-y-2 text-sm text-gray-600">
-                            <li className="flex items-start"><ChevronRight size={16} className="mr-1 mt-0.5 text-teal-500" />Addition modulo 2^64</li>
-                            <li className="flex items-start"><ChevronRight size={16} className="mr-1 mt-0.5 text-teal-500" />Bitwise rotation</li>
-                            <li className="flex items-start"><ChevronRight size={16} className="mr-1 mt-0.5 text-teal-500" />XOR operations</li>
-                            <li className="flex items-start"><ChevronRight size={16} className="mr-1 mt-0.5 text-teal-500" />Word permutation</li>
-                        </ul>
-                    </div>
+                <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                    <h4 className="text-xl font-semibold text-gray-800 mb-3 flex items-center">
+                        <span className="w-1.5 h-6 bg-[#0056b3] rounded-full mr-2"></span>| Origin Story
+                    </h4>
+                    <p className="text-gray-700 leading-relaxed">
+                        Threefish was created by a team of prominent cryptographers, including Bruce Schneier, as part of the Skein hash function. The team's goal was to create a modern, high-performance cipher that was also resistant to side-channel attacks. The design was made unpatented and license-free to encourage its adoption and public scrutiny.
+                    </p>
+                </div>
+                
+                <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mt-6">
+                    <h4 className="text-xl font-semibold text-gray-800 mb-3 flex items-center">
+                        <span className="w-1.5 h-6 bg-[#0056b3] rounded-full mr-2"></span>| Core Idea
+                    </h4>
+                    <p className="text-gray-700 leading-relaxed">
+                        The core idea of Threefish is to provide robust security without the use of lookup tables or S-boxes, which are common sources of timing side-channel attacks in software implementations. Its non-linearity is achieved through a simple and elegant **Add-Rotate-XOR (ARX)** design. The "tweakable" property allows a public value (the tweak) to modify the encryption of a message. This means that two identical plaintext-key pairs will produce different ciphertexts if their tweaks are different.
+                    </p>
+                </div>
+
+                <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mt-6">
+                    <h4 className="text-xl font-semibold text-gray-800 mb-3 flex items-center">
+                        <span className="w-1.5 h-6 bg-[#0056b3] rounded-full mr-2"></span>| Technical Blueprint
+                    </h4>
+                    <p className="text-gray-700 leading-relaxed mb-4">
+                        Threefish operates on 64-bit words and supports block and key sizes of 256, 512, or 1024 bits. The cipher works over a series of rounds (72 for 256/512-bit versions, 80 for the 1024-bit version). The encryption process involves three main steps:
+                    </p>
+                    <ul className="space-y-4 text-gray-700 text-sm">
+                        <li className="bg-[#f9f9f9] p-4 rounded-lg shadow-sm border border-gray-100 flex items-start">
+                            <ChevronRight size={16} className="mr-2 mt-0.5 text-[#0056b3]" />
+                            <div>
+                                <strong className="text-base text-gray-800">Key Addition:</strong> The data words are combined with a set of round key words and tweak words. This is done before the first round and after every four rounds. A fixed constant, **C<sub>240</sub>**, is used in the key schedule to thwart certain attacks.
+                            </div>
+                        </li>
+                        <li className="bg-[#f9f9f9] p-4 rounded-lg shadow-sm border border-gray-100 flex items-start">
+                            <ChevronRight size={16} className="mr-2 mt-0.5 text-[#0056b3]" />
+                            <div>
+                                <strong className="text-base text-gray-800">Mix Function:</strong> The Mix function is the heart of the ARX design. It takes a pair of words and returns a new pair of words using modular addition, bitwise rotation, and XOR operations. These operations are chosen for their speed and resistance to timing attacks.
+                            </div>
+                        </li>
+                        <li className="bg-[#f9f9f9] p-4 rounded-lg shadow-sm border border-gray-100 flex items-start">
+                            <ChevronRight size={16} className="mr-2 mt-0.5 text-[#0056b3]" />
+                            <div>
+                                <strong className="text-base text-gray-800">Permute Step:</strong> This step rearranges the positions of the words according to a fixed pattern. The permutation is designed to be independent of the key or plaintext to ensure a consistent computation time, further protecting against side-channel attacks.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mt-6">
+                    <h4 className="text-xl font-semibold text-gray-800 mb-3 flex items-center">
+                        <span className="w-1.5 h-6 bg-[#0056b3] rounded-full mr-2"></span>| Security Scorecard
+                    </h4>
+                    <p className="text-gray-700 leading-relaxed">
+                        Threefish was designed to be highly secure and resistant to timing attacks. However, as is common with new cryptographic designs, cryptanalytic attacks against reduced-round versions have been published. A known-key distinguisher attack was published in 2010 that affected 53 of 72 rounds of Threefish-256 and 57 of 72 rounds of Threefish-512. In response, the designers updated the cipher's rotation constants to strengthen it.
+                    </p>
+                </div>
+
+                <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mt-6">
+                    <h4 className="text-xl font-semibold text-gray-800 mb-3 flex items-center">
+                        <span className="w-1.5 h-6 bg-[#0056b3] rounded-full mr-2"></span>| Real-World Usage
+                    </h4>
+                    <p className="text-gray-700 leading-relaxed">
+                        While not as widely adopted as AES, Threefish is a notable and respected cipher. Its primary use is within the Skein hash function. Its design, which avoids S-boxes and is resistant to timing attacks, makes it a good candidate for secure software and hardware applications, particularly for financial transactions and other sensitive data.
+                    </p>
                 </div>
             </div>
             
-            <div className="bg-white p-6 rounded-xl shadow-sm border">
-                <h4 className="text-xl font-semibold text-gray-800 mb-4">Security Properties</h4>
-                <p className="text-gray-600 leading-relaxed">
-                    Threefish provides strong security through its large number of rounds (72 for 256-bit), 
-                    the tweakable construction that allows for domain separation, and the mixing of operations 
-                    that creates strong diffusion and confusion properties essential for cryptographic security.
+            <div className="bg-[#f9f9f9] p-6 rounded-xl shadow-sm border border-gray-200">
+                <h4 className="text-xl font-semibold text-[#0056b3] mb-4">Solved Example: Threefish</h4>
+                <p className="text-gray-600 leading-relaxed mb-4">
+                    The provided sources do not include a full numerical example for Threefish. However, a conceptual walkthrough can illustrate the process and its core components.
                 </p>
+                <div className="space-y-4 text-sm text-gray-700">
+                    <p><strong>Example:</strong> A single round of Threefish-256 encryption.</p>
+                    <ul className="list-disc list-inside space-y-1 ml-4">
+                        <li><strong>Plaintext Block:</strong> A 256-bit block, represented as four 64-bit words: w<sub>0</sub>, w<sub>1</sub>, w<sub>2</sub>, w<sub>3</sub>.</li>
+                        <li><strong>Key:</strong> A 256-bit key, represented as four 64-bit words: k<sub>0</sub>, k<sub>1</sub>, k<sub>2</sub>, k<sub>3</sub>.</li>
+                        <li><strong>Tweak:</strong> A 128-bit tweak, represented as two 64-bit words: t<sub>0</sub>, t<sub>1</sub>.</li>
+                    </ul>
+                    <p><strong>Step 1: Key and Tweak Addition</strong></p>
+                    <p className="pl-4">
+                        Before the first round, and after every four rounds, the data words are combined with the round key words. The first round key words are the original key words plus a special tweak word that is derived from the original two tweak words. The addition is done modulo **2<sup>64</sup>**.
+                    </p>
+                    <p className="font-mono bg-gray-100 p-2 rounded-lg text-xs break-all">
+                        w<sub>0</sub> = w<sub>0</sub> + k<sub>0</sub> + t<sub>0</sub> (mod 2<sup>64</sup>)<br/>
+                        w<sub>1</sub> = w<sub>1</sub> + k<sub>1</sub> + t<sub>1</sub> (mod 2<sup>64</sup>)<br/>
+                        w<sub>2</sub> = w<sub>2</sub> + k<sub>2</sub> + t<sub>2</sub> (mod 2<sup>64</sup>)<br/>
+                        w<sub>3</sub> = w<sub>3</sub> + k<sub>3</sub> (mod 2<sup>64</sup>)<br/>
+                        (Note: the tweak word t<sub>2</sub> is t<sub>0</sub> ⊕ t<sub>1</sub>)
+                    </p>
+                    <p><strong>Step 2: Apply the Mix Function</strong></p>
+                    <p className="pl-4">
+                        The heart of the cipher's non-linearity is the Mix function, which is applied to pairs of words. It takes two words, adds them, rotates one, and XORs the result. For example, for the first pair of words (w<sub>0</sub>, w<sub>1</sub>):
+                    </p>
+                    <p className="font-mono bg-gray-100 p-2 rounded-lg text-xs break-all">
+                        y<sub>0</sub> = w<sub>0</sub> + w<sub>1</sub> (mod 2<sup>64</sup>)<br/>
+                        y<sub>1</sub> = (w<sub>1</sub> ⋘ R<sub>d</sub>) ⊕ y<sub>0</sub>
+                    </p>
+                    <p className="pl-4">
+                        Where R<sub>d</sub> is a fixed rotation constant dependent on the round number. This produces a new pair of words (y<sub>0</sub>, y<sub>1</sub>).
+                    </p>
+                    <p><strong>Step 3: Permute the Words</strong></p>
+                    <p className="pl-4">
+                        The words are then rearranged according to a fixed, constant permutation pattern. This step ensures rapid diffusion of information across the entire block without using key- or data-dependent operations that could reveal information through timing.
+                    </p>
+                    <p className="mt-4">
+                        This process of key addition, mixing, and permutation is repeated for 72 rounds for a 256-bit key. Decryption reverses this process by applying the inverse operations in the opposite order, using the keys in reverse.
+                    </p>
+                </div>
             </div>
         </div>
     );
 
     const renderAlgorithm = () => (
         <div className="max-w-4xl mx-auto space-y-6">
-            <div className="bg-gray-50 p-6 rounded-xl">
-                <h3 className="text-2xl font-bold mb-4 text-indigo-700 flex items-center">
+            <div className="bg-[#f9f9f9] p-6 rounded-xl border border-gray-200 shadow-sm">
+                <h3 className="text-2xl font-bold mb-4 text-[#0056b3] flex items-center">
                     <FileText className="mr-2" size={24} />
                     Threefish-256 Algorithm Overview
                 </h3>
                 
-                <div className="space-y-4">
-                    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-                        <h4 className="text-lg font-semibold text-indigo-600 mb-3">1. Input Processing</h4>
-                        <p className="text-gray-600 text-sm">
-                            The 256-bit plaintext is divided into four 64-bit words. The 256-bit key is also 
-                            divided into four 64-bit words, with an additional parity word computed.
-                        </p>
-                    </div>
-                    
-                    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-                        <h4 className="text-lg font-semibold text-indigo-600 mb-3">2. Round Function (72 rounds total)</h4>
-                        <div className="space-y-3">
-                            <div className="border-l-4 border-teal-500 pl-3">
-                                <strong className="text-sm">Mix Operation:</strong>
-                                <p className="text-xs text-gray-600 mt-1">
-                                    For each pair of words (w0,w1) and (w2,w3): Add first word to second, 
-                                    rotate second word by a round-specific amount, then XOR with first word.
-                                </p>
-                            </div>
-                            <div className="border-l-4 border-indigo-500 pl-3">
-                                <strong className="text-sm">Permutation:</strong>
-                                <p className="text-xs text-gray-600 mt-1">
-                                    Reorder the four words according to a specific permutation pattern 
-                                    to ensure good diffusion across all words.
-                                </p>
-                            </div>
-                            <div className="border-l-4 border-orange-500 pl-3">
-                                <strong className="text-sm">Subkey Addition:</strong>
-                                <p className="text-xs text-gray-600 mt-1">
-                                    Every 4 rounds, add round-specific subkeys derived from the main key 
-                                    and tweak values to the data words.
-                                </p>
-                            </div>
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <h4 className="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                        <span className="w-1.5 h-6 bg-[#0056b3] rounded-full mr-2"></span>| Input Processing
+                    </h4>
+                    <p className="text-gray-600 text-sm">
+                        The 256-bit plaintext is divided into four 64-bit words. The 256-bit key is also 
+                        divided into four 64-bit words, with an additional parity word computed.
+                    </p>
+                </div>
+                
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mt-6">
+                    <h4 className="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                        <span className="w-1.5 h-6 bg-[#0056b3] rounded-full mr-2"></span>| Round Function (72 rounds total)
+                    </h4>
+                    <div className="space-y-3">
+                        <div className="border-l-4 border-[#0056b3] pl-3">
+                            <strong className="text-sm">Mix Operation:</strong>
+                            <p className="text-xs text-gray-600 mt-1">
+                                For each pair of words (w0,w1) and (w2,w3): Add first word to second, 
+                                rotate second word by a round-specific amount, then XOR with first word.
+                            </p>
+                        </div>
+                        <div className="border-l-4 border-[#0056b3] pl-3">
+                            <strong className="text-sm">Permutation:</strong>
+                            <p className="text-xs text-gray-600 mt-1">
+                                Reorder the four words according to a specific permutation pattern 
+                                to ensure good diffusion across all words.
+                            </p>
+                        </div>
+                        <div className="border-l-4 border-[#0056b3] pl-3">
+                            <strong className="text-sm">Subkey Addition:</strong>
+                            <p className="text-xs text-gray-600 mt-1">
+                                Every 4 rounds, add round-specific subkeys derived from the main key 
+                                and tweak values to the data words.
+                            </p>
                         </div>
                     </div>
-                    
-                    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-                        <h4 className="text-lg font-semibold text-indigo-600 mb-3">3. Final Output</h4>
-                        <p className="text-gray-600 text-sm">
-                            After 72 rounds, perform final subkey addition to produce the 256-bit ciphertext.
-                        </p>
-                    </div>
+                </div>
+                
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mt-6">
+                    <h4 className="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                        <span className="w-1.5 h-6 bg-[#0056b3] rounded-full mr-2"></span>| Final Output
+                    </h4>
+                    <p className="text-gray-600 text-sm">
+                        After 72 rounds, perform final subkey addition to produce the 256-bit ciphertext.
+                    </p>
                 </div>
             </div>
         </div>
@@ -594,8 +676,8 @@ const App = () => {
 
     const renderSimulation = () => (
         <div className="max-w-6xl mx-auto space-y-6">
-            <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-sm">
-                <h3 className="text-2xl font-bold mb-4 text-indigo-700 flex items-center">
+            <div className="bg-[#f9f9f9] p-6 rounded-xl border border-gray-200 shadow-sm">
+                <h3 className="text-2xl font-bold mb-4 text-[#0056b3] flex items-center">
                     <Play className="mr-2" size={24} />
                     Interactive Threefish Simulation
                 </h3>
@@ -608,7 +690,7 @@ const App = () => {
                                     Plaintext
                                 </label>
                                 <textarea
-                                    className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                                    className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-[#007bff] focus:border-[#007bff] transition-colors bg-[#f9f9f9]"
                                     rows="3"
                                     value={plaintext}
                                     onChange={(e) => setPlaintext(e.target.value)}
@@ -622,7 +704,7 @@ const App = () => {
                                 </label>
                                 <input
                                     type="text"
-                                    className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-mono"
+                                    className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-[#007bff] focus:border-[#007bff] transition-colors font-mono bg-[#f9f9f9]"
                                     value={key}
                                     onChange={(e) => setKey(e.target.value)}
                                     placeholder="Enter a 256-bit key in hex format"
@@ -670,7 +752,7 @@ const App = () => {
                         <button
                             onClick={handleRunSimulation}
                             disabled={isAnimating}
-                            className="w-full max-w-md bg-gradient-to-r from-indigo-500 to-indigo-700 text-white py-4 px-6 rounded-lg hover:from-indigo-600 hover:to-indigo-800 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed transition-colors duration-300 ease-in-out flex items-center justify-center text-lg font-semibold shadow-lg transform hover:scale-105"
+                            className="w-full max-w-md bg-gradient-to-r from-[#0056b3] to-[#007bff] text-white py-4 px-6 rounded-lg hover:from-[#007bff] hover:to-[#0056b3] disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed transition-colors duration-300 ease-in-out flex items-center justify-center text-lg font-semibold shadow-lg transform hover:scale-105"
                         >
                             {isAnimating ? (
                                 <>
@@ -690,15 +772,15 @@ const App = () => {
 
             {/* Visualization Controls */}
             {visualizationSteps.length > 0 && (
-                <div className="bg-white p-6 rounded-xl shadow-sm border">
+                <div className="bg-[#f9f9f9] p-6 rounded-xl shadow-sm border border-gray-200">
                     <div className="flex justify-between items-center mb-4">
-                        <h4 className="text-xl font-semibold text-gray-800">Step-by-Step Visualization</h4>
+                        <h4 className="text-xl font-semibold text-[#0056b3]">Step-by-Step Visualization</h4>
                         <div className="flex items-center gap-2">
                             <label className="text-sm text-gray-600">Speed:</label>
                             <select 
                                 value={animationSpeed}
                                 onChange={(e) => setAnimationSpeed(Number(e.target.value))}
-                                className="border border-gray-300 rounded-md px-3 py-1 text-sm bg-white focus:ring-2 focus:ring-indigo-500 transition-colors"
+                                className="border border-gray-300 rounded-md px-3 py-1 text-sm bg-white focus:ring-2 focus:ring-[#007bff] transition-colors"
                             >
                                 <option value={1000}>Slow</option>
                                 <option value={500}>Normal</option>
@@ -729,7 +811,7 @@ const App = () => {
                         <button
                             type="button"
                             onClick={() => handleStepControl(isAnimating ? 'pause' : 'play')}
-                            className="p-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-full transition-colors duration-200 shadow-lg"
+                            className="p-2 bg-[#0056b3] text-white hover:bg-[#007bff] rounded-full transition-colors duration-200 shadow-lg"
                             title={isAnimating ? 'Pause' : 'Play'}
                         >
                             {isAnimating ? <Pause size={16} /> : <Play size={16} />}
@@ -745,11 +827,11 @@ const App = () => {
                         </button>
                     </div>
 
-                    <div className="bg-gray-100 rounded-lg p-4">
+                    <div className="bg-white rounded-lg p-4 border border-gray-200">
                         <div className="mb-4">
                             <div className="bg-gray-200 rounded-full h-2">
                                 <div 
-                                    className="bg-indigo-500 h-2 rounded-full transition-all duration-300"
+                                    className="bg-[#007bff] h-2 rounded-full transition-all duration-300"
                                     style={{width: `${(currentStep / Math.max(visualizationSteps.length, 1)) * 100}%`}}
                                 ></div>
                             </div>
@@ -761,23 +843,23 @@ const App = () => {
                             {visualizationSteps.slice(0, currentStep).map((step, index) => (
                                 <div key={index} className="mb-4 last:mb-0">
                                     {step.type === 'header' && (
-                                        <div className="bg-indigo-100 p-4 rounded-lg border border-indigo-300">
-                                            <h3 className="font-bold text-indigo-800">{step.title}</h3>
-                                            <p className="text-indigo-700 text-sm">{step.description}</p>
+                                        <div className="bg-blue-100 p-4 rounded-lg border border-blue-300">
+                                            <h3 className="font-bold text-[#0056b3]">{step.title}</h3>
+                                            <p className="text-[#0056b3] text-sm">{step.description}</p>
                                         </div>
                                     )}
                                     
                                     {step.type === 'step' && (
-                                        <div className="bg-purple-50 p-3 rounded-lg border border-purple-200">
-                                            <h4 className="font-semibold text-purple-800">{step.title}</h4>
-                                            <p className="text-purple-700 text-sm">{step.description}</p>
+                                        <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                                            <h4 className="font-semibold text-gray-800">{step.title}</h4>
+                                            <p className="text-gray-700 text-sm">{step.description}</p>
                                         </div>
                                     )}
 
                                     {step.type === 'round_header' && (
-                                        <div className="bg-orange-100 p-3 rounded-lg border border-orange-300">
-                                            <h4 className="font-semibold text-orange-800">{step.title}</h4>
-                                            <p className="text-orange-700 text-sm">{step.description}</p>
+                                        <div className="bg-green-100 p-3 rounded-lg border border-green-300">
+                                            <h4 className="font-semibold text-green-800">{step.title}</h4>
+                                            <p className="text-green-700 text-sm">{step.description}</p>
                                         </div>
                                     )}
 
@@ -795,11 +877,11 @@ const App = () => {
                                                 <h5 className="font-medium text-gray-800">{step.title}</h5>
                                                 {step.operation && (
                                                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                        step.operation === 'mix' ? 'bg-teal-100 text-teal-800' :
-                                                        step.operation === 'permute' ? 'bg-indigo-100 text-indigo-800' :
-                                                        step.operation === 'subkey' ? 'bg-orange-100 text-orange-800' :
-                                                        'bg-gray-100 text-gray-800'
-                                                    }`}>
+                                                            step.operation === 'mix' ? 'bg-[#007bff] text-white' :
+                                                            step.operation === 'permute' ? 'bg-[#007bff] text-white' :
+                                                            step.operation === 'subkey' ? 'bg-orange-100 text-orange-800' :
+                                                            'bg-gray-100 text-gray-800'
+                                                        }`}>
                                                         {step.operation.toUpperCase()}
                                                     </span>
                                                 )}
@@ -849,54 +931,42 @@ const App = () => {
     );
 
     return (
-        <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
+        <div className="min-h-screen bg-[#f5f5f5] font-sans text-gray-900">
             {/* Header */}
-            <div className="bg-white shadow-md border-b sticky top-0 z-10">
-                <div className="max-w-7xl mx-auto px-4 py-4">
-                    <div className="flex items-center justify-between">
+            <div className="bg-[#f5f5f5] py-4">
+                <div className="max-w-7xl mx-auto px-4">
+                    <div className="flex flex-col md:flex-row items-center justify-center text-center">
                         <div>
-                            <h1 className="text-3xl font-bold text-indigo-800">
+                            <h1 className="text-3xl font-bold text-[#0056b3]">
                                 Threefish Cipher Visualizer
                             </h1>
                             <p className="text-gray-600 mt-1">Interactive cryptographic learning platform</p>
                         </div>
-                        <div className="hidden md:flex items-center space-x-4 text-sm text-gray-500">
-                            <div className="flex items-center">
-                                <Key className="mr-1 text-indigo-500" size={16} />
-                                256-bit Block Cipher
-                            </div>
-                            <div className="flex items-center">
-                                <Lock className="mr-1 text-indigo-500" size={16} />
-                                72 Rounds
-                            </div>
-                        </div>
+                        
                     </div>
                 </div>
             </div>
 
             {/* Tab Navigation */}
-            <div className="bg-white shadow-sm">
-                <div className="max-w-7xl mx-auto px-4">
-                    <div className="flex space-x-8">
-                        {[
-                            { id: 'theory', label: 'Theory', icon: FileText },
-                            { id: 'algorithm', label: 'Algorithm', icon: Key },
-                            { id: 'simulation', label: 'Simulation', icon: Play }
-                        ].map(({ id, label, icon: Icon }) => (
-                            <button
-                                key={id}
-                                onClick={() => setActiveTab(id)}
-                                className={`flex items-center px-4 py-4 text-sm font-medium border-b-2 transition-colors duration-300 ${
-                                    activeTab === id
-                                        ? 'border-indigo-600 text-indigo-700'
-                                        : 'border-transparent text-gray-500 hover:text-indigo-700 hover:border-indigo-300'
-                                }`}
-                            >
-                                <Icon className="mr-2" size={16} />
-                                {label}
-                            </button>
-                        ))}
-                    </div>
+            <div className="bg-transparent flex justify-center mb-8">
+                <div className="bg-white rounded-full shadow-md p-2 flex items-center space-x-2 border border-gray-200">
+                    {[
+                        { id: 'theory', label: 'Theory', icon: FileText },
+                        { id: 'algorithm', label: 'Algorithm', icon: Key },
+                        { id: 'simulation', label: 'Simulation', icon: Play }
+                    ].map(({ id, label, icon: Icon }) => (
+                        <button
+                            key={id}
+                            onClick={() => setActiveTab(id)}
+                            className={`flex items-center px-4 py-2 rounded-full text-sm font-medium transition-colors duration-300 ${
+                                activeTab === id
+                                    ? 'bg-[#007bff] text-white shadow-md'
+                                    : 'bg-white text-gray-800 hover:bg-gray-100'
+                            }`}
+                        >
+                            {label}
+                        </button>
+                    ))}
                 </div>
             </div>
 
@@ -908,15 +978,8 @@ const App = () => {
             </div>
 
             {/* Footer */}
-            <footer className="bg-gray-800 text-white py-6 mt-12">
-                <div className="max-w-7xl mx-auto px-4 text-center">
-                    <p className="text-gray-300">
-                        Educational implementation of Threefish-256 cipher for learning purposes
-                    </p>
-                    <p className="text-gray-400 text-sm mt-1">
-                        Built with React • Not for production use
-                    </p>
-                </div>
+            <footer className="bg-white text-gray-500 py-4 mt-8 text-center border-t border-gray-200">
+                <p>This app is for educational purposes only. Do not use for any sensitive data.</p>
             </footer>
         </div>
     );
