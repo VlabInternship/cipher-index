@@ -8,44 +8,44 @@ import { ChevronDown, ChevronUp, Lock, Unlock, Play, RotateCcw } from "lucide-re
 
 // --- Tables (S-Box, Inv S-Box, Rcon) ---
 const S = [
-  0x63,0x7c,0x77,0x7b,0xf2,0x6b,0x6f,0xc5,0x30,0x01,0x67,0x2b,0xfe,0xd7,0xab,0x76,
-  0xca,0x82,0xc9,0x7d,0xfa,0x59,0x47,0xf0,0xad,0xd4,0xa2,0xaf,0x9c,0xa4,0x72,0xc0,
-  0xb7,0xfd,0x93,0x26,0x36,0x3f,0xf7,0xcc,0x34,0xa5,0xe5,0xf1,0x71,0xd8,0x31,0x15,
-  0x04,0xc7,0x23,0xc3,0x18,0x96,0x05,0x9a,0x07,0x12,0x80,0xe2,0xeb,0x27,0xb2,0x75,
-  0x09,0x83,0x2c,0x1a,0x1b,0x6e,0x5a,0xa0,0x52,0x3b,0xd6,0xb3,0x29,0xe3,0x2f,0x84,
-  0x53,0xd1,0x00,0xed,0x20,0xfc,0xb1,0x5b,0x6a,0xcb,0xbe,0x39,0x4a,0x4c,0x58,0xcf,
-  0xd0,0xef,0xaa,0xfb,0x43,0x4d,0x33,0x85,0x45,0xf9,0x02,0x7f,0x50,0x3c,0x9f,0xa8,
-  0x51,0xa3,0x40,0x8f,0x92,0x9d,0x38,0xf5,0xbc,0xb6,0xda,0x21,0x10,0xff,0xf3,0xd2,
-  0xcd,0x0c,0x13,0xec,0x5f,0x97,0x44,0x17,0xc4,0xa7,0x7e,0x3d,0x64,0x5d,0x19,0x73,
-  0x60,0x81,0x4f,0xdc,0x22,0x2a,0x90,0x88,0x46,0xee,0xb8,0x14,0xde,0x5e,0x0b,0xdb,
-  0xe0,0x32,0x3a,0x0a,0x49,0x06,0x24,0x5c,0xc2,0xd3,0xac,0x62,0x91,0x95,0xe4,0x79,
-  0xe7,0xc8,0x37,0x6d,0x8d,0xd5,0x4e,0xa9,0x6c,0x56,0xf4,0xea,0x65,0x7a,0xae,0x08,
-  0xba,0x78,0x25,0x2e,0x1c,0xa6,0xb4,0xc6,0xe8,0xdd,0x74,0x1f,0x4b,0xbd,0x8b,0x8a,
-  0x70,0x3e,0xb5,0x66,0x48,0x03,0xf6,0x0e,0x61,0x35,0x57,0xb9,0x86,0xc1,0x1d,0x9e,
-  0xe1,0xf8,0x98,0x11,0x69,0xd9,0x8e,0x94,0x9b,0x1e,0x87,0xe9,0xce,0x55,0x28,0xdf,
-  0x8c,0xa1,0x89,0x0d,0xbf,0xe6,0x42,0x68,0x41,0x99,0x2d,0x0f,0xb0,0x54,0xbb,0x16
+  0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
+  0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0,
+  0xb7, 0xfd, 0x93, 0x26, 0x36, 0x3f, 0xf7, 0xcc, 0x34, 0xa5, 0xe5, 0xf1, 0x71, 0xd8, 0x31, 0x15,
+  0x04, 0xc7, 0x23, 0xc3, 0x18, 0x96, 0x05, 0x9a, 0x07, 0x12, 0x80, 0xe2, 0xeb, 0x27, 0xb2, 0x75,
+  0x09, 0x83, 0x2c, 0x1a, 0x1b, 0x6e, 0x5a, 0xa0, 0x52, 0x3b, 0xd6, 0xb3, 0x29, 0xe3, 0x2f, 0x84,
+  0x53, 0xd1, 0x00, 0xed, 0x20, 0xfc, 0xb1, 0x5b, 0x6a, 0xcb, 0xbe, 0x39, 0x4a, 0x4c, 0x58, 0xcf,
+  0xd0, 0xef, 0xaa, 0xfb, 0x43, 0x4d, 0x33, 0x85, 0x45, 0xf9, 0x02, 0x7f, 0x50, 0x3c, 0x9f, 0xa8,
+  0x51, 0xa3, 0x40, 0x8f, 0x92, 0x9d, 0x38, 0xf5, 0xbc, 0xb6, 0xda, 0x21, 0x10, 0xff, 0xf3, 0xd2,
+  0xcd, 0x0c, 0x13, 0xec, 0x5f, 0x97, 0x44, 0x17, 0xc4, 0xa7, 0x7e, 0x3d, 0x64, 0x5d, 0x19, 0x73,
+  0x60, 0x81, 0x4f, 0xdc, 0x22, 0x2a, 0x90, 0x88, 0x46, 0xee, 0xb8, 0x14, 0xde, 0x5e, 0x0b, 0xdb,
+  0xe0, 0x32, 0x3a, 0x0a, 0x49, 0x06, 0x24, 0x5c, 0xc2, 0xd3, 0xac, 0x62, 0x91, 0x95, 0xe4, 0x79,
+  0xe7, 0xc8, 0x37, 0x6d, 0x8d, 0xd5, 0x4e, 0xa9, 0x6c, 0x56, 0xf4, 0xea, 0x65, 0x7a, 0xae, 0x08,
+  0xba, 0x78, 0x25, 0x2e, 0x1c, 0xa6, 0xb4, 0xc6, 0xe8, 0xdd, 0x74, 0x1f, 0x4b, 0xbd, 0x8b, 0x8a,
+  0x70, 0x3e, 0xb5, 0x66, 0x48, 0x03, 0xf6, 0x0e, 0x61, 0x35, 0x57, 0xb9, 0x86, 0xc1, 0x1d, 0x9e,
+  0xe1, 0xf8, 0x98, 0x11, 0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf,
+  0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16
 ];
 const iS = [
-  0x52,0x09,0x6a,0xd5,0x30,0x36,0xa5,0x38,0xbf,0x40,0xa3,0x9e,0x81,0xf3,0xd7,0xfb,
-  0x7c,0xe3,0x39,0x82,0x9b,0x2f,0xff,0x87,0x34,0x8e,0x43,0x44,0xc4,0xde,0xe9,0xcb,
-  0x54,0x7b,0x94,0x32,0xa6,0xc2,0x23,0x3d,0xee,0x4c,0x95,0x0b,0x42,0xfa,0xc3,0x4e,
-  0x08,0x2e,0xa1,0x66,0x28,0xd9,0x24,0xb2,0x76,0x5b,0xa2,0x49,0x6d,0x8b,0xd1,0x25,
-  0x72,0xf8,0xf6,0x64,0x86,0x68,0x98,0x16,0xd4,0xa4,0x5c,0xcc,0x5d,0x65,0xb6,0x92,
-  0x6c,0x70,0x48,0x50,0xfd,0xed,0xb9,0xda,0x5e,0x15,0x46,0x57,0xa7,0x8d,0x9d,0x84,
-  0x90,0xd8,0xab,0x00,0x8c,0xbc,0xd3,0x0a,0xf7,0xe4,0x58,0x05,0xb8,0xb3,0x45,0x06,
-  0xd0,0x2c,0x1e,0x8f,0xca,0x3f,0x0f,0x02,0xc1,0xaf,0xbd,0x03,0x01,0x13,0x8a,0x6b,
-  0x3a,0x91,0x11,0x41,0x4f,0x67,0xdc,0xea,0x97,0xf2,0xcf,0xce,0xf0,0xb4,0xe6,0x73,
-  0x96,0xac,0x74,0x22,0xe7,0xad,0x35,0x85,0xe2,0xf9,0x37,0xe8,0x1c,0x75,0xdf,0x6e,
-  0x47,0xf1,0x1a,0x71,0x1d,0x29,0xc5,0x89,0x6f,0xb7,0x62,0x0e,0xaa,0x18,0xbe,0x1b,
-  0xfc,0x56,0x3e,0x4b,0xc6,0xd2,0x79,0x20,0x9a,0xdb,0xc0,0xfe,0x78,0xcd,0x5a,0xf4,
-  0x1f,0xdd,0xa8,0x33,0x88,0x07,0xc7,0x31,0xb1,0x12,0x10,0x59,0x27,0x80,0xec,0x5f,
-  0x60,0x51,0x7f,0xa9,0x19,0xb5,0x4a,0x0d,0x2d,0xe5,0x7a,0x9f,0x93,0xc9,0x9c,0xef,
-  0xa0,0xe0,0x3b,0x4d,0xae,0x2a,0xf5,0xb0,0xc8,0xeb,0xbb,0x3c,0x83,0x53,0x99,0x61,
-  0x17,0x2b,0x04,0x7e,0xba,0x77,0xd6,0x26,0xe1,0x69,0x14,0x63,0x55,0x21,0x0c,0x7d
+  0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3, 0x9e, 0x81, 0xf3, 0xd7, 0xfb,
+  0x7c, 0xe3, 0x39, 0x82, 0x9b, 0x2f, 0xff, 0x87, 0x34, 0x8e, 0x43, 0x44, 0xc4, 0xde, 0xe9, 0xcb,
+  0x54, 0x7b, 0x94, 0x32, 0xa6, 0xc2, 0x23, 0x3d, 0xee, 0x4c, 0x95, 0x0b, 0x42, 0xfa, 0xc3, 0x4e,
+  0x08, 0x2e, 0xa1, 0x66, 0x28, 0xd9, 0x24, 0xb2, 0x76, 0x5b, 0xa2, 0x49, 0x6d, 0x8b, 0xd1, 0x25,
+  0x72, 0xf8, 0xf6, 0x64, 0x86, 0x68, 0x98, 0x16, 0xd4, 0xa4, 0x5c, 0xcc, 0x5d, 0x65, 0xb6, 0x92,
+  0x6c, 0x70, 0x48, 0x50, 0xfd, 0xed, 0xb9, 0xda, 0x5e, 0x15, 0x46, 0x57, 0xa7, 0x8d, 0x9d, 0x84,
+  0x90, 0xd8, 0xab, 0x00, 0x8c, 0xbc, 0xd3, 0x0a, 0xf7, 0xe4, 0x58, 0x05, 0xb8, 0xb3, 0x45, 0x06,
+  0xd0, 0x2c, 0x1e, 0x8f, 0xca, 0x3f, 0x0f, 0x02, 0xc1, 0xaf, 0xbd, 0x03, 0x01, 0x13, 0x8a, 0x6b,
+  0x3a, 0x91, 0x11, 0x41, 0x4f, 0x67, 0xdc, 0xea, 0x97, 0xf2, 0xcf, 0xce, 0xf0, 0xb4, 0xe6, 0x73,
+  0x96, 0xac, 0x74, 0x22, 0xe7, 0xad, 0x35, 0x85, 0xe2, 0xf9, 0x37, 0xe8, 0x1c, 0x75, 0xdf, 0x6e,
+  0x47, 0xf1, 0x1a, 0x71, 0x1d, 0x29, 0xc5, 0x89, 0x6f, 0xb7, 0x62, 0x0e, 0xaa, 0x18, 0xbe, 0x1b,
+  0xfc, 0x56, 0x3e, 0x4b, 0xc6, 0xd2, 0x79, 0x20, 0x9a, 0xdb, 0xc0, 0xfe, 0x78, 0xcd, 0x5a, 0xf4,
+  0x1f, 0xdd, 0xa8, 0x33, 0x88, 0x07, 0xc7, 0x31, 0xb1, 0x12, 0x10, 0x59, 0x27, 0x80, 0xec, 0x5f,
+  0x60, 0x51, 0x7f, 0xa9, 0x19, 0xb5, 0x4a, 0x0d, 0x2d, 0xe5, 0x7a, 0x9f, 0x93, 0xc9, 0x9c, 0xef,
+  0xa0, 0xe0, 0x3b, 0x4d, 0xae, 0x2a, 0xf5, 0xb0, 0xc8, 0xeb, 0xbb, 0x3c, 0x83, 0x53, 0x99, 0x61,
+  0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26, 0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d
 ];
 const RCON = [
-  0x00000000,0x01000000,0x02000000,0x04000000,0x08000000,
-  0x10000000,0x20000000,0x40000000,0x80000000,0x1b000000,0x36000000
+  0x00000000, 0x01000000, 0x02000000, 0x04000000, 0x08000000,
+  0x10000000, 0x20000000, 0x40000000, 0x80000000, 0x1b000000, 0x36000000
 ];
 
 // --- Helpers ---
@@ -58,44 +58,44 @@ const toBytes16 = (str) => {
   out.set(b.slice(0, 16));
   return out;
 };
-const bytesToHex = (bytes) => Array.from(bytes).map(b=>b.toString(16).padStart(2,"0")).join("").toUpperCase();
+const bytesToHex = (bytes) => Array.from(bytes).map(b => b.toString(16).padStart(2, "0")).join("").toUpperCase();
 const hexToBytes = (hex) => {
-  const clean = hex.replace(/\s+/g,"");
+  const clean = hex.replace(/\s+/g, "");
   if (clean.length % 2) return new Uint8Array();
-  const out = new Uint8Array(clean.length/2);
-  for (let i=0;i<out.length;i++) out[i]=parseInt(clean.substr(i*2,2),16);
+  const out = new Uint8Array(clean.length / 2);
+  for (let i = 0; i < out.length; i++) out[i] = parseInt(clean.substr(i * 2, 2), 16);
   return out;
 };
 const bytesToPrintableAscii = (bytes) => {
   let s = "";
-  for (const b of bytes) s += (b>=32 && b<=126) ? String.fromCharCode(b) : "\\x"+b.toString(16).padStart(2,"0");
+  for (const b of bytes) s += (b >= 32 && b <= 126) ? String.fromCharCode(b) : "\\x" + b.toString(16).padStart(2, "0");
   return s;
 };
 
 // State <-> Matrix (row-major for display; internally we keep a 16-byte array)
 const toMatrixRows = (bytes16) => {
-  const m = [[],[],[],[]];
-  for (let i=0;i<16;i++) m[Math.floor(i/4)].push(bytes16[i]);
+  const m = [[], [], [], []];
+  for (let i = 0; i < 16; i++) m[Math.floor(i / 4)].push(bytes16[i]);
   return m;
 };
 
 // Galois mult
-const xtime = (a)=>((a<<1) ^ ((a & 0x80)?0x1b:0)) & 0xff;
-const gmul = (a,b)=>{
-  let p=0;
-  for(let i=0;i<8;i++){
-    if (b & 1) p^=a;
-    const hi=a&0x80;
-    a=(a<<1)&0xff;
-    if(hi) a^=0x1b;
-    b>>=1;
+const xtime = (a) => ((a << 1) ^ ((a & 0x80) ? 0x1b : 0)) & 0xff;
+const gmul = (a, b) => {
+  let p = 0;
+  for (let i = 0; i < 8; i++) {
+    if (b & 1) p ^= a;
+    const hi = a & 0x80;
+    a = (a << 1) & 0xff;
+    if (hi) a ^= 0x1b;
+    b >>= 1;
   }
   return p;
 };
 
 // Round steps
-const subBytes = (s)=>s.map(b=>S[b]);
-const invSubBytes = (s)=>s.map(b=>iS[b]);
+const subBytes = (s) => s.map(b => S[b]);
+const invSubBytes = (s) => s.map(b => iS[b]);
 
 // Rotate left a 4-byte row by n
 const rotl4 = (row4, n) => {
@@ -103,7 +103,7 @@ const rotl4 = (row4, n) => {
   for (let c = 0; c < 4; c++) out[c] = row4[(c + n) % 4];
   return out;
 };
-console.log(rotl4([1,2,3,4], 1));
+console.log(rotl4([1, 2, 3, 4], 1));
 // Rotate right a 4-byte row by n
 const rotr4 = (row4, n) => {
   const out = new Uint8Array(4);
@@ -134,86 +134,86 @@ const invShiftRows = (s) => {
 };
 
 
-const mixSingleColumn = (a)=>[
-  gmul(0x02,a[0]) ^ gmul(0x03,a[1]) ^ a[2] ^ a[3],
-  a[0] ^ gmul(0x02,a[1]) ^ gmul(0x03,a[2]) ^ a[3],
-  a[0] ^ a[1] ^ gmul(0x02,a[2]) ^ gmul(0x03,a[3]),
-  gmul(0x03,a[0]) ^ a[1] ^ a[2] ^ gmul(0x02,a[3])
-].map(x=>x&0xff);
+const mixSingleColumn = (a) => [
+  gmul(0x02, a[0]) ^ gmul(0x03, a[1]) ^ a[2] ^ a[3],
+  a[0] ^ gmul(0x02, a[1]) ^ gmul(0x03, a[2]) ^ a[3],
+  a[0] ^ a[1] ^ gmul(0x02, a[2]) ^ gmul(0x03, a[3]),
+  gmul(0x03, a[0]) ^ a[1] ^ a[2] ^ gmul(0x02, a[3])
+].map(x => x & 0xff);
 
-const invMixSingleColumn = (a)=>[
-  gmul(0x0e,a[0]) ^ gmul(0x0b,a[1]) ^ gmul(0x0d,a[2]) ^ gmul(0x09,a[3]),
-  gmul(0x09,a[0]) ^ gmul(0x0e,a[1]) ^ gmul(0x0b,a[2]) ^ gmul(0x0d,a[3]),
-  gmul(0x0d,a[0]) ^ gmul(0x09,a[1]) ^ gmul(0x0e,a[2]) ^ gmul(0x0b,a[3]),
-  gmul(0x0b,a[0]) ^ gmul(0x0d,a[1]) ^ gmul(0x09,a[2]) ^ gmul(0x0e,a[3])
-].map(x=>x&0xff);
+const invMixSingleColumn = (a) => [
+  gmul(0x0e, a[0]) ^ gmul(0x0b, a[1]) ^ gmul(0x0d, a[2]) ^ gmul(0x09, a[3]),
+  gmul(0x09, a[0]) ^ gmul(0x0e, a[1]) ^ gmul(0x0b, a[2]) ^ gmul(0x0d, a[3]),
+  gmul(0x0d, a[0]) ^ gmul(0x09, a[1]) ^ gmul(0x0e, a[2]) ^ gmul(0x0b, a[3]),
+  gmul(0x0b, a[0]) ^ gmul(0x0d, a[1]) ^ gmul(0x09, a[2]) ^ gmul(0x0e, a[3])
+].map(x => x & 0xff);
 
-const mixColumns = (s)=>{
+const mixColumns = (s) => {
   const t = s.slice();
-  for (let c=0;c<4;c++){
-    const col=[t[c],t[4+c],t[8+c],t[12+c]];
-    const m=mixSingleColumn(col);
-    t[c]=m[0]; t[4+c]=m[1]; t[8+c]=m[2]; t[12+c]=m[3];
+  for (let c = 0; c < 4; c++) {
+    const col = [t[c], t[4 + c], t[8 + c], t[12 + c]];
+    const m = mixSingleColumn(col);
+    t[c] = m[0]; t[4 + c] = m[1]; t[8 + c] = m[2]; t[12 + c] = m[3];
   }
   return t;
 };
-const invMixColumns = (s)=>{
+const invMixColumns = (s) => {
   const t = s.slice();
-  for (let c=0;c<4;c++){
-    const col=[t[c],t[4+c],t[8+c],t[12+c]];
-    const m=invMixSingleColumn(col);
-    t[c]=m[0]; t[4+c]=m[1]; t[8+c]=m[2]; t[12+c]=m[3];
+  for (let c = 0; c < 4; c++) {
+    const col = [t[c], t[4 + c], t[8 + c], t[12 + c]];
+    const m = invMixSingleColumn(col);
+    t[c] = m[0]; t[4 + c] = m[1]; t[8 + c] = m[2]; t[12 + c] = m[3];
   }
   return t;
 };
 
-const addRoundKey = (s, rk)=> s.map((b,i)=> b ^ rk[i]);
+const addRoundKey = (s, rk) => s.map((b, i) => b ^ rk[i]);
 
 // Key expansion (AES-128 -> 11 round keys of 16 bytes)
-const rotWord = (w)=>( (w<<8)&0xffffffff ) | (w>>>24);
-const subWord = (w)=>{
-  return ((S[(w>>>24)&0xff]<<24) | (S[(w>>>16)&0xff]<<16) | (S[(w>>>8)&0xff]<<8) | S[w&0xff])>>>0;
+const rotWord = (w) => ((w << 8) & 0xffffffff) | (w >>> 24);
+const subWord = (w) => {
+  return ((S[(w >>> 24) & 0xff] << 24) | (S[(w >>> 16) & 0xff] << 16) | (S[(w >>> 8) & 0xff] << 8) | S[w & 0xff]) >>> 0;
 };
-const bytesToWords = (b)=>[
-  (b[0]<<24)|(b[1]<<16)|(b[2]<<8)|b[3],
-  (b[4]<<24)|(b[5]<<16)|(b[6]<<8)|b[7],
-  (b[8]<<24)|(b[9]<<16)|(b[10]<<8)|b[11],
-  (b[12]<<24)|(b[13]<<16)|(b[14]<<8)|b[15]
-].map(x=>x>>>0);
-const wordsToBytes = (w)=>{
-  const out=new Uint8Array(16);
-  for(let i=0;i<4;i++){
-    out[i*4+0]=(w[i]>>>24)&0xff;
-    out[i*4+1]=(w[i]>>>16)&0xff;
-    out[i*4+2]=(w[i]>>>8)&0xff;
-    out[i*4+3]=w[i]&0xff;
+const bytesToWords = (b) => [
+  (b[0] << 24) | (b[1] << 16) | (b[2] << 8) | b[3],
+  (b[4] << 24) | (b[5] << 16) | (b[6] << 8) | b[7],
+  (b[8] << 24) | (b[9] << 16) | (b[10] << 8) | b[11],
+  (b[12] << 24) | (b[13] << 16) | (b[14] << 8) | b[15]
+].map(x => x >>> 0);
+const wordsToBytes = (w) => {
+  const out = new Uint8Array(16);
+  for (let i = 0; i < 4; i++) {
+    out[i * 4 + 0] = (w[i] >>> 24) & 0xff;
+    out[i * 4 + 1] = (w[i] >>> 16) & 0xff;
+    out[i * 4 + 2] = (w[i] >>> 8) & 0xff;
+    out[i * 4 + 3] = w[i] & 0xff;
   }
   return out;
 };
 
-const expandKey = (key16)=>{
-  const Nk=4, Nb=4, Nr=10;
-  const W = new Array(Nb*(Nr+1));
+const expandKey = (key16) => {
+  const Nk = 4, Nb = 4, Nr = 10;
+  const W = new Array(Nb * (Nr + 1));
   let temp;
   const keyWords = bytesToWords(key16);
-  for(let i=0;i<Nk;i++) W[i]=keyWords[i];
-  for(let i=Nk;i<Nb*(Nr+1);i++){
-    temp=W[i-1];
-    if(i%Nk===0){
-      temp = subWord(rotWord(temp)) ^ RCON[i/Nk];
+  for (let i = 0; i < Nk; i++) W[i] = keyWords[i];
+  for (let i = Nk; i < Nb * (Nr + 1); i++) {
+    temp = W[i - 1];
+    if (i % Nk === 0) {
+      temp = subWord(rotWord(temp)) ^ RCON[i / Nk];
     }
-    W[i]=(W[i-Nk]^temp)>>>0;
+    W[i] = (W[i - Nk] ^ temp) >>> 0;
   }
   // Convert to round keys (11 * 16 bytes)
-  const rks=[];
-  for(let r=0;r<=Nr;r++){
-    rks.push(wordsToBytes(W.slice(r*4,r*4+4)));
+  const rks = [];
+  for (let r = 0; r <= Nr; r++) {
+    rks.push(wordsToBytes(W.slice(r * 4, r * 4 + 4)));
   }
   return rks;
 };
 
 // Encrypt/Decrypt one 16-byte block with trace
-const encryptBlock = (input16, rks)=>{
+const encryptBlock = (input16, rks) => {
   let state = input16.slice();
   const rounds = [];
 
@@ -222,45 +222,45 @@ const encryptBlock = (input16, rks)=>{
   rounds.push({ addRoundKey: state.slice() });
 
   // Rounds 1..9
-  for (let r=1;r<=9;r++){
-    state = subBytes(state);   const sb=state.slice();
-    state = shiftRows(state);  const sr=state.slice();
-    state = mixColumns(state); const mc=state.slice();
-    state = addRoundKey(state, rks[r]); const ark=state.slice();
+  for (let r = 1; r <= 9; r++) {
+    state = subBytes(state); const sb = state.slice();
+    state = shiftRows(state); const sr = state.slice();
+    state = mixColumns(state); const mc = state.slice();
+    state = addRoundKey(state, rks[r]); const ark = state.slice();
     rounds.push({ subBytes: sb, shiftRows: sr, mixColumns: mc, addRoundKey: ark });
   }
 
   // Round 10
-  state = subBytes(state);   const sb10=state.slice();
-  state = shiftRows(state);  const sr10=state.slice();
-  state = addRoundKey(state, rks[10]); const ark10=state.slice();
+  state = subBytes(state); const sb10 = state.slice();
+  state = shiftRows(state); const sr10 = state.slice();
+  state = addRoundKey(state, rks[10]); const ark10 = state.slice();
   rounds.push({ subBytes: sb10, shiftRows: sr10, addRoundKey: ark10 });
 
   return { result: state, rounds };
 };
 
-const decryptBlock = (input16, rks)=>{
+const decryptBlock = (input16, rks) => {
   // rks[10]..rks[0]
   let state = input16.slice();
   const rounds = [];
 
   // Round 0 (inverse final)
-  state = addRoundKey(state, rks[10]); const ark0=state.slice();
-  state = invShiftRows(state); const isr0=state.slice();
-  state = invSubBytes(state); const isb0=state.slice();
+  state = addRoundKey(state, rks[10]); const ark0 = state.slice();
+  state = invShiftRows(state); const isr0 = state.slice();
+  state = invSubBytes(state); const isb0 = state.slice();
   rounds.push({ addRoundKey: ark0, shiftRows: isr0, subBytes: isb0 }); // naming aligned for UI
 
   // Rounds 9..1
-  for (let r=9;r>=1;r--){
-    state = addRoundKey(state, rks[r]); const ark=state.slice();
-    state = invMixColumns(state); const imc=state.slice();
-    state = invShiftRows(state);  const isr=state.slice();
-    state = invSubBytes(state);   const isb=state.slice();
+  for (let r = 9; r >= 1; r--) {
+    state = addRoundKey(state, rks[r]); const ark = state.slice();
+    state = invMixColumns(state); const imc = state.slice();
+    state = invShiftRows(state); const isr = state.slice();
+    state = invSubBytes(state); const isb = state.slice();
     rounds.push({ addRoundKey: ark, mixColumns: imc, shiftRows: isr, subBytes: isb });
   }
 
   // Final: round key 0
-  state = addRoundKey(state, rks[0]); const arkf=state.slice();
+  state = addRoundKey(state, rks[0]); const arkf = state.slice();
   rounds.push({ addRoundKey: arkf });
 
   return { result: state, rounds };
@@ -269,7 +269,7 @@ const decryptBlock = (input16, rks)=>{
 /* ================================== UI bits ================================== */
 
 const Matrix = ({ title, bytes16 }) => {
-  const m = bytes16 ? toMatrixRows(bytes16) : [[],[],[],[]];
+  const m = bytes16 ? toMatrixRows(bytes16) : [[], [], [], []];
   return (
     <div className="bg-white rounded-lg shadow p-4">
       <div className="font-semibold text-gray-800 mb-3">{title}</div>
@@ -392,17 +392,15 @@ const AESCipher = () => {
           <div className="bg-white rounded-lg shadow-md p-1">
             <button
               onClick={() => setActiveTab("theory")}
-              className={`px-6 py-2 rounded-md transition-colors ${
-                activeTab === "theory" ? "bg-blue-500 text-white" : "text-gray-600 hover:bg-gray-100"
-              }`}
+              className={`px-6 py-2 rounded-md transition-colors ${activeTab === "theory" ? "bg-blue-500 text-white" : "text-gray-600 hover:bg-gray-100"
+                }`}
             >
               Theory
             </button>
             <button
               onClick={() => setActiveTab("interactive")}
-              className={`px-6 py-2 rounded-md transition-colors ${
-                activeTab === "interactive" ? "bg-blue-500 text-white" : "text-gray-600 hover:bg-gray-100"
-              }`}
+              className={`px-6 py-2 rounded-md transition-colors ${activeTab === "interactive" ? "bg-blue-500 text-white" : "text-gray-600 hover:bg-gray-100"
+                }`}
             >
               Interactive Tool
             </button>
@@ -411,23 +409,307 @@ const AESCipher = () => {
 
         {/* Theory */}
         {activeTab === "theory" && (
-          <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">What is AES?</h2>
-            <div className="prose max-w-none text-gray-700">
-              <p className="mb-4">
-                AES is a symmetric‑key block cipher. AES‑128 processes 16‑byte blocks using 10 rounds over a 4×4 state.
-              </p>
-              <h3 className="text-xl font-semibold text-gray-800 mb-3">Encryption rounds</h3>
-              <ol className="list-decimal list-inside mb-4 space-y-1">
-                <li>Round 0: AddRoundKey</li>
-                <li>Rounds 1–9: SubBytes → ShiftRows → MixColumns → AddRoundKey</li>
-                <li>Round 10: SubBytes → ShiftRows → AddRoundKey</li>
-              </ol>
-              <h3 className="text-xl font-semibold text-gray-800 mb-3">Decryption</h3>
-              <p className="mb-2">
-                Uses inverse steps in reverse order with the same expanded keys in reverse: K₁₀ … K₀.
-              </p>
-              <p className="text-sm text-gray-600">Mode shown here: ECB (single 16‑byte block) for learning purposes.</p>
+          <div class="p-8 space-y-6 text-gray-800">
+            <div className="bg-white rounded-lg shadow-lg p-6">
+
+              <h1 class="text-3xl font-bold text-blue-700">Introduction to AES (Advanced Encryption Standard)</h1>
+              <p>The Advanced Encryption Standard (AES) is a method used to keep digital information safe and secure. It is one of the most widely used encryption techniques in the world today — used by governments, banks, apps, and websites to protect sensitive data.</p>
+              <p>AES is a symmetric key encryption algorithm, which means the same key is used to lock (encrypt) and unlock (decrypt) a message. For example, if Alice encrypts a file using AES, Bob will need the exact same key to decrypt and read it.</p>
+
+              <h2 class="text-2xl font-semibold text-blue-600">Why Was AES Created?</h2>
+              <p>Before AES, a method called DES (Data Encryption Standard) was used. But over time, DES became weak and easy to break. In the late 1990s, the U.S. National Institute of Standards and Technology (NIST) held a global competition to find a stronger replacement.</p>
+              <p>Out of many submissions, the Rijndael algorithm (pronounced “Rhine-dahl”), created by Joan Daemen and Vincent Rijmen of Belgium, was chosen. It became the official AES standard in 2001, published as FIPS PUB 197.</p>
+
+              <h2 class="text-2xl font-semibold text-blue-600">Why AES is Important</h2>
+              <ul class="list-disc list-inside space-y-1">
+                <li><strong>Very secure</strong> – protects against brute-force and known attacks</li>
+                <li><strong>Fast</strong> – works well on both computers and smaller devices</li>
+                <li><strong>Flexible</strong> – supports different key lengths for different levels of security</li>
+              </ul>
+              <p>Today, AES is used in:</p>
+              <ul class="list-disc list-inside space-y-1 ml-4">
+                <li>Websites (HTTPS)</li>
+                <li>Messaging apps (like WhatsApp)</li>
+                <li>Cloud storage</li>
+                <li>Wi-Fi encryption</li>
+                <li>Government communications</li>
+              </ul>
+
+              <h2 class="text-2xl font-semibold text-blue-600">Key Characteristics of AES</h2>
+              <p>The Advanced Encryption Standard (AES) is a symmetric block cipher that operates on fixed-size blocks of data using a secret key. It is designed to be fast, secure, and suitable for a wide range of applications in both hardware and software.</p>
+              <h3 class="text-xl font-medium text-blue-500">Core Characteristics</h3>
+              <ul class="list-disc list-inside space-y-1">
+                <li><strong>Cipher Type:</strong> Symmetric key block cipher.</li>
+                <li><strong>Block Size:</strong> AES processes data in blocks of 128 bits (16 bytes).</li>
+                <li><strong>Key Sizes:</strong> 128, 192, or 256 bits.</li>
+                <li><strong>Number of Rounds:</strong>
+                  <ul class="list-disc ml-6 space-y-1">
+                    <li>10 rounds for 128-bit keys</li>
+                    <li>12 rounds for 192-bit keys</li>
+                    <li>14 rounds for 256-bit keys</li>
+                  </ul>
+                </li>
+                <li><strong>Speed and Efficiency:</strong> Optimized for high performance on both hardware and software.</li>
+                <li><strong>Security:</strong> Considered highly secure; no known practical attacks on the full AES algorithm.</li>
+                <li><strong>Standardization:</strong> Adopted by NIST as FIPS PUB 197 in 2001.</li>
+              </ul>
+
+              <h3 class="text-xl font-medium text-blue-500">Explanation of Terms</h3>
+              <ul class="list-disc list-inside space-y-1">
+                <li><strong>Block:</strong> AES encrypts data in units of 128 bits. If the message is larger, it is divided into blocks processed independently or with modes of operation.</li>
+                <li><strong>Key:</strong> Determines how data is encrypted/decrypted. Longer keys offer stronger security and influence the number of rounds.</li>
+              </ul>
+
+              <h2 class="text-2xl font-semibold text-blue-600">AES Encryption Process</h2>
+              <p>AES encryption takes a 128-bit plaintext block and transforms it into ciphertext using a secret key. The number of transformation rounds depends on the key size:</p>
+              <ul class="list-disc list-inside ml-4 space-y-1">
+                <li>10 rounds for 128-bit key</li>
+                <li>12 rounds for 192-bit key</li>
+                <li>14 rounds for 256-bit key</li>
+              </ul>
+
+              <h3 class="text-xl font-medium text-blue-500">Overview of Steps</h3>
+              <h4 class="text-lg font-semibold text-blue-400">Step 1: AddRoundKey (Initial Round)</h4>
+              <p>Bitwise XOR combines plaintext with the key to start the process.</p>
+
+              <h4 class="text-lg font-semibold text-blue-400">Step 2: Main Rounds (Repeated)</h4>
+              <ul class="list-disc list-inside ml-4 space-y-2">
+                <li><strong>SubBytes:</strong> Replace each byte with one from the S-box to add non-linearity.</li>
+                <li><strong>ShiftRows:</strong> Rotate rows left by 0, 1, 2, 3 bytes to spread byte positions.</li>
+                <li><strong>MixColumns:</strong> Apply matrix multiplication in GF(2⁸) to confuse patterns.</li>
+                <li><strong>AddRoundKey:</strong> XOR the state with a round-specific key.</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-blue-400">Step 3: Final Round</h4>
+              <p>Same as other rounds but skips MixColumns:</p>
+              <ul class="list-disc list-inside ml-4 space-y-1">
+                <li>SubBytes</li>
+                <li>ShiftRows</li>
+                <li>AddRoundKey</li>
+              </ul>
+
+              <h3 class="text-xl font-medium text-blue-500">Internal Structure</h3>
+              <p>AES uses a 4×4 matrix of bytes (the state) which changes every round. Keys are expanded into round keys through a key schedule using substitution, rotation, and XOR with round constants.</p>
+
+              <h3 class="text-xl font-medium text-blue-500">Summary Table (AES-128 Example)</h3>
+              <div class="overflow-x-auto">
+                <table class="table-auto border border-collapse border-gray-400">
+                  <thead class="bg-blue-100">
+                    <tr>
+                      <th class="border px-4 py-2">Round</th>
+                      <th class="border px-4 py-2">Operations</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="border px-4 py-2">Initial Round</td>
+                      <td class="border px-4 py-2">AddRoundKey</td>
+                    </tr>
+                    <tr>
+                      <td class="border px-4 py-2">Rounds 1–9</td>
+                      <td class="border px-4 py-2">SubBytes → ShiftRows → MixColumns → AddRoundKey</td>
+                    </tr>
+                    <tr>
+                      <td class="border px-4 py-2">Final Round</td>
+                      <td class="border px-4 py-2">SubBytes → ShiftRows → AddRoundKey</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h2 class="text-2xl font-semibold text-blue-600">AES Decryption Process</h2>
+              <p>AES decryption is the reverse of the encryption process. It takes the scrambled ciphertext and step-by-step undoes each transformation using the same key, but in reverse order.</p>
+              <p>Just like encryption, AES decryption works on a 128-bit block of data and passes it through several rounds. The number of rounds depends on the key size (10, 12, or 14).</p>
+
+              <h3 class="text-xl font-medium text-blue-500">How Decryption Reverses Encryption</h3>
+              <p>To understand decryption, think of each encryption step and its exact opposite in decryption:</p>
+              <div class="overflow-x-auto">
+                <table class="table-auto border border-collapse border-gray-400">
+                  <thead class="bg-blue-100">
+                    <tr>
+                      <th class="border px-4 py-2">Encryption Step</th>
+                      <th class="border px-4 py-2">Corresponding Decryption Step</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="border px-4 py-2">SubBytes</td>
+                      <td class="border px-4 py-2">InvSubBytes</td>
+                    </tr>
+                    <tr>
+                      <td class="border px-4 py-2">ShiftRows</td>
+                      <td class="border px-4 py-2">InvShiftRows</td>
+                    </tr>
+                    <tr>
+                      <td class="border px-4 py-2">MixColumns</td>
+                      <td class="border px-4 py-2">InvMixColumns</td>
+                    </tr>
+                    <tr>
+                      <td class="border px-4 py-2">AddRoundKey</td>
+                      <td class="border px-4 py-2">AddRoundKey</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p>Only the order changes — decryption starts from the last round and goes backward to the first.</p>
+
+              <h3 class="text-xl font-medium text-blue-500">Step-by-Step Decryption (AES-128)</h3>
+              <h4 class="text-lg font-semibold text-blue-400">Step 1: Initial Round</h4>
+              <p><strong>AddRoundKey:</strong> The last round key is XORed with the ciphertext.</p>
+
+              <h4 class="text-lg font-semibold text-blue-400">Step 2: Main Rounds (Rounds 9 to 1)</h4>
+              <ul class="list-disc list-inside ml-4 space-y-1">
+                <li><strong>InvShiftRows:</strong> Undo the left shifts by rotating rows to the right.</li>
+                <li><strong>InvSubBytes:</strong> Use the inverse S-box for substitution.</li>
+                <li><strong>AddRoundKey:</strong> XOR with the correct round key.</li>
+                <li><strong>InvMixColumns:</strong> Reverse the column mixing step.</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-blue-400">Step 3: Final Round (Round 0)</h4>
+              <ul class="list-disc list-inside ml-4 space-y-1">
+                <li>InvShiftRows</li>
+                <li>InvSubBytes</li>
+                <li>AddRoundKey</li>
+              </ul>
+              <p><em>(Note: No InvMixColumns in the final round, just like encryption skips MixColumns at the end.)</em></p>
+
+              <h3 class="text-xl font-medium text-blue-500">Visual Comparison (Encryption vs Decryption)</h3>
+              <div class="overflow-x-auto">
+                <table class="table-auto border border-collapse border-gray-400">
+                  <thead class="bg-blue-100">
+                    <tr>
+                      <th class="border px-4 py-2">Process</th>
+                      <th class="border px-4 py-2">Order of Operations</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="border px-4 py-2">Encryption</td>
+                      <td class="border px-4 py-2">SubBytes → ShiftRows → MixColumns → AddRoundKey</td>
+                    </tr>
+                    <tr>
+                      <td class="border px-4 py-2">Decryption</td>
+                      <td class="border px-4 py-2">InvShiftRows → InvSubBytes → AddRoundKey → InvMixColumns</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <h2 class="text-2xl font-semibold text-blue-600">Mathematical Foundations of AES</h2>
+              <p>Although the steps of AES (SubBytes, ShiftRows, etc.) look simple on the surface, they are powered by solid mathematical concepts from finite field algebra, especially operations over GF(2⁸) — a type of arithmetic used for secure data transformations.</p>
+              <p>This section provides an introductory understanding of the key math concepts behind AES, without diving too deep into advanced algebra.</p>
+
+
+              <h3 class="text-xl font-medium text-blue-500">1. Byte Substitution – The S-Box</h3>
+              <p><strong>What it does:</strong> In the SubBytes step, each byte is replaced with another byte using a substitution box (S-box).</p>
+              <p><strong>How it works:</strong></p>
+              <ul class="list-disc list-inside ml-4 space-y-1">
+                <li>Each byte (8 bits) is treated as a number in a finite field GF(2⁸).</li>
+                <li>First, the multiplicative inverse of the byte is calculated in this field.</li>
+                <li>Then, an affine transformation (a special kind of bit-level transformation) is applied to further scramble the value.</li>
+                <li>This creates a non-linear mapping that helps resist cryptographic attacks.</li>
+                <li>The resulting values are stored in a precomputed S-box table for efficiency.</li>
+              </ul>
+
+
+              <h3 class="text-xl font-medium text-blue-500">2. ShiftRows – Simple Byte Shifts</h3>
+              <p><strong>What it does:</strong> Each row in the 4×4 state matrix is rotated to the left by a certain number of positions.</p>
+              <p><strong>Mathematical role:</strong> This step spreads out byte positions, which increases diffusion (spreading influence of a single byte across the state). It doesn't require field math but works alongside other steps to enhance security.</p>
+
+
+              <h3 class="text-xl font-medium text-blue-500">3. MixColumns – Matrix Multiplication in GF(2⁸)</h3>
+              <p><strong>What it does:</strong> Each column in the state is transformed using matrix multiplication over GF(2⁸).</p>
+              <p><strong>How it works:</strong></p>
+              <ul class="list-disc list-inside ml-4 space-y-1">
+                <li>Each column is treated as a 4-byte vector.</li>
+                <li>It is multiplied by a fixed 4×4 matrix using finite field arithmetic.</li>
+                <li>The coefficients and operations ensure that each output byte is affected by all four input bytes, providing strong diffusion.</li>
+                <li>This operation is reversed in decryption using InvMixColumns with the inverse matrix.</li>
+              </ul>
+
+
+              <h3 class="text-xl font-medium text-blue-500">4. AddRoundKey – Bitwise XOR</h3>
+              <p><strong>What it does:</strong> Combines the current state with the round key using the XOR operation.</p>
+              <p><strong>Mathematical role:</strong> XOR is a simple binary operation: if the bits are the same → 0, if different → 1. It is fast, reversible, and ensures that the transformation depends on the key.</p>
+
+
+              <h3 class="text-xl font-medium text-blue-500">5. Key Expansion (Key Schedule)</h3>
+              <p>AES doesn't use the original key directly in every round. Instead, it generates multiple round keys using a process called the key schedule.</p>
+              <ul class="list-disc list-inside ml-4 space-y-1">
+                <li>The original key is expanded into a set of round keys using byte substitution, rotation, and XOR operations.</li>
+                <li>A round constant (Rcon) is used to make sure each round key is different.</li>
+              </ul>
+              <h2 class="text-2xl font-semibold text-blue-600">Security, Strength, and Known Attacks on AES</h2>
+              <p>AES is widely regarded as one of the most secure symmetric encryption algorithms in use today. It offers strong protection against brute-force attacks and known cryptanalytic methods when implemented correctly.</p>
+
+
+              <h3 class="text-xl font-medium text-blue-500">1. Brute-Force Resistance</h3>
+              <p>AES supports large key sizes:</p>
+              <ul class="list-disc list-inside ml-4 space-y-1">
+                <li>128-bit key → 2¹²⁸ possible combinations</li>
+                <li>192-bit key → 2¹⁹² combinations</li>
+                <li>256-bit key → 2²⁵⁶ combinations</li>
+              </ul>
+              <p>These keyspaces are computationally infeasible to break with current or foreseeable technology.</p>
+
+
+              <h3 class="text-xl font-medium text-blue-500">2. Protection Against Classical Attacks</h3>
+              <p>AES is designed to resist:</p>
+              <ul class="list-disc list-inside ml-4 space-y-1">
+                <li>Differential and linear cryptanalysis</li>
+                <li>Square (integral) attacks</li>
+                <li>Algebraic and interpolation attacks</li>
+              </ul>
+              <p>Its structure ensures strong confusion and diffusion across multiple rounds.</p>
+
+
+              <h3 class="text-xl font-medium text-blue-500">3. Theoretical and Implementation-Based Attacks</h3>
+              <p>While AES itself remains unbroken, some specialized attacks exist in limited contexts:</p>
+              <ul class="list-disc list-inside ml-4 space-y-1">
+                <li><strong>Biclique Attack:</strong> Slightly reduces brute-force complexity but is not practical.</li>
+                <li><strong>Related-Key Attack:</strong> Targets specific key schedule weaknesses (rare in real use).</li>
+                <li><strong>Side-Channel Attacks:</strong> Exploit physical characteristics like timing or power consumption. Secure implementation practices can mitigate these risks.</li>
+              </ul>
+
+
+              <h3 class="text-xl font-medium text-blue-500">4. AES and Quantum Threats</h3>
+              <p>Quantum computing can reduce brute-force effort via Grover’s algorithm. AES-256 provides a high margin of safety even under this model, making it suitable for post-quantum use cases.</p>
+
+
+              <h3 class="text-xl font-medium text-green-700">Summary</h3>
+              <ul class="list-disc list-inside ml-4 space-y-1">
+                <li>Proper key lengths are used</li>
+                <li>Implementations avoid side-channel leakage</li>
+                <li>Key management and randomness are handled correctly</li>
+              </ul>
+              <p>AES continues to be the encryption standard of choice across industries.</p>
+              <h2 class="text-2xl font-semibold text-blue-600">Real-World Applications of AES</h2>
+              <p>AES is widely used to protect digital data across many systems and services:</p>
+              <ul class="list-disc list-inside ml-4 space-y-1">
+                <li><strong>Web Security:</strong> Encrypts data in HTTPS (TLS).</li>
+                <li><strong>Wi-Fi Networks:</strong> Used in WPA2 and WPA3 for wireless encryption.</li>
+                <li><strong>Disk and File Encryption:</strong> Secures data in tools like BitLocker, FileVault, and VeraCrypt.</li>
+                <li><strong>Messaging Apps:</strong> Ensures end-to-end encryption in WhatsApp, Signal, and others.</li>
+                <li><strong>Cloud Storage:</strong> Protects data at rest in AWS, Azure, and Google Cloud.</li>
+                <li><strong>Government Systems:</strong> AES-256 is approved for securing classified information.</li>
+              </ul>
+              <p>Its high performance, strong security, and wide support make AES a standard in both consumer and enterprise technologies.</p>
+
+
+              <h3 class="text-xl font-medium text-green-700">References</h3>
+              <ul class="list-disc list-inside ml-4 space-y-1">
+                <li><strong>Wikipedia – Advanced Encryption Standard</strong><br />
+                  <a href="https://en.wikipedia.org/wiki/Advanced_Encryption_Standard" class="text-blue-500 underline">https://en.wikipedia.org/wiki/Advanced_Encryption_Standard</a>
+                </li>
+                <li><strong>TutorialsPoint – Advanced Encryption Standard</strong><br />
+                  <a href="https://www.tutorialspoint.com/cryptography/advanced_encryption_standard.htm" class="text-blue-500 underline">https://www.tutorialspoint.com/cryptography/advanced_encryption_standard.htm</a>
+                </li>
+                <li><strong>GeeksforGeeks – Advanced Encryption Standard (AES)</strong><br />
+                  <a href="https://www.geeksforgeeks.org/advanced-encryption-standard-aes/" class="text-blue-500 underline">https://www.geeksforgeeks.org/advanced-encryption-standard-aes/</a>
+                </li>
+                <li><strong>FIPS PUB 197 – AES Announcement (NIST)</strong><br />
+                  <a href="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf" class="text-blue-500 underline">https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf</a>
+                </li>
+              </ul>
             </div>
           </div>
         )}
