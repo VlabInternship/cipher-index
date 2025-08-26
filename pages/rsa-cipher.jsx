@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useRouter } from "next/navigation";
+
 
 // RSA Helper Functions
 // Checks if a number is prime.
@@ -285,6 +287,7 @@ function App() {
   const [step, setStep] = useState(1);
   const [animationState, setAnimationState] = useState('idle');
   const [animationIndex, setAnimationIndex] = useState(-1);
+  const router = useRouter(); 
 
   // RSA Parameters
   const [p, setP] = useState(61);
@@ -406,7 +409,8 @@ function App() {
       backgroundColor: '#f9f9f9',
       padding: '15px',
       borderRadius: '8px',
-      border: '1px solid #e0e0e0'
+      border: '1px solid #e0e0e0',
+      marginBottom: '15px'
     },
     stepContainer: {
       border: '1px solid #e0e0e0',
@@ -542,36 +546,97 @@ function App() {
 
       <div style={styles.content}>
         {/* Theory Tab */}
-        {activeTab === 'theory' && (
-          <div style={styles.card}>
-            <h2 style={styles.sectionTitle}>RSA Algorithm Theory</h2>
-            
-            <div>
-              <h3 style={styles.subsectionTitle}>Key Generation</h3>
-              <div style={styles.resultCard}>
-                <ol style={{paddingLeft: '20px', lineHeight: '1.6'}}>
-                  <li>Choose two large prime numbers <strong>p</strong> and <strong>q</strong></li>
-                  <li>Compute <strong>n = p × q</strong> (modulus)</li>
-                  <li>Compute <strong>φ(n) = (p-1) × (q-1)</strong> (Euler's totient)</li>
-                  <li>Choose <strong>e</strong> such that 1 &lt; e &lt; φ(n) and gcd(e, φ(n)) = 1</li>
-                  <li>Compute <strong>d</strong> such that d × e ≡ 1 (mod φ(n))</li>
-                  <li><strong>Public key:</strong> (e, n)</li>
-                  <li><strong>Private key:</strong> (d, n)</li>
-                </ol>
-              </div>
+{activeTab === 'theory' && (
+  <div style={styles.card}>
 
-              <h3 style={styles.subsectionTitle}>Encryption & Decryption</h3>
-              <div style={styles.resultCard}>
-                <p><strong>Encryption:</strong> C = M^e mod n</p>
-                <p><strong>Decryption:</strong> M = C^d mod n</p>
-                <p style={{marginTop: '10px', fontSize: '14px', color: '#666'}}>
-                  Where M is the message, C is the ciphertext, e is the public exponent, 
-                  d is the private exponent, and n is the modulus.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
+
+    <h2 style={styles.sectionTitle}>RSA Algorithm Theory</h2>
+
+    {/* Introduction */}
+    <div style={styles.resultCard}>
+      <h3 style={styles.subsectionTitle}>Introduction</h3>
+      <p>
+        The RSA algorithm is a foundational public-key cryptography system that
+        enables secure communication without requiring a pre-shared secret key.
+        It is a cornerstone of modern digital security and has been widely used
+        for secure data transmission, digital signatures, and authentication
+        since its invention.
+      </p>
+    </div>
+
+    {/* Origin Story */}
+    <div style={styles.resultCard}>
+      <h3 style={styles.subsectionTitle}>Origin Story</h3>
+      <p>
+        The RSA algorithm was invented in 1977 by Ron Rivest, Adi Shamir, and
+        Leonard Adleman, who lent their initials to its name. The development of
+        RSA was revolutionary because it introduced the concept of public-key
+        cryptography, fundamentally solving the key distribution problem that
+        had long been a major challenge in symmetric cryptography.
+      </p>
+    </div>
+
+    {/* Core Idea */}
+    <div style={styles.resultCard}>
+      <h3 style={styles.subsectionTitle}>Core Idea</h3>
+      <p>
+        The security of RSA is based on the computational difficulty of integer
+        factorization, specifically the difficulty of factoring the product of
+        two very large prime numbers. It is easy to multiply two primes but
+        infeasible to reverse the process. This one-way function forms the
+        basis of RSA’s key pair.
+      </p>
+    </div>
+
+    {/* Technical Blueprint */}
+    <div style={styles.resultCard}>
+      <h3 style={styles.subsectionTitle}>Technical Blueprint</h3>
+      <ol style={{ paddingLeft: '20px', lineHeight: '1.6' }}>
+        <li>
+          <strong>Key Generation:</strong> Choose primes p, q → n = p × q →
+          φ(n) = (p−1)(q−1). Select e with gcd(e, φ(n)) = 1, then compute d as
+          modular inverse of e mod φ(n). Public key = (n, e), Private key = (n,
+          d).
+        </li>
+        <li>
+          <strong>Encryption:</strong> c = m^e mod n
+        </li>
+        <li>
+          <strong>Decryption:</strong> m = c^d mod n
+        </li>
+      </ol>
+    </div>
+
+    {/* Security Scorecard */}
+    <div style={styles.resultCard}>
+      <h3 style={styles.subsectionTitle}>Security Scorecard</h3>
+      <p>
+        The strength of RSA depends on key size. While 512-bit keys are now
+        insecure, modern systems use 2048-bit or larger keys. RSA can be
+        vulnerable to side-channel attacks (timing, power analysis), and weak
+        random number generation may compromise security.
+      </p>
+    </div>
+
+    {/* Real-World Usage */}
+    <div style={styles.resultCard}>
+      <h3 style={styles.subsectionTitle}>Real-World Usage</h3>
+      <p>
+        RSA is widely used in digital security: HTTPS, TLS/SSL handshakes,
+        secure email, digital signatures, and secure key exchange. Its elegant
+        solution to key distribution enabled the secure internet we rely on
+        today.
+      </p>
+    </div>
+        {/* Back Button */}
+    <button
+       onClick={() => router.push("/")}
+  className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-xl shadow-md hover:bg-blue-700"
+>
+  ⬅ Back to Home
+</button>
+  </div>
+)}
 
         {/* Example Tab */}
         {activeTab === 'example' && (
@@ -610,7 +675,16 @@ function App() {
                 <p>Private: (2753, 3233)</p>
               </div>
             </div>
+            {/* Back Button */}
+    <button
+       onClick={() => router.push("/")}
+  className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-xl shadow-md hover:bg-blue-700"
+>
+  ⬅ Back to Home
+</button>
+
           </div>
+        
         )}
 
         {/* Simulation Tab */}
@@ -712,6 +786,7 @@ function App() {
                   />
                 )}
               </div>
+              
             </div>
 
             {/* Final Results */}
@@ -732,9 +807,20 @@ function App() {
                 </div>
               </div>
             </div>
+            {/* Back Button */}
+                <button
+       onClick={() => router.push("/")}
+  className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-xl shadow-md hover:bg-blue-700"
+>
+  ⬅ Back to Home
+</button>
+
           </div>
+          
         )}
+        
       </div>
+      
     </div>
   );
 }
