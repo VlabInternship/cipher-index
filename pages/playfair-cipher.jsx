@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+
 // Main application component
 const App = () => {
     // State variables for the app
-    const [activeTab, setActiveTab] = useState('simulation');
+    // FIX: Changed initial tab to 'theory' as requested
+    const [activeTab, setActiveTab] = useState('theory');
     const [mode, setMode] = useState('encrypt'); // 'encrypt' or 'decrypt'
     const [text, setText] = useState('');
     const [key, setKey] = useState('');
@@ -12,6 +14,7 @@ const App = () => {
     const [isAnimating, setIsAnimating] = useState(false);
     const [keySquare, setKeySquare] = useState([]);
     const [copied, setCopied] = useState(false);
+
     // Reset the form and results
     const handleReset = () => {
         setText('');
@@ -22,6 +25,7 @@ const App = () => {
         setIsAnimating(false);
         setCopied(false);
     };
+
     // Copy result to clipboard
     const copyToClipboard = () => {
         if (result) {
@@ -30,6 +34,7 @@ const App = () => {
             setTimeout(() => setCopied(false), 2000);
         }
     };
+
     // The core Playfair encryption logic
     const playfairEncrypt = (plaintext, key) => {
         const steps = [];
@@ -180,6 +185,7 @@ const App = () => {
         });
         setVisualizationSteps(steps);
     };
+
     // The core Playfair decryption logic
     const playfairDecrypt = (ciphertext, key) => {
         const steps = [];
@@ -352,6 +358,7 @@ const App = () => {
         setResult(finalPlaintext);
         setVisualizationSteps(steps);
     };
+
     // Controls the step-by-step animation
     useEffect(() => {
         if (isAnimating && currentStep < visualizationSteps.length) {
@@ -363,6 +370,7 @@ const App = () => {
             setIsAnimating(false);
         }
     }, [isAnimating, currentStep, visualizationSteps.length]);
+
     // Handle form submission and start visualization
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -380,9 +388,10 @@ const App = () => {
             setIsAnimating(true);
         }
     };
+
     // UI components for each section
     const renderTheory = () => (
-         <div className="p-6 bg-[#f9f9f9] rounded-2xl shadow-inner space-y-6">
+        <div className="p-6 bg-[#f9f9f9] rounded-2xl shadow-inner space-y-6">
             {/* Introduction Section */}
             <div className="bg-white rounded-xl p-6 shadow-sm">
                 <h3 className="text-2xl font-bold mb-4 text-[#0056b3] border-b-2 border-[#007bff] pb-2">Introduction</h3>
@@ -796,6 +805,7 @@ const App = () => {
                             {isAnimating ? 'Pause' : currentStep > 0 ? 'Resume' : 'Start Animation'}
                         </button>
                         <button
+                            type="button"
                             onClick={() => {
                                 setCurrentStep(0);
                                 setIsAnimating(false);
@@ -809,6 +819,7 @@ const App = () => {
             )}
         </div>
     );
+
     return (
         <div className="bg-[#f5f5f5] text-gray-800 p-6">
             <div className="bg-white rounded-3xl shadow-2xl overflow-hidden max-w-4xl mx-auto my-8">
@@ -858,4 +869,5 @@ const App = () => {
         </div>
     );
 };
+
 export default App;

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Play, Pause, RotateCcw, Lock, Unlock, ChevronDown } from 'lucide-react';
 
 const A51CipherApp = () => {
-  // User inputs and state management
+  const [activeTab, setActiveTab] = useState('theory');
   const [inputText, setInputText] = useState('HELLO');
   const [key, setKey] = useState('1010101010101010101010101010101010101010101010101010101010101010');
   const [isEncrypting, setIsEncrypting] = useState(true);
@@ -19,47 +19,6 @@ const A51CipherApp = () => {
   const [highlightedBit, setHighlightedBit] = useState(null);
 
   const animationRef = useRef(null);
-
-  // Theory content
-  const theorySections = [
-    {
-      title: "What is A5/1?",
-      content: "A5/1 is a stream cipher used in GSM cellular networks for voice privacy. It uses three linear feedback shift registers (LFSRs) with irregular clocking controlled by a majority function."
-    },
-    {
-      title: "How it works",
-      content: "The cipher generates a keystream by combining bits from three registers. The registers are clocked irregularly based on a majority function of their middle bits."
-    },
-    {
-      title: "Security",
-      content: "While A5/1 was initially considered secure, modern cryptanalysis has revealed vulnerabilities. It's no longer recommended for high-security applications."
-    }
-  ];
-
-  // Register configuration data
-  const registerDetails = [
-    {
-      name: "Register 1 (R1)",
-      bits: 19,
-      clockingPos: 8,
-      taps: [13, 16, 17, 18],
-      color: "border-blue-500"
-    },
-    {
-      name: "Register 2 (R2)",
-      bits: 22,
-      clockingPos: 10,
-      taps: [20, 21],
-      color: "border-green-500"
-    },
-    {
-      name: "Register 3 (R3)",
-      bits: 23,
-      clockingPos: 10,
-      taps: [7, 20, 21, 22],
-      color: "border-purple-500"
-    }
-  ];
 
   // Helper functions for text/binary conversion
   const textToBinary = (text) => {
@@ -103,13 +62,9 @@ const A51CipherApp = () => {
       return (a + b + c) >= 2 ? 1 : 0;
     }
 
-    shiftRegister(register, feedbackBit, taps) {
+    shiftRegister(register, taps) {
       const outputBit = register[register.length - 1];
-      let feedback = feedbackBit;
-      
-      for (const tap of taps) {
-        feedback ^= register[tap];
-      }
+      const feedback = taps.reduce((acc, tap) => acc ^ register[tap], 0);
       
       for (let i = register.length - 1; i > 0; i--) {
         register[i] = register[i - 1];
@@ -136,15 +91,15 @@ const A51CipherApp = () => {
       };
 
       if (c1 === maj) {
-        this.shiftRegister(this.r1, 0, [13, 16, 17, 18]);
+        this.shiftRegister(this.r1, [13, 16, 17, 18]);
         step.clockedRegisters.push('R1');
       }
       if (c2 === maj) {
-        this.shiftRegister(this.r2, 0, [20, 21]);
+        this.shiftRegister(this.r2, [20, 21]);
         step.clockedRegisters.push('R2');
       }
       if (c3 === maj) {
-        this.shiftRegister(this.r3, 0, [7, 20, 21, 22]);
+        this.shiftRegister(this.r3, [7, 20, 21, 22]);
         step.clockedRegisters.push('R3');
       }
 
@@ -178,7 +133,6 @@ const A51CipherApp = () => {
     }
   }
 
-  // Process encryption/decryption
   const processCipher = () => {
     const cipher = new A51Cipher(key);
     const processResult = cipher.process(inputText);
@@ -191,12 +145,10 @@ const A51CipherApp = () => {
     resetAnimation();
   };
 
-  // Start the animation
   const startAnimation = () => {
     if (!showResult) {
       processCipher();
     }
-
     const cipher = new A51Cipher(key);
     const processResult = cipher.process(inputText);
     
@@ -207,18 +159,18 @@ const A51CipherApp = () => {
     setCurrentStep(0);
     setIsAnimating(true);
     
-    // Initialize registers
     setRegister1(cipher.steps[0]?.r1 || []);
     setRegister2(cipher.steps[0]?.r2 || []);
     setRegister3(cipher.steps[0]?.r3 || []);
   };
 
-  // Animation controls
   const nextStep = () => {
     if (currentStep < animationSteps.length - 1) {
       const nextStep = currentStep + 1;
       setCurrentStep(nextStep);
       updateRegisters(nextStep);
+    } else {
+      setIsAnimating(false);
     }
   };
 
@@ -227,6 +179,7 @@ const A51CipherApp = () => {
       const prevStep = currentStep - 1;
       setCurrentStep(prevStep);
       updateRegisters(prevStep);
+      setIsAnimating(false);
     }
   };
 
@@ -240,26 +193,268 @@ const A51CipherApp = () => {
     setHighlightedBit(null);
   };
 
-  // Animation effect with proper dependencies
   useEffect(() => {
     if (isAnimating && animationSteps.length > 0) {
       animationRef.current = setInterval(() => {
-        setCurrentStep(prev => {
-          if (prev < animationSteps.length - 1) {
-            const nextStep = prev + 1;
-            updateRegisters(nextStep);
-            return nextStep;
-          }
-          setIsAnimating(false);
-          return prev;
-        });
+        nextStep();
       }, 1000);
     }
-
     return () => clearInterval(animationRef.current);
-  }, [isAnimating, animationSteps, updateRegisters]);
+  }, [isAnimating, animationSteps, nextStep]);
 
-  // Register display component
+  const renderTheory = () => (
+    <div className="bg-white rounded-2xl shadow-lg p-6 mb-5">
+      <h2 className="text-xl font-semibold text-[#0056b3] mb-4">A5/1 Algorithm Theory</h2>
+      <div className="bg-gray-100 p-4 rounded-lg border border-gray-200 shadow-sm mb-4">
+        <h3 className="text-lg font-medium text-[#007bff] mb-3">Introduction</h3>
+        <p>
+          A5/1 is a stream cipher used to provide air interface communication privacy in the GSM cellular system. It is a symmetric key algorithm, meaning the same key is used for both encryption and decryption.
+        </p>
+      </div>
+      <div className="bg-gray-100 p-4 rounded-lg border border-gray-200 shadow-sm mb-4">
+        <h3 className="text-lg font-medium text-[#007bff] mb-3">Core Idea</h3>
+        <p>
+          The cipher's core is composed of three **Linear Feedback Shift Registers (LFSRs)** of different lengths: 19, 22, and 23 bits. The security comes from the irregular way these registers are clocked. The clocking of each register is controlled by a majority function, which looks at a specific bit in each register. Only registers whose clocking bit matches the majority vote are advanced. This irregular clocking makes the keystream output highly unpredictable.
+        </p>
+      </div>
+      <div className="bg-gray-100 p-4 rounded-lg border border-gray-200 shadow-sm mb-4">
+        <h3 className="text-lg font-medium text-[#007bff] mb-3">Keystream Generation</h3>
+        <p>
+          The output keystream is a single bit generated at each clock cycle by XORing the output bits from the three registers. This keystream is then XORed with the plaintext to produce the ciphertext. Decryption is the same process in reverse.
+        </p>
+      </div>
+      <div className="bg-gray-100 p-4 rounded-lg border border-gray-200 shadow-sm mb-4">
+        <h3 className="text-lg font-medium text-[#007bff] mb-3">Security</h3>
+        <p>
+          A5/1 was considered a strong cipher for its time, but with advances in computing power and cryptanalysis techniques, it is now considered **vulnerable**. Several attacks, including a time-memory trade-off attack, can break the cipher in a matter of minutes.
+        </p>
+      </div>
+    </div>
+  );
+
+  const renderExample = () => (
+    <div className="bg-white rounded-2xl shadow-lg p-6 mb-5">
+      <h2 className="text-xl font-semibold text-[#0056b3] mb-4">A5/1 Example</h2>
+      <div className="bg-gray-100 p-4 rounded-lg border border-gray-200 shadow-sm mb-4">
+        <h3 className="text-lg font-medium text-[#007bff] mb-3">Registers and Key</h3>
+        <p>
+          Let's assume a simplified key `1010...` which is split into the three registers.
+        </p>
+        <ul className="list-disc list-inside pl-5 space-y-2">
+          <li>R1 (19 bits): `1010101010101010101`</li>
+          <li>R2 (22 bits): `0101010101010101010101`</li>
+          <li>R3 (23 bits): `01010101010101010101010`</li>
+        </ul>
+      </div>
+      <div className="bg-gray-100 p-4 rounded-lg border border-gray-200 shadow-sm mb-4">
+        <h3 className="text-lg font-medium text-[#007bff] mb-3">First Clock Cycle</h3>
+        <p>
+          1. The clocking bits are R1[8], R2[10], R3[10].
+        </p>
+        <p>
+          2. The majority function determines which registers to clock. If the majority of `(R1[8], R2[10], R3[10])` is `1`, then all registers with a `1` at that position are clocked.
+        </p>
+        <p>
+          3. For example, if R1's clocking bit is `1` and R2 and R3's are `0`, then only R1 is clocked.
+        </p>
+        <p>
+          4. The keystream bit is the XOR of the last bit of each register: `R1[18] ^ R2[21] ^ R3[22]`.
+        </p>
+      </div>
+      <div className="bg-gray-100 p-4 rounded-lg border border-gray-200 shadow-sm">
+        <h3 className="text-lg font-medium text-[#007bff] mb-3">Result</h3>
+        <p>
+          This process is repeated for each bit of the plaintext to generate a unique keystream for encryption.
+        </p>
+      </div>
+    </div>
+  );
+
+  const renderSimulation = () => (
+    <div>
+      <div className="bg-white rounded-2xl shadow-lg p-6 mb-5">
+        <h2 className="text-xl font-semibold text-[#0056b3] mb-4">Simulation Controls</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-5">
+          <div className="flex flex-col">
+            <label className="mb-1 font-medium text-gray-700">Input Text</label>
+            <input
+              type="text"
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value.toUpperCase())}
+              className="p-2 border border-gray-300 rounded-md text-sm"
+              placeholder="Enter text to encrypt/decrypt"
+            />
+          </div>
+          <div className="flex flex-col">
+            <label className="mb-1 font-medium text-gray-700">64-bit Key</label>
+            <input
+              type="text"
+              value={key}
+              onChange={(e) => setKey(e.target.value.replace(/[^01]/g, '').slice(0, 64))}
+              className="p-2 border border-gray-300 rounded-md text-sm font-mono"
+              placeholder="Enter 64-bit binary key"
+              maxLength={64}
+            />
+            <div className="text-xs text-gray-500 mt-1">{key.length}/64 bits</div>
+          </div>
+        </div>
+        <div className="flex gap-4 mb-8 justify-center">
+          <button
+            onClick={() => setIsEncrypting(true)}
+            className={`px-6 py-3 rounded-lg font-semibold transition-colors ${isEncrypting ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+          >
+            Encrypt
+          </button>
+          <button
+            onClick={() => setIsEncrypting(false)}
+            className={`px-6 py-3 rounded-lg font-semibold transition-colors ${!isEncrypting ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+          >
+            Decrypt
+          </button>
+        </div>
+        <div className="flex flex-wrap gap-4 mb-8 justify-center">
+          <button
+            onClick={processCipher}
+            className="flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            {isEncrypting ? <Lock className="mr-2 w-4 h-4" /> : <Unlock className="mr-2 w-4 h-4" />}
+            {isEncrypting ? 'Encrypt Text' : 'Decrypt Text'}
+          </button>
+          <button
+            onClick={startAnimation}
+            className="flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <Play className="mr-2 w-4 h-4" />
+            Visualize Cipher
+          </button>
+          <button
+            onClick={resetAnimation}
+            className="flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <RotateCcw className="mr-2 w-4 h-4" />
+            Reset
+          </button>
+        </div>
+      </div>
+      
+      {showResult && (
+        <div className="bg-white rounded-2xl shadow-lg p-6 mb-5">
+          <h2 className="text-xl font-semibold text-[#0056b3] mb-4">Results</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+            <div className="bg-gray-100 p-4 rounded-lg border border-gray-200 shadow-sm">
+              <h3 className="text-lg font-medium text-[#007bff] mb-3">Input Text</h3>
+              <p className="font-mono">{inputText}</p>
+            </div>
+            <div className="bg-gray-100 p-4 rounded-lg border border-gray-200 shadow-sm">
+              <h3 className="text-lg font-medium text-[#007bff] mb-3">Binary Input</h3>
+              <p className="font-mono break-all">{binaryInput}</p>
+            </div>
+            <div className="bg-gray-100 p-4 rounded-lg border border-gray-200 shadow-sm">
+              <h3 className="text-lg font-medium text-[#007bff] mb-3">Keystream</h3>
+              <p className="font-mono break-all">{keystream.join('')}</p>
+            </div>
+            <div className="bg-gray-100 p-4 rounded-lg border border-gray-200 shadow-sm">
+              <h3 className="text-lg font-medium text-[#007bff] mb-3">Output Text</h3>
+              <p className="font-mono">{result}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {animationSteps.length > 0 && (
+        <div className="bg-white rounded-2xl shadow-lg p-6 mb-5">
+          <h2 className="text-xl font-semibold text-[#0056b3] mb-4">Animated Simulation</h2>
+          <div className="flex flex-wrap gap-4 justify-center mb-6">
+            <button
+              onClick={() => setIsAnimating(!isAnimating)}
+              disabled={currentStep >= animationSteps.length}
+              className="flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-400"
+            >
+              {isAnimating ? <Pause className="mr-2 w-4 h-4" /> : <Play className="mr-2 w-4 h-4" />}
+              {isAnimating ? 'Pause' : 'Play'}
+            </button>
+            <button
+              onClick={prevStep}
+              disabled={currentStep === 0}
+              className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors disabled:bg-gray-400"
+            >
+              ← Previous Step
+            </button>
+            <button
+              onClick={nextStep}
+              disabled={currentStep >= animationSteps.length}
+              className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors disabled:bg-gray-400"
+            >
+              Next Step →
+            </button>
+          </div>
+          <h3 className="text-xl font-bold mb-4">
+            Step {currentStep + 1} of {animationSteps.length}
+            {highlightedBit !== null && (
+              <span className="ml-4 text-sm font-normal">
+                Output Bit: <span className="font-bold">{highlightedBit}</span>
+              </span>
+            )}
+          </h3>
+          <div className="bg-gray-100 p-4 rounded-lg mb-4">
+            <div className="grid md:grid-cols-3 gap-4 text-sm">
+              <div>
+                <strong>Clocking Bits:</strong> [{animationSteps[currentStep]?.clockingBits?.join(', ')}]
+              </div>
+              <div>
+                <strong>Majority:</strong> {animationSteps[currentStep]?.majority}
+              </div>
+              <div>
+                <strong>Clocked Registers:</strong> {animationSteps[currentStep]?.clockedRegisters?.join(', ') || 'None'}
+              </div>
+            </div>
+          </div>
+          <RegisterDisplay
+            register={register1}
+            name="R1"
+            isClocked={animationSteps[currentStep]?.clockedRegisters?.includes('R1')}
+            color="border-blue-500"
+            clockingPos={8}
+          />
+          <RegisterDisplay
+            register={register2}
+            name="R2"
+            isClocked={animationSteps[currentStep]?.clockedRegisters?.includes('R2')}
+            color="border-green-500"
+            clockingPos={10}
+          />
+          <RegisterDisplay
+            register={register3}
+            name="R3"
+            isClocked={animationSteps[currentStep]?.clockedRegisters?.includes('R3')}
+            color="border-purple-500"
+            clockingPos={10}
+          />
+          <div className="mt-8">
+            <h4 className="font-bold mb-3">Keystream Generation</h4>
+            <div className="font-mono bg-white p-4 rounded border overflow-x-auto">
+              <div className="flex gap-1 mb-2">
+                {keystream.slice(0, 20).map((bit, i) => (
+                  <div 
+                    key={i} 
+                    className={`w-8 h-8 flex items-center justify-center border rounded 
+                      ${i === currentStep ? 'bg-blue-200 border-blue-500' : 'bg-gray-100 border-gray-300'}`}
+                  >
+                    {bit}
+                  </div>
+                ))}
+                {keystream.length > 20 && <span className="self-center">...</span>}
+              </div>
+              <div className="text-sm text-gray-600">
+                Generated {keystream.length} bits (showing first 20)
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
   const RegisterDisplay = ({ register, name, clockingPos, isClocked, color }) => (
     <div className={`border-2 ${color} rounded-lg p-4 mb-4`}>
       <h3 className="font-bold text-lg mb-2">{name}</h3>
@@ -287,218 +482,34 @@ const A51CipherApp = () => {
     </div>
   );
 
+  const renderTab = (id, label) => (
+    <button
+      key={id}
+      onClick={() => {
+        setActiveTab(id);
+        resetAnimation();
+        setShowResult(false);
+      }}
+      className={`py-2 px-4 rounded-lg font-medium transition-colors cursor-pointer ${activeTab === id ? 'bg-[#0056b3] text-white shadow-md' : 'bg-gray-100 text-[#0056b3] border border-[#0056b3] hover:bg-gray-200'}`}
+    >
+      {label}
+    </button>
+  );
+
   return (
-    <div className="max-w-7xl mx-auto p-6 bg-gray-50 min-h-screen">
-      <div className="bg-white rounded-lg shadow-lg p-8">
-        <h1 className="text-4xl font-bold text-center mb-8 text-blue-600">A5/1 Stream Cipher</h1>
-        
-        {/* Theory Section - Always Visible */}
-        <div className="mb-8">
-          <div className="grid md:grid-cols-3 gap-6">
-            {theorySections.map((section, index) => (
-              <div 
-                key={index}
-                className={`p-6 rounded-lg shadow-md transition-all hover:shadow-lg
-                  ${index === 0 ? 'bg-blue-50 border-l-4 border-blue-500' : ''}
-                  ${index === 1 ? 'bg-green-50 border-l-4 border-green-500' : ''}
-                  ${index === 2 ? 'bg-purple-50 border-l-4 border-purple-500' : ''}
-                `}
-              >
-                <h3 className="text-xl font-bold mb-3">
-                  {index === 0 && <span className="text-blue-600">🔒 {section.title}</span>}
-                  {index === 1 && <span className="text-green-600">⚙️ {section.title}</span>}
-                  {index === 2 && <span className="text-purple-600">🛡️ {section.title}</span>}
-                </h3>
-                <p className="text-gray-700">{section.content}</p>
-              </div>
-            ))}
-          </div>
+    <div className="min-h-screen bg-gray-100 font-sans">
+      <div className="bg-white p-5 shadow-md text-center">
+        <h1 className="text-2xl sm:text-4xl font-bold text-[#0056b3] mb-5">A5/1</h1>
+        <div className="flex justify-center gap-2">
+          {renderTab('theory', 'Theory')}
+          {renderTab('example', 'Example')}
+          {renderTab('simulation', 'Simulation')}
         </div>
-
-        {/* Input Section */}
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
-          <div>
-            <label className="block text-sm font-medium mb-2">Input Text:</label>
-            <input
-              type="text"
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value.toUpperCase())}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter text to encrypt/decrypt"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-2">64-bit Key:</label>
-            <input
-              type="text"
-              value={key}
-              onChange={(e) => setKey(e.target.value.replace(/[^01]/g, '').slice(0, 64))}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono"
-              placeholder="Enter 64-bit binary key"
-              maxLength={64}
-            />
-            <div className="text-xs text-gray-500 mt-1">{key.length}/64 bits</div>
-          </div>
-        </div>
-
-        {/* Mode Selection */}
-        <div className="flex gap-4 mb-8 justify-center">
-          <button
-            onClick={() => setIsEncrypting(true)}
-            className={`px-6 py-3 rounded-lg ${isEncrypting ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
-          >
-            Encrypt
-          </button>
-          <button
-            onClick={() => setIsEncrypting(false)}
-            className={`px-6 py-3 rounded-lg ${!isEncrypting ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
-          >
-            Decrypt
-          </button>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex flex-wrap gap-4 mb-8 justify-center">
-          <button
-            onClick={processCipher}
-            className="flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            {isEncrypting ? <Lock className="mr-2 w-4 h-4" /> : <Unlock className="mr-2 w-4 h-4" />}
-            {isEncrypting ? 'Encrypt Text' : 'Decrypt Text'}
-          </button>
-          <button
-            onClick={startAnimation}
-            className="flex items-center px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-          >
-            <Play className="mr-2 w-4 h-4" />
-            Visualize Cipher
-          </button>
-          <button
-            onClick={resetAnimation}
-            className="flex items-center px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-          >
-            <RotateCcw className="mr-2 w-4 h-4" />
-            Reset
-          </button>
-        </div>
-
-        {/* Result Display */}
-        {showResult && (
-          <div className="mb-8 bg-green-50 p-6 rounded-lg">
-            <h3 className="text-xl font-bold mb-4 flex items-center">
-              {isEncrypting ? <Lock className="mr-2" /> : <Unlock className="mr-2" />}
-              {isEncrypting ? 'Encryption Result' : 'Decryption Result'}
-            </h3>
-            
-            <div className="grid gap-4">
-              <div>
-                <strong>Input Text:</strong> {inputText}
-              </div>
-              <div>
-                <strong>Binary Input:</strong>
-                <div className="font-mono bg-white p-2 rounded border mt-1 overflow-x-auto">
-                  {binaryInput}
-                </div>
-              </div>
-              <div>
-                <strong>Output:</strong> {result}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Animation Controls */}
-        {animationSteps.length > 0 && (
-          <div className="mb-8">
-            <div className="flex flex-wrap gap-4 justify-center mb-6">
-              <button
-                onClick={() => setIsAnimating(!isAnimating)}
-                disabled={animationSteps.length === 0}
-                className="flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-400"
-              >
-                {isAnimating ? <Pause className="mr-2 w-4 h-4" /> : <Play className="mr-2 w-4 h-4" />}
-                {isAnimating ? 'Pause' : 'Play'}
-              </button>
-              <button
-                onClick={prevStep}
-                disabled={currentStep === 0}
-                className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors disabled:bg-gray-400"
-              >
-                ← Previous Step
-              </button>
-              <button
-                onClick={nextStep}
-                disabled={currentStep >= animationSteps.length - 1}
-                className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors disabled:bg-gray-400"
-              >
-                Next Step →
-              </button>
-            </div>
-
-            <h3 className="text-xl font-bold mb-4">
-              Step {currentStep + 1} of {animationSteps.length}
-              {highlightedBit !== null && (
-                <span className="ml-4 text-sm font-normal">
-                  Output Bit: <span className="font-bold">{highlightedBit}</span>
-                </span>
-              )}
-            </h3>
-            
-            {/* Current Step Info */}
-            <div className="bg-gray-100 p-4 rounded-lg mb-4">
-              <div className="grid md:grid-cols-3 gap-4 text-sm">
-                <div>
-                  <strong>Clocking Bits:</strong> [{animationSteps[currentStep]?.clockingBits?.join(', ')}]
-                </div>
-                <div>
-                  <strong>Majority:</strong> {animationSteps[currentStep]?.majority}
-                </div>
-                <div>
-                  <strong>Clocked Registers:</strong> {animationSteps[currentStep]?.clockedRegisters?.join(', ') || 'None'}
-                </div>
-              </div>
-            </div>
-
-            {/* Register Displays */}
-            <div className="grid lg:grid-cols-1 gap-4">
-              {registerDetails.map((reg, index) => {
-                const regName = reg.name.split(' ')[1];
-                return (
-                  <RegisterDisplay
-                    key={index}
-                    register={index === 0 ? register1 : index === 1 ? register2 : register3}
-                    name={regName}
-                    clockingPos={reg.clockingPos}
-                    isClocked={animationSteps[currentStep]?.clockedRegisters?.includes(regName)}
-                    color={reg.color}
-                  />
-                );
-              })}
-            </div>
-
-            {/* Keystream Visualization */}
-            <div className="mt-8">
-              <h4 className="font-bold mb-3">Keystream Generation</h4>
-              <div className="font-mono bg-white p-4 rounded border overflow-x-auto">
-                <div className="flex gap-1 mb-2">
-                  {keystream.slice(0, 20).map((bit, i) => (
-                    <div 
-                      key={i} 
-                      className={`w-8 h-8 flex items-center justify-center border rounded 
-                        ${i === currentStep ? 'bg-blue-200 border-blue-500' : 'bg-gray-100 border-gray-300'}`}
-                    >
-                      {bit}
-                    </div>
-                  ))}
-                  {keystream.length > 20 && <span className="self-center">...</span>}
-                </div>
-                <div className="text-sm text-gray-600">
-                  Generated {keystream.length} bits (showing first 20)
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+      </div>
+      <div className="max-w-4xl mx-auto p-5">
+        {activeTab === 'theory' && renderTheory()}
+        {activeTab === 'example' && renderExample()}
+        {activeTab === 'simulation' && renderSimulation()}
       </div>
     </div>
   );
