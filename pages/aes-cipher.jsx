@@ -1,10 +1,9 @@
-//aes-cipher.jsx
 import React, { useState } from "react";
 import { ChevronDown, ChevronUp, Lock, Unlock, Play, RotateCcw } from "lucide-react";
 
 /* =========================================================================================
-   Minimal AES-128 ECB implementation with round-by-round trace (inside this single file)
-   ========================================================================================= */
+Minimal AES-128 ECB implementation with round-by-round trace (inside this single file)
+========================================================================================= */
 
 // --- Tables (S-Box, Inv S-Box, Rcon) ---
 const S = [
@@ -112,11 +111,11 @@ const rotr4 = (row4, n) => {
 };
 
 const shiftRows = (s) => {
-  const t = s.slice();                 // Uint8Array(16)
+  const t = s.slice();
   for (let r = 0; r < 4; r++) {
     const base = r * 4;
-    const row = t.slice(base, base + 4);     // Uint8Array(4)
-    const rot = rotl4(row, r);               // rotate left by r
+    const row = t.slice(base, base + 4);
+    const rot = rotl4(row, r);
     for (let c = 0; c < 4; c++) t[base + c] = rot[c];
   }
   return t;
@@ -127,7 +126,7 @@ const invShiftRows = (s) => {
   for (let r = 0; r < 4; r++) {
     const base = r * 4;
     const row = t.slice(base, base + 4);
-    const rot = rotr4(row, r);               // rotate right by r
+    const rot = rotr4(row, r);
     for (let c = 0; c < 4; c++) t[base + c] = rot[c];
   }
   return t;
@@ -319,11 +318,11 @@ const CollapsibleRound = ({ roundIndex, step, openDefault = false }) => {
 };
 
 const AESCipher = () => {
-  const [activeTab, setActiveTab] = useState("interactive"); // default to tool like screenshot
+  const [activeTab, setActiveTab] = useState("theory");
   const [mode, setMode] = useState("encrypt");
-  const [plaintext, setPlaintext] = useState("Hello, AES Demo!!"); // 16 chars
-  const [key, setKey] = useState("Sixteen byte key");              // 16 chars
-  const [ciphertext, setCiphertext] = useState("");                // HEX when encrypting / input when decrypting
+  const [plaintext, setPlaintext] = useState("Hello, AES Demo!!");
+  const [key, setKey] = useState("Sixteen byte key");
+  const [ciphertext, setCiphertext] = useState("");
   const [isAnimating, setIsAnimating] = useState(false);
   const [trace, setTrace] = useState([]);
   const [initialState, setInitialState] = useState(null);
@@ -398,318 +397,93 @@ const AESCipher = () => {
               Theory
             </button>
             <button
+              onClick={() => setActiveTab("example")}
+              className={`px-6 py-2 rounded-md transition-colors ${activeTab === "example" ? "bg-blue-500 text-white" : "text-gray-600 hover:bg-gray-100"
+                }`}
+            >
+              Example
+            </button>
+            <button
               onClick={() => setActiveTab("interactive")}
               className={`px-6 py-2 rounded-md transition-colors ${activeTab === "interactive" ? "bg-blue-500 text-white" : "text-gray-600 hover:bg-gray-100"
                 }`}
             >
-              Interactive Tool
+              Cipher
             </button>
           </div>
         </div>
 
         {/* Theory */}
         {activeTab === "theory" && (
-          <div class="p-8 space-y-6 text-gray-800">
+          <div className="p-8 space-y-6 text-gray-800">
             <div className="bg-white rounded-lg shadow-lg p-6">
-
-              <h1 class="text-3xl font-bold text-blue-700">Introduction to AES (Advanced Encryption Standard)</h1>
-              <p>The Advanced Encryption Standard (AES) is a method used to keep digital information safe and secure. It is one of the most widely used encryption techniques in the world today — used by governments, banks, apps, and websites to protect sensitive data.</p>
-              <p>AES is a symmetric key encryption algorithm, which means the same key is used to lock (encrypt) and unlock (decrypt) a message. For example, if Alice encrypts a file using AES, Bob will need the exact same key to decrypt and read it.</p>
-
-              <h2 class="text-2xl font-semibold text-blue-600">Why Was AES Created?</h2>
-              <p>Before AES, a method called DES (Data Encryption Standard) was used. But over time, DES became weak and easy to break. In the late 1990s, the U.S. National Institute of Standards and Technology (NIST) held a global competition to find a stronger replacement.</p>
-              <p>Out of many submissions, the Rijndael algorithm (pronounced “Rhine-dahl”), created by Joan Daemen and Vincent Rijmen of Belgium, was chosen. It became the official AES standard in 2001, published as FIPS PUB 197.</p>
-
-              <h2 class="text-2xl font-semibold text-blue-600">Why AES is Important</h2>
-              <ul class="list-disc list-inside space-y-1">
-                <li><strong>Very secure</strong> – protects against brute-force and known attacks</li>
-                <li><strong>Fast</strong> – works well on both computers and smaller devices</li>
-                <li><strong>Flexible</strong> – supports different key lengths for different levels of security</li>
+              <h1 className="text-3xl font-bold text-blue-700">Introduction</h1>
+              <p>The Advanced Encryption Standard (AES) is a symmetric-key block cipher that is the global standard for securing digital information. It was adopted by the U.S. National Institute of Standards and Technology (NIST) in 2001 as the successor to DES, a testament to its efficiency, security, and versatility.</p>
+              
+              <h2 className="text-2xl font-semibold text-blue-600 mt-6">Origin Story</h2>
+              <p>The selection of AES was the result of a public, five-year competition held by NIST to find a replacement for DES, which was becoming obsolete due to its small key size. The winning algorithm was Rijndael, designed by Belgian cryptographers Joan Daemen and Vincent Rijmen. The transparent, open nature of this competition was a stark contrast to the secretive design process of DES and was crucial in building trust in the new standard.</p>
+              
+              <h2 className="text-2xl font-semibold text-blue-600 mt-6">Core Idea</h2>
+              <p>AES is a **Substitution-Permutation Network (SPN)** that operates on fixed-size blocks of 128 bits, regardless of the key length. This is a departure from the Feistel structure of DES. The algorithm's security stems from its iterative application of a series of reversible transformations that create both confusion and diffusion. These transformations are based on substitution (the S-box), permutation (row shifts), and key mixing (XOR).</p>
+              
+              <h2 className="text-2xl font-semibold text-blue-600 mt-6">Technical Blueprint</h2>
+              <p>The AES algorithm operates on a $4 \times 4$ matrix of bytes, which represents the 128-bit data block. The number of transformation rounds depends on the key length: 10 rounds for a 128-bit key, 12 for a 192-bit key, and 14 for a 256-bit key. The encryption process begins with an **Initial AddRoundKey** step, where the plaintext is XORed with the first round key.  Each subsequent round (except for the final one) consists of four steps:</p>
+              <ul className="list-disc list-inside space-y-2 mt-4 ml-4">
+                <li><strong>SubBytes:</strong> A non-linear substitution operation where each byte in the state matrix is replaced with a new byte from a fixed lookup table called a substitution box (S-box).</li>
+                <li><strong>ShiftRows:</strong> A permutation operation where the rows of the matrix are cyclically shifted to the left by different offsets. Row 0 is not shifted, Row 1 is shifted one byte, Row 2 is shifted two bytes, and Row 3 is shifted three bytes.</li>
+                <li><strong>MixColumns:</strong> A mixing operation where each column is transformed by matrix multiplication over a finite field. This step, which is omitted in the final round, provides robust diffusion across the block.</li>
+                <li><strong>AddRoundKey:</strong> The current round key, derived from the original key through a key expansion process, is XORed with the entire state matrix.</li>
               </ul>
-              <p>Today, AES is used in:</p>
-              <ul class="list-disc list-inside space-y-1 ml-4">
-                <li>Websites (HTTPS)</li>
-                <li>Messaging apps (like WhatsApp)</li>
-                <li>Cloud storage</li>
-                <li>Wi-Fi encryption</li>
-                <li>Government communications</li>
+              <p className="mt-4">Decryption is performed by applying the inverse of each of these steps in the reverse order.</p>
+
+              <h2 className="text-2xl font-semibold text-blue-600 mt-6">Security Scorecard</h2>
+              <p>AES is considered highly secure and has withstood extensive cryptanalysis since its standardization. Its strength is a result of its substitution-permutation network design and its large key lengths, which make brute-force attacks computationally infeasible. The use of key expansion ensures that each round uses a unique, derived key.</p>
+              
+              <h2 className="text-2xl font-semibold text-blue-600 mt-6">Real-World Usage</h2>
+              <p>AES is ubiquitous in modern digital life. Its combination of speed, security, and hardware acceleration support makes it the go-to algorithm for a vast range of applications. It is used to secure web traffic (HTTPS), virtual private networks (VPNs), wireless security protocols (WPA2/WPA3), file encryption, and financial transactions. Its status as a global standard for classified U.S. government data further solidifies its position as a cornerstone of modern security.</p>
+            </div>
+          </div>
+        )}
+
+        {/* Example */}
+        {activeTab === "example" && (
+          <div className="p-8 space-y-6 text-gray-800">
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h1 className="text-3xl font-bold text-blue-700">Solved Example:</h1>
+              <p>A full numerical walkthrough of an AES round is complex, but a conceptual example can illustrate the effect of each step on a simplified data block.</p>
+              <h3 className="text-xl font-medium text-blue-500 mt-4">Example: A single round of AES-128 encryption.</h3>
+              <p><strong>Plaintext Block:</strong> <code>00 11 22 33 44 55 66 77 88 99 AA BB CC DD EE FF</code></p>
+              <p><strong>Initial Key:</strong> <code>01 23 45 67 89 AB CD EF 01 23 45 67 89 AB CD EF</code></p>
+              <p className="text-sm italic">Note: These values are for demonstration purposes only.</p>
+              
+              <h3 className="text-xl font-medium text-blue-500 mt-6">Step 1: The Initial State</h3>
+              <p>The 128-bit plaintext is arranged into a $4 \times 4$ state matrix, column-wise:</p>
+              <pre className="bg-gray-100 p-4 rounded-lg font-mono text-sm mt-2 overflow-x-auto">
+                00  44  88  CC<br />
+                11  55  99  DD<br />
+                22  66  AA  EE<br />
+                33  77  BB  FF<br />
+              </pre>
+              
+              <h3 className="text-xl font-medium text-blue-500 mt-6">Step 2: Initial AddRoundKey</h3>
+              <p>The initial state is XORed ($\oplus$) with the original key (RoundKey0):</p>
+              <pre className="bg-gray-100 p-4 rounded-lg font-mono text-sm mt-2 overflow-x-auto">
+                00$\oplus$01  44$\oplus$89  88$\oplus$01  CC$\oplus$89<br />
+                11$\oplus$23  55$\oplus$AB  99$\oplus$23  DD$\oplus$AB<br />
+                22$\oplus$45  66$\oplus$CD  AA$\oplus$45  EE$\oplus$CD<br />
+                33$\oplus$67  77$\oplus$EF  BB$\oplus$67  FF$\oplus$EF<br />
+              </pre>
+              <p className="mt-2">This produces a new state matrix.</p>
+
+              <h3 className="text-xl font-medium text-blue-500 mt-6">Step 3: Round 1 (of 10 total rounds)</h3>
+              <p>The new state matrix undergoes the four main round steps.</p>
+              <ul className="list-disc list-inside space-y-2 mt-4 ml-4">
+                <li><strong>SubBytes:</strong> Each byte in the matrix is replaced by a value from the S-box lookup table. For example, <code>00</code> from the first row and column might be replaced with <code>63</code>.</li>
+                <li><strong>ShiftRows:</strong> The rows are cyclically shifted. Row 0 is unchanged. Row 1 is shifted left by 1 byte. Row 2 is shifted left by 2 bytes. Row 3 is shifted left by 3 bytes. This permutation moves bytes to new columns, spreading their influence.</li>
+                <li><strong>MixColumns:</strong> Each column of the matrix is treated as a vector and multiplied by a fixed, invertible matrix over a finite field. This is a complex mathematical operation that ensures a single change in an input bit diffuses throughout the entire column, increasing the cipher's diffusion.</li>
+                <li><strong>AddRoundKey:</strong> The resulting matrix is XORed with the next round key, which was generated in the key expansion process.</li>
               </ul>
-
-              <h2 class="text-2xl font-semibold text-blue-600">Key Characteristics of AES</h2>
-              <p>The Advanced Encryption Standard (AES) is a symmetric block cipher that operates on fixed-size blocks of data using a secret key. It is designed to be fast, secure, and suitable for a wide range of applications in both hardware and software.</p>
-              <h3 class="text-xl font-medium text-blue-500">Core Characteristics</h3>
-              <ul class="list-disc list-inside space-y-1">
-                <li><strong>Cipher Type:</strong> Symmetric key block cipher.</li>
-                <li><strong>Block Size:</strong> AES processes data in blocks of 128 bits (16 bytes).</li>
-                <li><strong>Key Sizes:</strong> 128, 192, or 256 bits.</li>
-                <li><strong>Number of Rounds:</strong>
-                  <ul class="list-disc ml-6 space-y-1">
-                    <li>10 rounds for 128-bit keys</li>
-                    <li>12 rounds for 192-bit keys</li>
-                    <li>14 rounds for 256-bit keys</li>
-                  </ul>
-                </li>
-                <li><strong>Speed and Efficiency:</strong> Optimized for high performance on both hardware and software.</li>
-                <li><strong>Security:</strong> Considered highly secure; no known practical attacks on the full AES algorithm.</li>
-                <li><strong>Standardization:</strong> Adopted by NIST as FIPS PUB 197 in 2001.</li>
-              </ul>
-
-              <h3 class="text-xl font-medium text-blue-500">Explanation of Terms</h3>
-              <ul class="list-disc list-inside space-y-1">
-                <li><strong>Block:</strong> AES encrypts data in units of 128 bits. If the message is larger, it is divided into blocks processed independently or with modes of operation.</li>
-                <li><strong>Key:</strong> Determines how data is encrypted/decrypted. Longer keys offer stronger security and influence the number of rounds.</li>
-              </ul>
-
-              <h2 class="text-2xl font-semibold text-blue-600">AES Encryption Process</h2>
-              <p>AES encryption takes a 128-bit plaintext block and transforms it into ciphertext using a secret key. The number of transformation rounds depends on the key size:</p>
-              <ul class="list-disc list-inside ml-4 space-y-1">
-                <li>10 rounds for 128-bit key</li>
-                <li>12 rounds for 192-bit key</li>
-                <li>14 rounds for 256-bit key</li>
-              </ul>
-
-              <h3 class="text-xl font-medium text-blue-500">Overview of Steps</h3>
-              <h4 class="text-lg font-semibold text-blue-400">Step 1: AddRoundKey (Initial Round)</h4>
-              <p>Bitwise XOR combines plaintext with the key to start the process.</p>
-
-              <h4 class="text-lg font-semibold text-blue-400">Step 2: Main Rounds (Repeated)</h4>
-              <ul class="list-disc list-inside ml-4 space-y-2">
-                <li><strong>SubBytes:</strong> Replace each byte with one from the S-box to add non-linearity.</li>
-                <li><strong>ShiftRows:</strong> Rotate rows left by 0, 1, 2, 3 bytes to spread byte positions.</li>
-                <li><strong>MixColumns:</strong> Apply matrix multiplication in GF(2⁸) to confuse patterns.</li>
-                <li><strong>AddRoundKey:</strong> XOR the state with a round-specific key.</li>
-              </ul>
-
-              <h4 class="text-lg font-semibold text-blue-400">Step 3: Final Round</h4>
-              <p>Same as other rounds but skips MixColumns:</p>
-              <ul class="list-disc list-inside ml-4 space-y-1">
-                <li>SubBytes</li>
-                <li>ShiftRows</li>
-                <li>AddRoundKey</li>
-              </ul>
-
-              <h3 class="text-xl font-medium text-blue-500">Internal Structure</h3>
-              <p>AES uses a 4×4 matrix of bytes (the state) which changes every round. Keys are expanded into round keys through a key schedule using substitution, rotation, and XOR with round constants.</p>
-
-              <h3 class="text-xl font-medium text-blue-500">Summary Table (AES-128 Example)</h3>
-              <div class="overflow-x-auto">
-                <table class="table-auto border border-collapse border-gray-400">
-                  <thead class="bg-blue-100">
-                    <tr>
-                      <th class="border px-4 py-2">Round</th>
-                      <th class="border px-4 py-2">Operations</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td class="border px-4 py-2">Initial Round</td>
-                      <td class="border px-4 py-2">AddRoundKey</td>
-                    </tr>
-                    <tr>
-                      <td class="border px-4 py-2">Rounds 1–9</td>
-                      <td class="border px-4 py-2">SubBytes → ShiftRows → MixColumns → AddRoundKey</td>
-                    </tr>
-                    <tr>
-                      <td class="border px-4 py-2">Final Round</td>
-                      <td class="border px-4 py-2">SubBytes → ShiftRows → AddRoundKey</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              <h2 class="text-2xl font-semibold text-blue-600">AES Decryption Process</h2>
-              <p>AES decryption is the reverse of the encryption process. It takes the scrambled ciphertext and step-by-step undoes each transformation using the same key, but in reverse order.</p>
-              <p>Just like encryption, AES decryption works on a 128-bit block of data and passes it through several rounds. The number of rounds depends on the key size (10, 12, or 14).</p>
-
-              <h3 class="text-xl font-medium text-blue-500">How Decryption Reverses Encryption</h3>
-              <p>To understand decryption, think of each encryption step and its exact opposite in decryption:</p>
-              <div class="overflow-x-auto">
-                <table class="table-auto border border-collapse border-gray-400">
-                  <thead class="bg-blue-100">
-                    <tr>
-                      <th class="border px-4 py-2">Encryption Step</th>
-                      <th class="border px-4 py-2">Corresponding Decryption Step</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td class="border px-4 py-2">SubBytes</td>
-                      <td class="border px-4 py-2">InvSubBytes</td>
-                    </tr>
-                    <tr>
-                      <td class="border px-4 py-2">ShiftRows</td>
-                      <td class="border px-4 py-2">InvShiftRows</td>
-                    </tr>
-                    <tr>
-                      <td class="border px-4 py-2">MixColumns</td>
-                      <td class="border px-4 py-2">InvMixColumns</td>
-                    </tr>
-                    <tr>
-                      <td class="border px-4 py-2">AddRoundKey</td>
-                      <td class="border px-4 py-2">AddRoundKey</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <p>Only the order changes — decryption starts from the last round and goes backward to the first.</p>
-
-              <h3 class="text-xl font-medium text-blue-500">Step-by-Step Decryption (AES-128)</h3>
-              <h4 class="text-lg font-semibold text-blue-400">Step 1: Initial Round</h4>
-              <p><strong>AddRoundKey:</strong> The last round key is XORed with the ciphertext.</p>
-
-              <h4 class="text-lg font-semibold text-blue-400">Step 2: Main Rounds (Rounds 9 to 1)</h4>
-              <ul class="list-disc list-inside ml-4 space-y-1">
-                <li><strong>InvShiftRows:</strong> Undo the left shifts by rotating rows to the right.</li>
-                <li><strong>InvSubBytes:</strong> Use the inverse S-box for substitution.</li>
-                <li><strong>AddRoundKey:</strong> XOR with the correct round key.</li>
-                <li><strong>InvMixColumns:</strong> Reverse the column mixing step.</li>
-              </ul>
-
-              <h4 class="text-lg font-semibold text-blue-400">Step 3: Final Round (Round 0)</h4>
-              <ul class="list-disc list-inside ml-4 space-y-1">
-                <li>InvShiftRows</li>
-                <li>InvSubBytes</li>
-                <li>AddRoundKey</li>
-              </ul>
-              <p><em>(Note: No InvMixColumns in the final round, just like encryption skips MixColumns at the end.)</em></p>
-
-              <h3 class="text-xl font-medium text-blue-500">Visual Comparison (Encryption vs Decryption)</h3>
-              <div class="overflow-x-auto">
-                <table class="table-auto border border-collapse border-gray-400">
-                  <thead class="bg-blue-100">
-                    <tr>
-                      <th class="border px-4 py-2">Process</th>
-                      <th class="border px-4 py-2">Order of Operations</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td class="border px-4 py-2">Encryption</td>
-                      <td class="border px-4 py-2">SubBytes → ShiftRows → MixColumns → AddRoundKey</td>
-                    </tr>
-                    <tr>
-                      <td class="border px-4 py-2">Decryption</td>
-                      <td class="border px-4 py-2">InvShiftRows → InvSubBytes → AddRoundKey → InvMixColumns</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <h2 class="text-2xl font-semibold text-blue-600">Mathematical Foundations of AES</h2>
-              <p>Although the steps of AES (SubBytes, ShiftRows, etc.) look simple on the surface, they are powered by solid mathematical concepts from finite field algebra, especially operations over GF(2⁸) — a type of arithmetic used for secure data transformations.</p>
-              <p>This section provides an introductory understanding of the key math concepts behind AES, without diving too deep into advanced algebra.</p>
-
-
-              <h3 class="text-xl font-medium text-blue-500">1. Byte Substitution – The S-Box</h3>
-              <p><strong>What it does:</strong> In the SubBytes step, each byte is replaced with another byte using a substitution box (S-box).</p>
-              <p><strong>How it works:</strong></p>
-              <ul class="list-disc list-inside ml-4 space-y-1">
-                <li>Each byte (8 bits) is treated as a number in a finite field GF(2⁸).</li>
-                <li>First, the multiplicative inverse of the byte is calculated in this field.</li>
-                <li>Then, an affine transformation (a special kind of bit-level transformation) is applied to further scramble the value.</li>
-                <li>This creates a non-linear mapping that helps resist cryptographic attacks.</li>
-                <li>The resulting values are stored in a precomputed S-box table for efficiency.</li>
-              </ul>
-
-
-              <h3 class="text-xl font-medium text-blue-500">2. ShiftRows – Simple Byte Shifts</h3>
-              <p><strong>What it does:</strong> Each row in the 4×4 state matrix is rotated to the left by a certain number of positions.</p>
-              <p><strong>Mathematical role:</strong> This step spreads out byte positions, which increases diffusion (spreading influence of a single byte across the state). It doesn't require field math but works alongside other steps to enhance security.</p>
-
-
-              <h3 class="text-xl font-medium text-blue-500">3. MixColumns – Matrix Multiplication in GF(2⁸)</h3>
-              <p><strong>What it does:</strong> Each column in the state is transformed using matrix multiplication over GF(2⁸).</p>
-              <p><strong>How it works:</strong></p>
-              <ul class="list-disc list-inside ml-4 space-y-1">
-                <li>Each column is treated as a 4-byte vector.</li>
-                <li>It is multiplied by a fixed 4×4 matrix using finite field arithmetic.</li>
-                <li>The coefficients and operations ensure that each output byte is affected by all four input bytes, providing strong diffusion.</li>
-                <li>This operation is reversed in decryption using InvMixColumns with the inverse matrix.</li>
-              </ul>
-
-
-              <h3 class="text-xl font-medium text-blue-500">4. AddRoundKey – Bitwise XOR</h3>
-              <p><strong>What it does:</strong> Combines the current state with the round key using the XOR operation.</p>
-              <p><strong>Mathematical role:</strong> XOR is a simple binary operation: if the bits are the same → 0, if different → 1. It is fast, reversible, and ensures that the transformation depends on the key.</p>
-
-
-              <h3 class="text-xl font-medium text-blue-500">5. Key Expansion (Key Schedule)</h3>
-              <p>AES doesn't use the original key directly in every round. Instead, it generates multiple round keys using a process called the key schedule.</p>
-              <ul class="list-disc list-inside ml-4 space-y-1">
-                <li>The original key is expanded into a set of round keys using byte substitution, rotation, and XOR operations.</li>
-                <li>A round constant (Rcon) is used to make sure each round key is different.</li>
-              </ul>
-              <h2 class="text-2xl font-semibold text-blue-600">Security, Strength, and Known Attacks on AES</h2>
-              <p>AES is widely regarded as one of the most secure symmetric encryption algorithms in use today. It offers strong protection against brute-force attacks and known cryptanalytic methods when implemented correctly.</p>
-
-
-              <h3 class="text-xl font-medium text-blue-500">1. Brute-Force Resistance</h3>
-              <p>AES supports large key sizes:</p>
-              <ul class="list-disc list-inside ml-4 space-y-1">
-                <li>128-bit key → 2¹²⁸ possible combinations</li>
-                <li>192-bit key → 2¹⁹² combinations</li>
-                <li>256-bit key → 2²⁵⁶ combinations</li>
-              </ul>
-              <p>These keyspaces are computationally infeasible to break with current or foreseeable technology.</p>
-
-
-              <h3 class="text-xl font-medium text-blue-500">2. Protection Against Classical Attacks</h3>
-              <p>AES is designed to resist:</p>
-              <ul class="list-disc list-inside ml-4 space-y-1">
-                <li>Differential and linear cryptanalysis</li>
-                <li>Square (integral) attacks</li>
-                <li>Algebraic and interpolation attacks</li>
-              </ul>
-              <p>Its structure ensures strong confusion and diffusion across multiple rounds.</p>
-
-
-              <h3 class="text-xl font-medium text-blue-500">3. Theoretical and Implementation-Based Attacks</h3>
-              <p>While AES itself remains unbroken, some specialized attacks exist in limited contexts:</p>
-              <ul class="list-disc list-inside ml-4 space-y-1">
-                <li><strong>Biclique Attack:</strong> Slightly reduces brute-force complexity but is not practical.</li>
-                <li><strong>Related-Key Attack:</strong> Targets specific key schedule weaknesses (rare in real use).</li>
-                <li><strong>Side-Channel Attacks:</strong> Exploit physical characteristics like timing or power consumption. Secure implementation practices can mitigate these risks.</li>
-              </ul>
-
-
-              <h3 class="text-xl font-medium text-blue-500">4. AES and Quantum Threats</h3>
-              <p>Quantum computing can reduce brute-force effort via Grover’s algorithm. AES-256 provides a high margin of safety even under this model, making it suitable for post-quantum use cases.</p>
-
-
-              <h3 class="text-xl font-medium text-green-700">Summary</h3>
-              <ul class="list-disc list-inside ml-4 space-y-1">
-                <li>Proper key lengths are used</li>
-                <li>Implementations avoid side-channel leakage</li>
-                <li>Key management and randomness are handled correctly</li>
-              </ul>
-              <p>AES continues to be the encryption standard of choice across industries.</p>
-              <h2 class="text-2xl font-semibold text-blue-600">Real-World Applications of AES</h2>
-              <p>AES is widely used to protect digital data across many systems and services:</p>
-              <ul class="list-disc list-inside ml-4 space-y-1">
-                <li><strong>Web Security:</strong> Encrypts data in HTTPS (TLS).</li>
-                <li><strong>Wi-Fi Networks:</strong> Used in WPA2 and WPA3 for wireless encryption.</li>
-                <li><strong>Disk and File Encryption:</strong> Secures data in tools like BitLocker, FileVault, and VeraCrypt.</li>
-                <li><strong>Messaging Apps:</strong> Ensures end-to-end encryption in WhatsApp, Signal, and others.</li>
-                <li><strong>Cloud Storage:</strong> Protects data at rest in AWS, Azure, and Google Cloud.</li>
-                <li><strong>Government Systems:</strong> AES-256 is approved for securing classified information.</li>
-              </ul>
-              <p>Its high performance, strong security, and wide support make AES a standard in both consumer and enterprise technologies.</p>
-
-
-              <h3 class="text-xl font-medium text-green-700">References</h3>
-              <ul class="list-disc list-inside ml-4 space-y-1">
-                <li><strong>Wikipedia – Advanced Encryption Standard</strong><br />
-                  <a href="https://en.wikipedia.org/wiki/Advanced_Encryption_Standard" class="text-blue-500 underline">https://en.wikipedia.org/wiki/Advanced_Encryption_Standard</a>
-                </li>
-                <li><strong>TutorialsPoint – Advanced Encryption Standard</strong><br />
-                  <a href="https://www.tutorialspoint.com/cryptography/advanced_encryption_standard.htm" class="text-blue-500 underline">https://www.tutorialspoint.com/cryptography/advanced_encryption_standard.htm</a>
-                </li>
-                <li><strong>GeeksforGeeks – Advanced Encryption Standard (AES)</strong><br />
-                  <a href="https://www.geeksforgeeks.org/advanced-encryption-standard-aes/" class="text-blue-500 underline">https://www.geeksforgeeks.org/advanced-encryption-standard-aes/</a>
-                </li>
-                <li><strong>FIPS PUB 197 – AES Announcement (NIST)</strong><br />
-                  <a href="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf" class="text-blue-500 underline">https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf</a>
-                </li>
-              </ul>
+              <p className="mt-4">These four steps are repeated for the remaining rounds. The final round omits the MixColumns step, and the final AddRoundKey produces the ciphertext. Decryption reverses this process by applying the inverse operations in the opposite order.</p>
             </div>
           </div>
         )}

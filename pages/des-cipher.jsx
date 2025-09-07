@@ -1,10 +1,9 @@
-//des-cipher.jsx
 import React, { useState } from "react";
 import { ChevronDown, ChevronUp, Lock, Unlock, Play, RotateCcw } from "lucide-react";
 
 /* =======================================================================
-   DES-64 (ECB) single-file implementation + round trace (typed-array safe)
-   ======================================================================= */
+DES-64 (ECB) single-file implementation + round trace (typed-array safe)
+======================================================================= */
 
 // ---------------- Text / bytes helpers ----------------
 const te = typeof TextEncoder !== "undefined" ? new TextEncoder() : null;
@@ -215,12 +214,12 @@ const keySchedule = (keyBytes8) => {
 };
 
 const desRound = (L, R, K) => {
-  const ER = permute(R, E);              // 32 -> 48
-  const x = xorBits(ER, K);              // 48
-  const s = sboxSubstitute(x);           // 48 -> 32
-  const p = permute(s, P);               // 32
-  const newR = xorBits(L, p);            // 32
-  const newL = R;                        // 32
+  const ER = permute(R, E); 
+  const x = xorBits(ER, K);
+  const s = sboxSubstitute(x);
+  const p = permute(s, P); 
+  const newR = xorBits(L, p);
+  const newL = R;
   return { newL, newR, trace: { L, R, ER, XOR: x, S: s, P: p, K } };
 };
 
@@ -296,7 +295,7 @@ const HalfRow = ({ title, bits32 }) => (
   <div className="bg-white rounded-lg shadow p-4">
     <div className="font-semibold text-gray-800 mb-2">{title}</div>
     <div className="font-mono text-sm bg-gray-50 rounded p-2 overflow-x-auto">
-      {bitsToHexNibbles(bits32).join("") /* 8 hex */}
+      {bitsToHexNibbles(bits32).join("")}
     </div>
   </div>
 );
@@ -329,16 +328,16 @@ const CollapsibleRound = ({ roundIndex, step, openDefault = false }) => {
 
 // ---------------- React component ----------------
 const DESCipher = () => {
-  const [activeTab, setActiveTab] = useState("interactive");
+  const [activeTab, setActiveTab] = useState("theory");
   const [mode, setMode] = useState("encrypt");
-  const [plaintext, setPlaintext] = useState("DES DEMO "); // 8 chars
-  const [key, setKey] = useState("8byteKey");             // 8 chars (padded/truncated)
-  const [cipherInput, setCipherInput] = useState("");     // hex or ascii for decrypt / hex output for encrypt
+  const [plaintext, setPlaintext] = useState("DES DEMO ");
+  const [key, setKey] = useState("8byteKey");
+  const [cipherInput, setCipherInput] = useState("");
   const [isAnimating, setIsAnimating] = useState(false);
-  const [trace, setTrace] = useState([]);                 // per-round
-  const [initial, setInitial] = useState(null);           // 64 bits
-  const [final, setFinal] = useState(null);               // 64 bits
-  const [subkeys, setSubkeys] = useState([]);             // K1..K16 (for display)
+  const [trace, setTrace] = useState([]);
+  const [initial, setInitial] = useState(null);
+  const [final, setFinal] = useState(null);
+  const [subkeys, setSubkeys] = useState([]);
   const [error, setError] = useState("");
 
   const reset = () => {
@@ -359,7 +358,7 @@ const DESCipher = () => {
     reset();
 
     const keyBytes = toBytes8(key);
-    const Ks = keySchedule(keyBytes);   // K1..K16 (48 bits)
+    const Ks = keySchedule(keyBytes);
     setSubkeys(Ks);
 
     if (mode === "encrypt") {
@@ -415,88 +414,110 @@ const DESCipher = () => {
               Theory
             </button>
             <button
+              onClick={() => setActiveTab("example")}
+              className={`px-6 py-2 rounded-md transition-colors ${activeTab === "example" ? "bg-blue-500 text-white" : "text-gray-600 hover:bg-gray-100"
+                }`}
+            >
+              Example
+            </button>
+            <button
               onClick={() => setActiveTab("interactive")}
               className={`px-6 py-2 rounded-md transition-colors ${activeTab === "interactive" ? "bg-blue-500 text-white" : "text-gray-600 hover:bg-gray-100"
                 }`}
             >
-              Interactive Tool
+              Cipher
             </button>
           </div>
         </div>
 
         {/* Theory */}
-
         {activeTab === "theory" && (
-          <div class="p-8 space-y-6 text-gray-800">
+          <div className="p-8 space-y-6 text-gray-800">
             <div className="bg-white rounded-lg shadow-lg p-6">
-
-              <h1 class="text-3xl font-bold text-indigo-700">Introduction to DES (Data Encryption Standard)</h1>
+              <h1 className="text-3xl font-bold text-indigo-700">Introduction</h1>
               <p>
-                The Data Encryption Standard (DES) is a symmetric key encryption algorithm developed in the early 1970s by IBM and adopted as a federal standard by the U.S. National Institute of Standards and Technology (NIST) in 1977. It was the first modern cipher standardized for widespread public use and became the cornerstone of digital security for over two decades.
+                The Data Encryption Standard (DES) is a symmetric-key block cipher that, for decades, was the global standard for data encryption. It was developed by IBM, and its design, based on the **Feistel structure**, was a cornerstone of modern cryptography until its small key size made it vulnerable to brute-force attacks.
               </p>
 
-              <h2 class="text-2xl font-semibold text-blue-600">Why Was DES Created?</h2>
+              <h2 className="text-2xl font-semibold text-blue-600 mt-6">Origin Story</h2>
               <p>
-                In the 1970s, digital communication systems were becoming increasingly popular, and there was an urgent need for a standardized way to protect sensitive data. IBM's Lucifer algorithm was modified and submitted to the NBS (now NIST), and with collaboration from the NSA, it was refined into what we know today as DES. The final version was published as FIPS PUB 46 in 1977.
+                DES was developed in the early 1970s by a team at IBM and was selected by the U.S. National Bureau of Standards (now NIST) in 1977 as an official federal standard. Its adoption was not without controversy. The algorithm's designers, with input from the NSA, reduced the key length from 64 bits to a final 56 bits. This, along with the undisclosed design rationale for the S-boxes, fueled speculation that the NSA had intentionally weakened the cipher or inserted a backdoor. However, the design proved to be remarkably resistant to a major cryptanalytic attack, differential cryptanalysis, that was publicly discovered much later but had been secretly known by the NSA for years.
+              </p>
+              <h2 className="text-2xl font-semibold text-blue-600 mt-6">Core Idea</h2>
+              <p>
+                DES processes **64-bit blocks** of plaintext using a **56-bit key**. Its core principle is a Feistel network with 16 rounds of iterative transformation. The security of the cipher relies on a combination of **substitution** and **permutation**, with the non-linear S-boxes being the most critical component for introducing **confusion** and preventing linear attacks.
+              </p>
+              <h2 className="text-2xl font-semibold text-blue-600 mt-6">Technical Blueprint</h2>
+              <p>
+                The DES encryption process is a sequence of well-defined steps:
+              </p>
+              <ul className="list-disc list-inside space-y-2 mt-4 ml-4">
+                <li><strong>Initial Permutation (IP):</strong> The 64-bit plaintext block is permuted according to a fixed rule.</li>
+                <li><strong>Feistel Network Rounds:</strong> The permuted block is split into two 32-bit halves, a left half ($L_0$) and a right half ($R_0$). These halves undergo 16 rounds of the Feistel function. In each round, the right half becomes the new left half, and the new right half is computed as the XOR of the old left half and the output of the round function, $f$, applied to the old right half and a round-specific subkey ($K_i$). </li>
+                <li><strong>Round Function $f$:</strong> This function involves several key operations: an expansion permutation that expands the 32-bit input to 48 bits, a substitution using 8 different **S-boxes**, and a final permutation. The S-boxes are the single non-linear component of the algorithm, making them crucial for its security.</li>
+                <li><strong>Final Permutation (FP):</strong> After 16 rounds, the left and right halves are re-combined and a final inverse permutation, $IP^{-1}$, is applied to produce the 64-bit ciphertext.</li>
+              </ul>
+
+              <h2 className="text-2xl font-semibold text-blue-600 mt-6">Security Scorecard</h2>
+              <p>
+                The primary weakness of DES is its small **56-bit effective key size**. This was a reasonable length when the cipher was designed in the 1970s, but the exponential growth of computational power quickly made it vulnerable to **brute-force attacks**. In 1999, the Electronic Frontier Foundation (EFF) demonstrated that a DES key could be found in less than 24 hours. Due to this vulnerability, DES was officially deprecated by NIST and has since been replaced by the more secure Advanced Encryption Standard (AES).
               </p>
 
-              <h2 class="text-2xl font-semibold text-blue-600">Key Characteristics of DES</h2>
-              <ul class="list-disc list-inside ml-4 space-y-1">
-                <li><strong>Type:</strong> Symmetric-key block cipher</li>
-                <li><strong>Block Size:</strong> 64 bits</li>
-                <li><strong>Key Size:</strong> 64 bits (56 bits used for encryption, 8 bits for parity check)</li>
-                <li><strong>Structure:</strong> 16-round Feistel network</li>
-                <li><strong>Mode of Operation:</strong> Can be used in ECB, CBC, CFB, OFB, and CTR modes</li>
-                <li><strong>Speed:</strong> Efficient in hardware; slower in software by modern standards</li>
-              </ul>
-
-              <h2 class="text-2xl font-semibold text-blue-600">DES Encryption Process</h2>
+              <h2 className="text-2xl font-semibold text-blue-600 mt-6">Real-World Usage</h2>
               <p>
-                DES transforms a 64-bit block of plaintext into a 64-bit block of ciphertext through multiple permutations and substitutions across 16 rounds. The structure of DES is based on a Feistel network where each round modifies half of the data based on a function of the other half and a round-specific key.
+                For over two decades, DES was the workhorse of symmetric encryption, used in a wide range of applications from securing financial transactions to protecting government data. Its story is a microcosm of the evolution of cryptography, where a once-formidable standard became obsolete in the face of rapid technological advancement. The transition from DES's 56-bit key to AES's 128/192/256-bit keys perfectly illustrates the need for larger key spaces to outpace the relentless increase in computing power.
               </p>
-
-              <h3 class="text-xl font-medium text-blue-500">Steps</h3>
-              <ul class="list-decimal list-inside ml-4 space-y-1">
-                <li>Initial Permutation (IP)</li>
-                <li>Split into Left (L) and Right (R) halves</li>
-                <li>For 16 Rounds: R[i] = L[i-1], L[i] = R[i-1] XOR f(L[i-1], Key[i])</li>
-                <li>Final Permutation (IP<sup>-1</sup>)</li>
-              </ul>
-
-              <h2 class="text-2xl font-semibold text-blue-600">DES Decryption Process</h2>
-              <p>
-                The decryption process of DES is the same as encryption except the round keys are used in reverse order. The symmetry of the Feistel structure allows encryption and decryption to use the same algorithm.
-              </p>
-
-              <h2 class="text-2xl font-semibold text-blue-600">Mathematics Behind DES</h2>
-              <ul class="list-disc list-inside ml-4 space-y-1">
-                <li><strong>Expansion:</strong> 32-bit half block is expanded to 48 bits</li>
-                <li><strong>Substitution:</strong> 48-bit block passes through 8 S-boxes (each 6-bit input → 4-bit output)</li>
-                <li><strong>Permutation:</strong> The output is permuted using a fixed P-table</li>
-                <li><strong>XOR:</strong> Round key is XORed with the expanded block</li>
-              </ul>
-
-              <h2 class="text-2xl font-semibold text-blue-600">Security of DES</h2>
-              <ul class="list-disc list-inside ml-4 space-y-1">
-                <li><strong>Short Key Length:</strong> 56 bits are vulnerable to brute-force attacks</li>
-                <li><strong>Known Attacks:</strong> Differential and linear cryptanalysis</li>
-                <li><strong>Triple DES (3DES):</strong> Applied DES three times to improve security (Encrypt-Decrypt-Encrypt)</li>
-              </ul>
-
-              <h2 class="text-2xl font-semibold text-blue-600">Modern Replacement</h2>
-              <p>
-                DES is now considered insecure for most applications. It has been replaced by the Advanced Encryption Standard (AES), which supports longer key lengths and more robust security.
-              </p>
-
-              <h2 class="text-xl font-medium text-green-700">References</h2>
-              <ul class="list-disc list-inside ml-4 space-y-1">
-                <li><a href="https://en.wikipedia.org/wiki/Data_Encryption_Standard" class="text-blue-500 underline">Wikipedia – Data Encryption Standard</a></li>
-                <li><a href="https://www.geeksforgeeks.org/data-encryption-standard-des-set-1/" class="text-blue-500 underline">GeeksforGeeks – DES Explained</a></li>
-                <li><a href="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.46-3.pdf" class="text-blue-500 underline">FIPS PUB 46-3 (NIST) – DES Standard</a></li>
-              </ul>
             </div>
-          </div>)}
-            {/* Interactive */}
+          </div>
+        )}
+        
+        {/* Example */}
+        {activeTab === "example" && (
+          <div className="p-8 space-y-6 text-gray-800">
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h1 className="text-3xl font-bold text-blue-700">Solved Example </h1>
+              <p>
+                A complete numerical walkthrough of DES is too complex and lengthy for this report, but a conceptual example can illustrate the process of a single round.
+              </p>
+              <h3 className="text-xl font-medium text-blue-500 mt-4">Example: A single round of DES encryption.</h3>
+              <p><strong>Plaintext block:</strong> <code>0123456789ABCDEF</code> (in hexadecimal)</p>
+              <p><strong>Subkey for Round 1:</strong> $K_1$</p>
+              <h3 className="text-xl font-medium text-blue-500 mt-6">Step 1: Initial Permutation (IP)</h3>
+              <p>
+                The 64-bit plaintext is rearranged. This step is a fixed, known permutation that shuffles the bits. The resulting 64-bit block is split into two 32-bit halves, $L_0$ and $R_0$.
+              </p>
+              <h3 className="text-xl font-medium text-blue-500 mt-6">Step 2: The Round Function, $f(R_0, K_1)$</h3>
+              <p>
+                The round function takes $R_0$ and the subkey $K_1$ as input.
+              </p>
+              <ul className="list-disc list-inside space-y-2 mt-4 ml-4">
+                <li><strong>Expansion Permutation (E-Box):</strong> $R_0$ (32 bits) is expanded to 48 bits by duplicating and rearranging some bits.</li>
+                <li><strong>Key Mixing:</strong> The 48-bit expanded $R_0$ is XORed with the 48-bit subkey $K_1$.</li>
+                <li><strong>S-Box Substitution:</strong> The 48-bit result is divided into eight 6-bit chunks. Each chunk is fed into a separate S-box, which is a lookup table that maps each 6-bit input to a unique 4-bit output. This is the non-linear, non-invertible step that provides the cipher's security. The eight 4-bit outputs are concatenated to form a 32-bit block.</li>
+                <li><strong>P-Box Permutation:</strong> The resulting 32-bit block is then permuted to create the final output of the round function.</li>
+              </ul>
+              <h3 className="text-xl font-medium text-blue-500 mt-6">Step 3: XOR with the Left Half</h3>
+              <p>
+                The output of the round function, $f(R_0, K_1)$, is XORed with the original left half, $L_0$.
+              </p>
+              <p className="mt-2 font-mono text-sm">
+                $R_1 = L_0 \oplus f(R_0, K_1)$
+              </p>
+              <h3 className="text-xl font-medium text-blue-500 mt-6">Step 4: Swap the Halves</h3>
+              <p>
+                The new left half becomes the old right half, and the new right half becomes the result of the XOR operation.
+              </p>
+              <p className="mt-2 font-mono text-sm">
+                $L_1 = R_0$
+              </p>
+              <p className="mt-4">
+                This completes a single round. The resulting ($L_1, R_1$) pair becomes the input for the next round. This process is repeated 16 times, followed by a final inverse permutation to produce the ciphertext.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Interactive */}
         {activeTab === "interactive" && (
           <div className="space-y-6">
             <div className="bg-white rounded-lg shadow-lg p-6">
