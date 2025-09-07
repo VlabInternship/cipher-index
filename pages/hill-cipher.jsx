@@ -5,6 +5,7 @@ const HillCipherApp = () => {
   const [activeTab, setActiveTab] = useState('Theory');
   const [plaintext, setPlaintext] = useState('HELLO');
   const [ciphertext, setCiphertext] = useState('');
+  const [decryptedResult, setDecryptedResult] = useState('');
   const [keyMatrix, setKeyMatrix] = useState([[3, 2], [5, 7]]);
   const [isEncrypting, setIsEncrypting] = useState(false);
   const [isDecrypting, setIsDecrypting] = useState(false);
@@ -32,7 +33,6 @@ const HillCipherApp = () => {
     const detInv = modInverse(detMod, 26);
     if (!detInv) return null;
     
-    // Fixed the inverse matrix calculation
     return [
       [((matrix[1][1] * detInv) % 26 + 26) % 26, ((-matrix[0][1] * detInv) % 26 + 26) % 26],
       [((-matrix[1][0] * detInv) % 26 + 26) % 26, ((matrix[0][0] * detInv) % 26 + 26) % 26]
@@ -84,6 +84,8 @@ const HillCipherApp = () => {
     
     for (let i = 0; i < cleanText.length; i += 2) {
       const pair = cleanText.slice(i, i + 2);
+      if (pair.length < 2) break; // Skip incomplete pairs
+      
       const nums = [charToNum(pair[0]), charToNum(pair[1])];
       const result = matrixMultiply(inverseKey, nums);
       const chars = [numToChar(result[0]), numToChar(result[1])];
@@ -107,6 +109,7 @@ const HillCipherApp = () => {
   const encrypt = () => {
     const steps = generateEncryptionSteps(plaintext, keyMatrix);
     setEncryptionSteps(steps);
+    setDecryptionSteps([]); // Clear decryption steps
     setCurrentStep(0);
     setIsEncrypting(true);
     setIsDecrypting(false);
@@ -114,16 +117,37 @@ const HillCipherApp = () => {
     
     const result = steps.map(step => step.cipherPair).join('');
     setCiphertext(result);
+    setDecryptedResult(''); // Clear decrypted result
   };
 
   const decrypt = () => {
-    if (!ciphertext) return;
+    if (!ciphertext.trim()) {
+      alert('Please enter ciphertext to decrypt');
+      return;
+    }
+    
+    const inverseMatrix = matrixInverse2x2(keyMatrix);
+    if (!inverseMatrix) {
+      alert('Matrix is not invertible! Cannot decrypt.');
+      return;
+    }
+    
     const steps = generateDecryptionSteps(ciphertext, keyMatrix);
+    if (steps.length === 0) {
+      alert('Invalid ciphertext or matrix');
+      return;
+    }
+    
     setDecryptionSteps(steps);
+    setEncryptionSteps([]); // Clear encryption steps
     setCurrentStep(0);
     setIsDecrypting(true);
     setIsEncrypting(false);
     setShowSteps(true);
+    
+    // Set the decrypted result immediately
+    const result = steps.map(step => step.plainPair).join('');
+    setDecryptedResult(result);
   };
 
   const nextStep = () => {
@@ -145,6 +169,9 @@ const HillCipherApp = () => {
     setShowSteps(false);
     setEncryptionSteps([]);
     setDecryptionSteps([]);
+    setCiphertext('');
+    setDecryptedResult('');
+    setPlaintext('HELLO');
   };
 
   const tabs = ['Theory', 'Example', 'Simulation'];
@@ -449,10 +476,7 @@ const HillCipherApp = () => {
                     Decrypted Result
                   </label>
                   <div className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-lg font-mono">
-                    {decryptionSteps.length > 0 && currentStep >= decryptionSteps.length 
-                      ? decryptionSteps.map(step => step.plainPair).join('') 
-                      : 'Click decrypt to see result'
-                    }
+                    {decryptedResult || 'Click decrypt to see result'}
                   </div>
                 </div>
               </div>
@@ -531,7 +555,7 @@ const HillCipherApp = () => {
                   })}
                 </div>
                 
-                {currentStep > 0 && (
+                {currentStep >= 0 && (
                   <div className="mt-6 p-4 bg-gradient-to-r from-blue-100 to-green-100 rounded-lg border">
                     <h4 className="font-bold text-lg mb-2">
                       {encryptionSteps.length > 0 ? 'Current Ciphertext:' : 'Current Plaintext:'}
