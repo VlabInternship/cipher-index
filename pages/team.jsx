@@ -45,8 +45,8 @@ export default function Team() {
       name: "Sneha Patil",
       role: "Developer",
       image: "/images/sneha.jpeg",
-      about: "Creative designer with a passion for user experience and interface design. Skilled in graphic design, UI/UX principles, and front-end development with focus on user-centered solutions.",
-      linkdin: "https://www.linkedin.com/in/sneha-patil/",
+      about: "Full-Stack Developer skilled in React, Node.js, and cloud technologies.Experienced in building scalable web applications and AI-powered systems with a focus on usability and modular design.Proven ability to deliver impactful projects across diverse domains by combining technical expertise with user-centric thinking.",
+      linkdin: "https://www.linkedin.com/in/5neha-patil/",
       email: "patil.sr@somaiya.edu",
     },
     {
