@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { ChevronDown, ChevronUp, Lock, Unlock, Play, RotateCcw } from "lucide-react";
+import { ChevronDown, ChevronUp, Lock, Unlock, Play, RotateCcw, ArrowLeft } from "lucide-react";
+import { useRouter } from "next/router";
 
 /* =========================================================================================
 Minimal AES-128 ECB implementation with round-by-round trace (inside this single file)
@@ -51,11 +52,23 @@ const RCON = [
 const te = new TextEncoder();
 const td = new TextDecoder();
 
+// Convert string to 16-byte array (pad with spaces or truncate)
 const toBytes16 = (str) => {
   const b = te.encode(str);
-  const out = new Uint8Array(16).fill(0x20);
+  const out = new Uint8Array(16).fill(0x20); // Fill with spaces
   out.set(b.slice(0, 16));
   return out;
+};
+
+// Convert 16 bytes to AES state in column-major order
+const bytesToState = (bytes16) => {
+  // AES state is already in the correct byte order for our operations
+  return bytes16.slice();
+};
+
+// Convert AES state back to bytes
+const stateToBytes = (state) => {
+  return state.slice();
 };
 const bytesToHex = (bytes) => Array.from(bytes).map(b => b.toString(16).padStart(2, "0")).join("").toUpperCase();
 const hexToBytes = (hex) => {
@@ -71,29 +84,41 @@ const bytesToPrintableAscii = (bytes) => {
   return s;
 };
 
-// State <-> Matrix (row-major for display; internally we keep a 16-byte array)
+// State <-> Matrix (AES standard: column-major byte ordering)
+// AES state matrix is organized as: state[row + 4*col]
+// Matrix visualization for display (showing actual AES layout)
 const toMatrixRows = (bytes16) => {
   const m = [[], [], [], []];
-  for (let i = 0; i < 16; i++) m[Math.floor(i / 4)].push(bytes16[i]);
+  for (let col = 0; col < 4; col++) {
+    for (let row = 0; row < 4; row++) {
+      m[row][col] = bytes16[row + 4 * col];
+    }
+  }
   return m;
 };
 
-// Galois mult
+// Galois Field (GF(2^8)) arithmetic for AES MixColumns
+// Multiplication by x in GF(2^8) with irreducible polynomial x^8 + x^4 + x^3 + x + 1
 const xtime = (a) => ((a << 1) ^ ((a & 0x80) ? 0x1b : 0)) & 0xff;
+
+// General multiplication in GF(2^8)
 const gmul = (a, b) => {
   let p = 0;
   for (let i = 0; i < 8; i++) {
     if (b & 1) p ^= a;
     const hi = a & 0x80;
     a = (a << 1) & 0xff;
-    if (hi) a ^= 0x1b;
+    if (hi) a ^= 0x1b; // Reduce by irreducible polynomial
     b >>= 1;
   }
   return p;
 };
 
-// Round steps
+// SubBytes: Apply S-box substitution to each byte
+// Non-linear transformation that provides confusion
 const subBytes = (s) => s.map(b => S[b]);
+
+// Inverse SubBytes: Apply inverse S-box substitution
 const invSubBytes = (s) => s.map(b => iS[b]);
 
 // Rotate left a 4-byte row by n
@@ -102,7 +127,6 @@ const rotl4 = (row4, n) => {
   for (let c = 0; c < 4; c++) out[c] = row4[(c + n) % 4];
   return out;
 };
-console.log(rotl4([1, 2, 3, 4], 1));
 // Rotate right a 4-byte row by n
 const rotr4 = (row4, n) => {
   const out = new Uint8Array(4);
@@ -110,29 +134,52 @@ const rotr4 = (row4, n) => {
   return out;
 };
 
+// ShiftRows: Cyclically shift each row left by row number
+// Row 0: no shift, Row 1: shift 1, Row 2: shift 2, Row 3: shift 3
 const shiftRows = (s) => {
   const t = s.slice();
-  for (let r = 0; r < 4; r++) {
-    const base = r * 4;
-    const row = t.slice(base, base + 4);
-    const rot = rotl4(row, r);
-    for (let c = 0; c < 4; c++) t[base + c] = rot[c];
+  for (let row = 0; row < 4; row++) {
+    const temp = [];
+    // Extract the row from column-major layout
+    for (let col = 0; col < 4; col++) {
+      temp[col] = t[row + 4 * col];
+    }
+    // Rotate left by row number
+    const shifted = rotl4(temp, row);
+    // Put back into column-major layout
+    for (let col = 0; col < 4; col++) {
+      t[row + 4 * col] = shifted[col];
+    }
   }
   return t;
 };
 
+// Inverse ShiftRows: Cyclically shift each row right by row number
 const invShiftRows = (s) => {
   const t = s.slice();
-  for (let r = 0; r < 4; r++) {
-    const base = r * 4;
-    const row = t.slice(base, base + 4);
-    const rot = rotr4(row, r);
-    for (let c = 0; c < 4; c++) t[base + c] = rot[c];
+  for (let row = 0; row < 4; row++) {
+    const temp = [];
+    // Extract the row from column-major layout
+    for (let col = 0; col < 4; col++) {
+      temp[col] = t[row + 4 * col];
+    }
+    // Rotate right by row number
+    const shifted = rotr4(temp, row);
+    // Put back into column-major layout
+    for (let col = 0; col < 4; col++) {
+      t[row + 4 * col] = shifted[col];
+    }
   }
   return t;
 };
 
 
+// MixColumns matrix multiplication for a single column
+// Multiplies column vector by fixed MDS matrix:
+// [02 03 01 01]   [a[0]]   [02*a[0] + 03*a[1] + 01*a[2] + 01*a[3]]
+// [01 02 03 01] * [a[1]] = [01*a[0] + 02*a[1] + 03*a[2] + 01*a[3]]
+// [01 01 02 03]   [a[2]]   [01*a[0] + 01*a[1] + 02*a[2] + 03*a[3]]
+// [03 01 01 02]   [a[3]]   [03*a[0] + 01*a[1] + 01*a[2] + 02*a[3]]
 const mixSingleColumn = (a) => [
   gmul(0x02, a[0]) ^ gmul(0x03, a[1]) ^ a[2] ^ a[3],
   a[0] ^ gmul(0x02, a[1]) ^ gmul(0x03, a[2]) ^ a[3],
@@ -140,6 +187,12 @@ const mixSingleColumn = (a) => [
   gmul(0x03, a[0]) ^ a[1] ^ a[2] ^ gmul(0x02, a[3])
 ].map(x => x & 0xff);
 
+// Inverse MixColumns matrix multiplication
+// Multiplies by inverse MDS matrix:
+// [0e 0b 0d 09]
+// [09 0e 0b 0d]
+// [0d 09 0e 0b]
+// [0b 0d 09 0e]
 const invMixSingleColumn = (a) => [
   gmul(0x0e, a[0]) ^ gmul(0x0b, a[1]) ^ gmul(0x0d, a[2]) ^ gmul(0x09, a[3]),
   gmul(0x09, a[0]) ^ gmul(0x0e, a[1]) ^ gmul(0x0b, a[2]) ^ gmul(0x0d, a[3]),
@@ -147,25 +200,41 @@ const invMixSingleColumn = (a) => [
   gmul(0x0b, a[0]) ^ gmul(0x0d, a[1]) ^ gmul(0x09, a[2]) ^ gmul(0x0e, a[3])
 ].map(x => x & 0xff);
 
+// MixColumns: Apply linear transformation to each column
+// Each column is treated as a 4-byte vector multiplied by MDS matrix
 const mixColumns = (s) => {
   const t = s.slice();
-  for (let c = 0; c < 4; c++) {
-    const col = [t[c], t[4 + c], t[8 + c], t[12 + c]];
-    const m = mixSingleColumn(col);
-    t[c] = m[0]; t[4 + c] = m[1]; t[8 + c] = m[2]; t[12 + c] = m[3];
-  }
-  return t;
-};
-const invMixColumns = (s) => {
-  const t = s.slice();
-  for (let c = 0; c < 4; c++) {
-    const col = [t[c], t[4 + c], t[8 + c], t[12 + c]];
-    const m = invMixSingleColumn(col);
-    t[c] = m[0]; t[4 + c] = m[1]; t[8 + c] = m[2]; t[12 + c] = m[3];
+  for (let col = 0; col < 4; col++) {
+    // Extract column in correct order (AES column-major)
+    const column = [t[0 + 4 * col], t[1 + 4 * col], t[2 + 4 * col], t[3 + 4 * col]];
+    const mixed = mixSingleColumn(column);
+    // Put back the mixed column
+    t[0 + 4 * col] = mixed[0];
+    t[1 + 4 * col] = mixed[1];
+    t[2 + 4 * col] = mixed[2];
+    t[3 + 4 * col] = mixed[3];
   }
   return t;
 };
 
+// Inverse MixColumns: Apply inverse linear transformation
+const invMixColumns = (s) => {
+  const t = s.slice();
+  for (let col = 0; col < 4; col++) {
+    // Extract column in correct order (AES column-major)
+    const column = [t[0 + 4 * col], t[1 + 4 * col], t[2 + 4 * col], t[3 + 4 * col]];
+    const mixed = invMixSingleColumn(column);
+    // Put back the mixed column
+    t[0 + 4 * col] = mixed[0];
+    t[1 + 4 * col] = mixed[1];
+    t[2 + 4 * col] = mixed[2];
+    t[3 + 4 * col] = mixed[3];
+  }
+  return t;
+};
+
+// AddRoundKey: XOR state with round key
+// Key mixing step that provides key-dependent transformation
 const addRoundKey = (s, rk) => s.map((b, i) => b ^ rk[i]);
 
 // Key expansion (AES-128 -> 11 round keys of 16 bytes)
@@ -318,16 +387,20 @@ const CollapsibleRound = ({ roundIndex, step, openDefault = false }) => {
 };
 
 const AESCipher = () => {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("theory");
   const [mode, setMode] = useState("encrypt");
-  const [plaintext, setPlaintext] = useState("Hello, AES Demo!!");
-  const [key, setKey] = useState("Sixteen byte key");
+  const [plaintext, setPlaintext] = useState("");
+  const [key, setKey] = useState("");
   const [ciphertext, setCiphertext] = useState("");
   const [isAnimating, setIsAnimating] = useState(false);
   const [trace, setTrace] = useState([]);
   const [initialState, setInitialState] = useState(null);
   const [finalState, setFinalState] = useState(null);
   const [error, setError] = useState("");
+  const [keyError, setKeyError] = useState("");
+  const [inputError, setInputError] = useState("");
+  const [warnings, setWarnings] = useState([]);
 
   const reset = () => {
     setIsAnimating(false);
@@ -335,8 +408,83 @@ const AESCipher = () => {
     setInitialState(null);
     setFinalState(null);
     setError("");
+    setKeyError("");
+    setInputError("");
+    setWarnings([]);
   };
 
+  const validateKey = (keyStr) => {
+    const errors = [];
+    const warnings = [];
+    
+    if (!keyStr) {
+      errors.push("Key is required");
+    } else if (keyStr.length < 16) {
+      warnings.push(`Key is ${keyStr.length} chars, will be padded to 16 with spaces`);
+    } else if (keyStr.length > 16) {
+      warnings.push(`Key is ${keyStr.length} chars, will be truncated to 16`);
+    }
+    
+    // Check for weak keys
+    if (keyStr && new Set(keyStr).size === 1) {
+      warnings.push("Weak key detected: all characters are the same");
+    }
+    
+    // Check for non-printable characters
+    const nonPrintable = keyStr.split('').filter(c => c.charCodeAt(0) < 32 || c.charCodeAt(0) > 126);
+    if (nonPrintable.length > 0) {
+      warnings.push("Key contains non-printable characters");
+    }
+    
+    return { errors, warnings };
+  };
+  
+  const validateInput = (inputStr, isEncrypt) => {
+    const errors = [];
+    const warnings = [];
+    
+    if (!inputStr) {
+      errors.push(`${isEncrypt ? 'Plaintext' : 'Ciphertext'} is required`);
+      return { errors, warnings };
+    }
+    
+    if (isEncrypt) {
+      // Validate plaintext
+      if (inputStr.length < 16) {
+        warnings.push(`Plaintext is ${inputStr.length} chars, will be padded to 16 with spaces`);
+      } else if (inputStr.length > 16) {
+        warnings.push(`Plaintext is ${inputStr.length} chars, will be truncated to 16`);
+      }
+      
+      const nonPrintable = inputStr.split('').filter(c => c.charCodeAt(0) < 32 || c.charCodeAt(0) > 126);
+      if (nonPrintable.length > 0) {
+        warnings.push("Plaintext contains non-printable characters");
+      }
+    } else {
+      // Validate ciphertext
+      const clean = inputStr.replace(/\s+/g, '');
+      const isHex = /^[0-9a-fA-F]+$/.test(clean);
+      
+      if (isHex) {
+        if (clean.length !== 32) {
+          errors.push(`Hex ciphertext must be exactly 32 characters (got ${clean.length})`);
+        }
+      } else {
+        // Assume ASCII input
+        if (inputStr.length !== 16) {
+          errors.push(`ASCII ciphertext must be exactly 16 characters (got ${inputStr.length})`);
+        }
+        
+        const nonPrintable = inputStr.split('').filter(c => c.charCodeAt(0) < 32 || c.charCodeAt(0) > 126);
+        if (nonPrintable.length > 0) {
+          warnings.push("Ciphertext contains non-printable characters");
+        }
+      }
+    }
+    
+    return { errors, warnings };
+  };
+  
   const parseCipherInput = (val) => {
     const clean = val.trim();
     const isHex = clean.length > 0 && clean.length % 2 === 0 && /^[0-9a-fA-F\s]+$/.test(clean);
@@ -344,10 +492,23 @@ const AESCipher = () => {
   };
 
   const runCore = (explain) => {
-    reset();
-
-    // Validate key & inputs a bit
-    if (key.length === 0) { setError("Key required (16 ASCII chars; padded/truncated with spaces)"); return; }
+    // Validate inputs before processing
+    const keyValidation = validateKey(key);
+    const inputValidation = validateInput(mode === "encrypt" ? plaintext : ciphertext, mode === "encrypt");
+    
+    setKeyError(keyValidation.errors.join(", "));
+    setInputError(inputValidation.errors.join(", "));
+    setWarnings([...keyValidation.warnings, ...inputValidation.warnings]);
+    setError("");
+    
+    // Stop if there are validation errors
+    if (keyValidation.errors.length > 0 || inputValidation.errors.length > 0) {
+      return;
+    }
+    
+    setTrace([]);
+    setInitialState(null);
+    setFinalState(null);
 
     const keyBytes = toBytes16(key);
     const rks = expandKey(keyBytes);
@@ -381,6 +542,17 @@ const AESCipher = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="max-w-6xl mx-auto">
+        {/* Back Button */}
+        <div className="mb-6">
+          <button
+            onClick={() => router.push('/')}
+            className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <ArrowLeft size={20} />
+            <span>Back to Home</span>
+          </button>
+        </div>
+        
         <header className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-2">AES Cipher (AES‑128, ECB)</h1>
           <p className="text-gray-600">Encrypt, decrypt, and visualize AES rounds step by step</p>
@@ -499,11 +671,23 @@ const AESCipher = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">Mode</label>
                   <select
                     value={mode}
-                    onChange={(e) => setMode(e.target.value)}
+                    onChange={(e) => {
+                      setMode(e.target.value);
+                      // Clear errors and warnings when switching modes
+                      setError("");
+                      setInputError("");
+                      setWarnings([]);
+                      // Clear output when switching modes
+                      if (e.target.value === "encrypt") {
+                        setCiphertext("");
+                      } else {
+                        setPlaintext("");
+                      }
+                    }}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
-                    <option value="encrypt">Encrypt</option>
-                    <option value="decrypt">Decrypt</option>
+                    <option value="encrypt">🔒 Encrypt (Plaintext → Ciphertext)</option>
+                    <option value="decrypt">🔓 Decrypt (Ciphertext → Plaintext)</option>
                   </select>
                 </div>
 
@@ -512,11 +696,23 @@ const AESCipher = () => {
                   <input
                     type="text"
                     value={key}
-                    maxLength={16}
-                    onChange={(e) => setKey(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Sixteen byte key"
+                    onChange={(e) => {
+                      setKey(e.target.value);
+                      if (keyError) setKeyError("");
+                      if (warnings.length > 0) setWarnings([]);
+                    }}
+                    className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      keyError ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                    }`}
+                    placeholder="Enter 16 characters..."
+                    title="Enter AES-128 key (16 ASCII characters)"
                   />
+                  {keyError && (
+                    <p className="mt-1 text-sm text-red-600">{keyError}</p>
+                  )}
+                  <p className="mt-1 text-xs text-gray-500">
+                    Current length: {key.length}/16 • {key.length < 16 ? 'Will be padded' : key.length > 16 ? 'Will be truncated' : 'Perfect length'}
+                  </p>
                 </div>
 
                 <div>
@@ -526,10 +722,38 @@ const AESCipher = () => {
                   <input
                     type="text"
                     value={mode === "encrypt" ? plaintext : ciphertext}
-                    onChange={(e) => (mode === "encrypt" ? setPlaintext(e.target.value) : setCiphertext(e.target.value))}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder={mode === "encrypt" ? "Exactly 16 characters (will pad/truncate)" : "e.g. 66E94BD4..."}
+                    onChange={(e) => {
+                      if (mode === "encrypt") {
+                        setPlaintext(e.target.value);
+                      } else {
+                        setCiphertext(e.target.value.toUpperCase());
+                      }
+                      if (inputError) setInputError("");
+                      if (warnings.length > 0) setWarnings([]);
+                    }}
+                    className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      inputError ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                    }`}
+                    placeholder={mode === "encrypt" ? "Enter 16 characters..." : "Enter 32 hex chars or 16 ASCII chars..."}
+                    title={mode === "encrypt" 
+                      ? "Enter plaintext (16 ASCII characters)"
+                      : "Enter ciphertext (32 hex characters or 16 ASCII characters)"
+                    }
                   />
+                  {inputError && (
+                    <p className="mt-1 text-sm text-red-600">{inputError}</p>
+                  )}
+                  {mode === "encrypt" ? (
+                    <p className="mt-1 text-xs text-gray-500">
+                      Current length: {plaintext.length}/16 • {plaintext.length < 16 ? 'Will be padded' : plaintext.length > 16 ? 'Will be truncated' : 'Perfect length'}
+                    </p>
+                  ) : (
+                    <p className="mt-1 text-xs text-gray-500">
+                      {ciphertext.replace(/\s+/g, '').length > 0 && /^[0-9a-fA-F\s]+$/.test(ciphertext) 
+                        ? `Hex format detected • Length: ${ciphertext.replace(/\s+/g, '').length}/32`
+                        : `ASCII format • Length: ${ciphertext.length}/16`}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -546,10 +770,20 @@ const AESCipher = () => {
                 </div>
               </div>
 
+              {/* Warnings Display */}
+              {warnings.length > 0 && (
+                <div className="mt-4 p-3 rounded bg-yellow-50 text-yellow-800 text-sm border border-yellow-200">
+                  <div className="font-medium mb-1">⚠️ Warnings:</div>
+                  <ul className="list-disc list-inside space-y-1">
+                    {warnings.map((warning, i) => <li key={i}>{warning}</li>)}
+                  </ul>
+                </div>
+              )}
+
               <div className="flex gap-4 mt-6">
                 <button
                   onClick={runExplain}
-                  disabled={isAnimating}
+                  disabled={isAnimating || keyError || inputError}
                   className="flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   <Play size={18} />
@@ -558,7 +792,8 @@ const AESCipher = () => {
 
                 <button
                   onClick={() => runCore(false)}
-                  className="flex items-center gap-2 px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                  disabled={keyError || inputError}
+                  className="flex items-center gap-2 px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {mode === "encrypt" ? <Lock size={18} /> : <Unlock size={18} />}
                   {mode === "encrypt" ? "Encrypt" : "Decrypt"}
@@ -571,11 +806,70 @@ const AESCipher = () => {
                   <RotateCcw size={18} />
                   Reset
                 </button>
+                
+                {/* Quick Fill Buttons */}
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      setKey("MySecretAESKey16");
+                      setPlaintext("Hello AES World!");
+                      setCiphertext("");
+                      setMode("encrypt");
+                      setError("");
+                      setKeyError("");
+                      setInputError("");
+                      setWarnings([]);
+                    }}
+                    className="px-3 py-2 text-xs bg-purple-100 text-purple-700 rounded hover:bg-purple-200 transition-colors"
+                  >
+                    📝 Sample Data
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      setKey("");
+                      setPlaintext("");
+                      setCiphertext("");
+                      setError("");
+                      setKeyError("");
+                      setInputError("");
+                      setWarnings([]);
+                    }}
+                    className="px-3 py-2 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
+                  >
+                    🗑️ Clear All
+                  </button>
+                </div>
               </div>
 
+              {/* Error Display */}
               {error && (
                 <div className="mt-4 p-3 rounded bg-red-50 text-red-700 text-sm border border-red-200">
+                  <div className="font-medium mb-1">❌ Error:</div>
                   {error}
+                </div>
+              )}
+              
+              {/* Input Validation Status */}
+              {(key || (mode === "encrypt" ? plaintext : ciphertext)) && (
+                <div className="mt-4 p-3 rounded bg-blue-50 text-blue-700 text-sm border border-blue-200">
+                  <div className="font-medium mb-2">📋 Input Status:</div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+                    <div className={`flex items-center gap-1 ${keyError ? 'text-red-600' : 'text-green-600'}`}>
+                      {keyError ? '❌' : '✅'} Key: {key.length}/16 chars
+                      {keyError && ` (${keyError})`}
+                    </div>
+                    <div className={`flex items-center gap-1 ${inputError ? 'text-red-600' : 'text-green-600'}`}>
+                      {inputError ? '❌' : '✅'} {mode === "encrypt" ? "Plaintext" : "Ciphertext"}:
+                      {mode === "encrypt" 
+                        ? ` ${plaintext.length}/16 chars`
+                        : ciphertext.replace(/\s+/g, '').length > 0 && /^[0-9a-fA-F\s]+$/.test(ciphertext)
+                          ? ` ${ciphertext.replace(/\s+/g, '').length}/32 hex`
+                          : ` ${ciphertext.length}/16 ASCII`
+                      }
+                      {inputError && ` (${inputError})`}
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -628,6 +922,13 @@ const AESCipher = () => {
           </div>
         )}
       </div>
+      
+      {/* Footer */}
+      <footer className="text-center py-8">
+        <p className="text-gray-600 text-sm">
+          AES Cipher Simulation Tool © 2025
+        </p>
+      </footer>
     </div>
   );
 };

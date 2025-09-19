@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { ChevronDown, ChevronUp, Lock, Unlock, Play, RotateCcw } from "lucide-react";
+import { ChevronDown, ChevronUp, Lock, Unlock, Play, RotateCcw, ArrowLeft } from "lucide-react";
+import { useRouter } from "next/router";
 
 /* =======================================================================
 DES-64 (ECB) single-file implementation + round trace (typed-array safe)
@@ -328,10 +329,11 @@ const CollapsibleRound = ({ roundIndex, step, openDefault = false }) => {
 
 // ---------------- React component ----------------
 const DESCipher = () => {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("theory");
   const [mode, setMode] = useState("encrypt");
-  const [plaintext, setPlaintext] = useState("DES DEMO ");
-  const [key, setKey] = useState("8byteKey");
+  const [plaintext, setPlaintext] = useState("");
+  const [key, setKey] = useState("");
   const [cipherInput, setCipherInput] = useState("");
   const [isAnimating, setIsAnimating] = useState(false);
   const [trace, setTrace] = useState([]);
@@ -339,6 +341,9 @@ const DESCipher = () => {
   const [final, setFinal] = useState(null);
   const [subkeys, setSubkeys] = useState([]);
   const [error, setError] = useState("");
+  const [keyError, setKeyError] = useState("");
+  const [inputError, setInputError] = useState("");
+  const [warnings, setWarnings] = useState([]);
 
   const reset = () => {
     setIsAnimating(false);
@@ -346,8 +351,83 @@ const DESCipher = () => {
     setInitial(null);
     setFinal(null);
     setError("");
+    setKeyError("");
+    setInputError("");
+    setWarnings([]);
   };
 
+  const validateKey = (keyStr) => {
+    const errors = [];
+    const warnings = [];
+    
+    if (!keyStr) {
+      errors.push("Key is required");
+    } else if (keyStr.length < 8) {
+      warnings.push(`Key is ${keyStr.length} chars, will be padded to 8 with spaces`);
+    } else if (keyStr.length > 8) {
+      warnings.push(`Key is ${keyStr.length} chars, will be truncated to 8`);
+    }
+    
+    // Check for weak keys (all same character)
+    if (keyStr && new Set(keyStr).size === 1) {
+      warnings.push("Weak key detected: all characters are the same");
+    }
+    
+    // Check for non-printable characters
+    const nonPrintable = keyStr.split('').filter(c => c.charCodeAt(0) < 32 || c.charCodeAt(0) > 126);
+    if (nonPrintable.length > 0) {
+      warnings.push("Key contains non-printable characters");
+    }
+    
+    return { errors, warnings };
+  };
+  
+  const validateInput = (inputStr, isEncrypt) => {
+    const errors = [];
+    const warnings = [];
+    
+    if (!inputStr) {
+      errors.push(`${isEncrypt ? 'Plaintext' : 'Ciphertext'} is required`);
+      return { errors, warnings };
+    }
+    
+    if (isEncrypt) {
+      // Validate plaintext
+      if (inputStr.length < 8) {
+        warnings.push(`Plaintext is ${inputStr.length} chars, will be padded to 8 with spaces`);
+      } else if (inputStr.length > 8) {
+        warnings.push(`Plaintext is ${inputStr.length} chars, will be truncated to 8`);
+      }
+      
+      const nonPrintable = inputStr.split('').filter(c => c.charCodeAt(0) < 32 || c.charCodeAt(0) > 126);
+      if (nonPrintable.length > 0) {
+        warnings.push("Plaintext contains non-printable characters");
+      }
+    } else {
+      // Validate ciphertext
+      const clean = inputStr.replace(/\s+/g, '');
+      const isHex = /^[0-9a-fA-F]+$/.test(clean);
+      
+      if (isHex) {
+        if (clean.length !== 16) {
+          errors.push(`Hex ciphertext must be exactly 16 characters (got ${clean.length})`);
+        }
+      } else {
+        // Assume ASCII input
+        if (inputStr.length !== 8) {
+          errors.push(`ASCII ciphertext must be exactly 8 characters (got ${inputStr.length})`);
+        }
+        
+        const nonPrintable = inputStr.split('').filter(c => c.charCodeAt(0) < 32 || c.charCodeAt(0) > 126);
+        if (nonPrintable.length > 0) {
+          warnings.push("Ciphertext contains non-printable characters");
+        }
+      }
+    }
+    
+    return { errors, warnings };
+  };
+  
   const parseCipherInput = (val) => {
     const clean = val.trim();
     const isHex = clean.length > 0 && clean.length % 2 === 0 && /^[0-9a-fA-F\s]+$/.test(clean);
@@ -355,7 +435,23 @@ const DESCipher = () => {
   };
 
   const runCore = (explain) => {
-    reset();
+    // Validate inputs before processing
+    const keyValidation = validateKey(key);
+    const inputValidation = validateInput(mode === "encrypt" ? plaintext : cipherInput, mode === "encrypt");
+    
+    setKeyError(keyValidation.errors.join(", "));
+    setInputError(inputValidation.errors.join(", "));
+    setWarnings([...keyValidation.warnings, ...inputValidation.warnings]);
+    setError("");
+    
+    // Stop if there are validation errors
+    if (keyValidation.errors.length > 0 || inputValidation.errors.length > 0) {
+      return;
+    }
+    
+    setTrace([]);
+    setInitial(null);
+    setFinal(null);
 
     const keyBytes = toBytes8(key);
     const Ks = keySchedule(keyBytes);
@@ -398,6 +494,17 @@ const DESCipher = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="max-w-6xl mx-auto">
+        {/* Back Button */}
+        <div className="mb-6">
+          <button
+            onClick={() => router.push('/')}
+            className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <ArrowLeft size={20} />
+            <span>Back to Home</span>
+          </button>
+        </div>
+        
         <header className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-2">DES Cipher (64-bit, ECB)</h1>
           <p className="text-gray-600">Encrypt, decrypt, and visualize DES rounds step by step</p>
@@ -436,7 +543,7 @@ const DESCipher = () => {
             <div className="bg-white rounded-lg shadow-lg p-6">
               <h1 className="text-3xl font-bold text-indigo-700">Introduction</h1>
               <p>
-                The Data Encryption Standard (DES) is a symmetric-key block cipher that, for decades, was the global standard for data encryption. It was developed by IBM, and its design, based on the **Feistel structure**, was a cornerstone of modern cryptography until its small key size made it vulnerable to brute-force attacks.
+                The Data Encryption Standard (DES) is a symmetric-key block cipher that, for decades, was the global standard for data encryption. It was developed by IBM, and its design, based on the Feistel structure, was a cornerstone of modern cryptography until its small key size made it vulnerable to brute-force attacks.
               </p>
 
               <h2 className="text-2xl font-semibold text-blue-600 mt-6">Origin Story</h2>
@@ -445,7 +552,7 @@ const DESCipher = () => {
               </p>
               <h2 className="text-2xl font-semibold text-blue-600 mt-6">Core Idea</h2>
               <p>
-                DES processes **64-bit blocks** of plaintext using a **56-bit key**. Its core principle is a Feistel network with 16 rounds of iterative transformation. The security of the cipher relies on a combination of **substitution** and **permutation**, with the non-linear S-boxes being the most critical component for introducing **confusion** and preventing linear attacks.
+                DES processes 64-bit blocks of plaintext using a 56-bit key. Its core principle is a Feistel network with 16 rounds of iterative transformation. The security of the cipher relies on a combination of substitution and permutation, with the non-linear S-boxes being the most critical component for introducing confusion and preventing linear attacks.
               </p>
               <h2 className="text-2xl font-semibold text-blue-600 mt-6">Technical Blueprint</h2>
               <p>
@@ -453,9 +560,9 @@ const DESCipher = () => {
               </p>
               <ul className="list-disc list-inside space-y-2 mt-4 ml-4">
                 <li><strong>Initial Permutation (IP):</strong> The 64-bit plaintext block is permuted according to a fixed rule.</li>
-                <li><strong>Feistel Network Rounds:</strong> The permuted block is split into two 32-bit halves, a left half ($L_0$) and a right half ($R_0$). These halves undergo 16 rounds of the Feistel function. In each round, the right half becomes the new left half, and the new right half is computed as the XOR of the old left half and the output of the round function, $f$, applied to the old right half and a round-specific subkey ($K_i$). </li>
-                <li><strong>Round Function $f$:</strong> This function involves several key operations: an expansion permutation that expands the 32-bit input to 48 bits, a substitution using 8 different **S-boxes**, and a final permutation. The S-boxes are the single non-linear component of the algorithm, making them crucial for its security.</li>
-                <li><strong>Final Permutation (FP):</strong> After 16 rounds, the left and right halves are re-combined and a final inverse permutation, $IP^{-1}$, is applied to produce the 64-bit ciphertext.</li>
+                <li><strong>Feistel Network Rounds:</strong> The permuted block is split into two 32-bit halves, a left half (L₀) and a right half (R₀). These halves undergo 16 rounds of the Feistel function. In each round, the right half becomes the new left half, and the new right half is computed as the XOR of the old left half and the output of the round function, f, applied to the old right half and a round-specific subkey (Kᵢ). </li>
+                <li><strong>Round Function f:</strong> This function involves several key operations: an expansion permutation that expands the 32-bit input to 48 bits, a substitution using 8 different **S-boxes**, and a final permutation. The S-boxes are the single non-linear component of the algorithm, making them crucial for its security.</li>
+                <li><strong>Final Permutation (FP):</strong> After 16 rounds, the left and right halves are re-combined and a final inverse permutation, IP⁻¹, is applied to produce the 64-bit ciphertext.</li>
               </ul>
 
               <h2 className="text-2xl font-semibold text-blue-600 mt-6">Security Scorecard</h2>
@@ -481,37 +588,37 @@ const DESCipher = () => {
               </p>
               <h3 className="text-xl font-medium text-blue-500 mt-4">Example: A single round of DES encryption.</h3>
               <p><strong>Plaintext block:</strong> <code>0123456789ABCDEF</code> (in hexadecimal)</p>
-              <p><strong>Subkey for Round 1:</strong> $K_1$</p>
+              <p><strong>Subkey for Round 1:</strong> K₁</p>
               <h3 className="text-xl font-medium text-blue-500 mt-6">Step 1: Initial Permutation (IP)</h3>
               <p>
-                The 64-bit plaintext is rearranged. This step is a fixed, known permutation that shuffles the bits. The resulting 64-bit block is split into two 32-bit halves, $L_0$ and $R_0$.
+                The 64-bit plaintext is rearranged. This step is a fixed, known permutation that shuffles the bits. The resulting 64-bit block is split into two 32-bit halves, L₀ and R₀.
               </p>
-              <h3 className="text-xl font-medium text-blue-500 mt-6">Step 2: The Round Function, $f(R_0, K_1)$</h3>
+              <h3 className="text-xl font-medium text-blue-500 mt-6">Step 2: The Round Function, f(R₀, K₁)</h3>
               <p>
-                The round function takes $R_0$ and the subkey $K_1$ as input.
+                The round function takes R₀ and the subkey K₁ as input.
               </p>
               <ul className="list-disc list-inside space-y-2 mt-4 ml-4">
-                <li><strong>Expansion Permutation (E-Box):</strong> $R_0$ (32 bits) is expanded to 48 bits by duplicating and rearranging some bits.</li>
-                <li><strong>Key Mixing:</strong> The 48-bit expanded $R_0$ is XORed with the 48-bit subkey $K_1$.</li>
+                <li><strong>Expansion Permutation (E-Box):</strong> R₀ (32 bits) is expanded to 48 bits by duplicating and rearranging some bits.</li>
+                <li><strong>Key Mixing:</strong> The 48-bit expanded R₀ is XORed with the 48-bit subkey K₁.</li>
                 <li><strong>S-Box Substitution:</strong> The 48-bit result is divided into eight 6-bit chunks. Each chunk is fed into a separate S-box, which is a lookup table that maps each 6-bit input to a unique 4-bit output. This is the non-linear, non-invertible step that provides the cipher's security. The eight 4-bit outputs are concatenated to form a 32-bit block.</li>
                 <li><strong>P-Box Permutation:</strong> The resulting 32-bit block is then permuted to create the final output of the round function.</li>
               </ul>
               <h3 className="text-xl font-medium text-blue-500 mt-6">Step 3: XOR with the Left Half</h3>
               <p>
-                The output of the round function, $f(R_0, K_1)$, is XORed with the original left half, $L_0$.
+                The output of the round function, f(R₀, K₁), is XORed with the original left half, L₀.
               </p>
               <p className="mt-2 font-mono text-sm">
-                $R_1 = L_0 \oplus f(R_0, K_1)$
+                R₁ = L₀ ⊕ f(R₀, K₁)
               </p>
               <h3 className="text-xl font-medium text-blue-500 mt-6">Step 4: Swap the Halves</h3>
               <p>
                 The new left half becomes the old right half, and the new right half becomes the result of the XOR operation.
               </p>
               <p className="mt-2 font-mono text-sm">
-                $L_1 = R_0$
+                L₁ = R₀
               </p>
               <p className="mt-4">
-                This completes a single round. The resulting ($L_1, R_1$) pair becomes the input for the next round. This process is repeated 16 times, followed by a final inverse permutation to produce the ciphertext.
+                This completes a single round. The resulting (L₁, R₁) pair becomes the input for the next round. This process is repeated 16 times, followed by a final inverse permutation to produce the ciphertext.
               </p>
             </div>
           </div>
@@ -528,11 +635,23 @@ const DESCipher = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">Mode</label>
                   <select
                     value={mode}
-                    onChange={(e) => setMode(e.target.value)}
+                    onChange={(e) => {
+                      setMode(e.target.value);
+                      // Clear errors and warnings when switching modes
+                      setError("");
+                      setInputError("");
+                      setWarnings([]);
+                      // Clear output when switching modes
+                      if (e.target.value === "encrypt") {
+                        setCipherInput("");
+                      } else {
+                        setPlaintext("");
+                      }
+                    }}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
-                    <option value="encrypt">Encrypt</option>
-                    <option value="decrypt">Decrypt</option>
+                    <option value="encrypt">🔒 Encrypt (Plaintext → Ciphertext)</option>
+                    <option value="decrypt">🔓 Decrypt (Ciphertext → Plaintext)</option>
                   </select>
                 </div>
 
@@ -541,11 +660,22 @@ const DESCipher = () => {
                   <input
                     type="text"
                     value={key}
-                    maxLength={8}
-                    onChange={(e) => setKey(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    onChange={(e) => {
+                      setKey(e.target.value);
+                      if (keyError) setKeyError("");
+                      if (warnings.length > 0) setWarnings([]);
+                    }}
+                    className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      keyError ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                    }`}
                     placeholder="8 chars (parity ignored)"
                   />
+                  {keyError && (
+                    <p className="mt-1 text-sm text-red-600">{keyError}</p>
+                  )}
+                  <p className="mt-1 text-xs text-gray-500">
+                    Current length: {key.length}/8 • {key.length < 8 ? 'Will be padded' : key.length > 8 ? 'Will be truncated' : 'Perfect length'}
+                  </p>
                 </div>
 
                 <div>
@@ -555,10 +685,38 @@ const DESCipher = () => {
                   <input
                     type="text"
                     value={mode === "encrypt" ? plaintext : cipherInput}
-                    onChange={(e) => (mode === "encrypt" ? setPlaintext(e.target.value) : setCipherInput(e.target.value))}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder={mode === "encrypt" ? "Exactly 8 chars (pad/truncate)" : "e.g. 85E813540F0AB405"}
+                    onChange={(e) => {
+                      if (mode === "encrypt") {
+                        setPlaintext(e.target.value);
+                      } else {
+                        setCipherInput(e.target.value.toUpperCase());
+                      }
+                      if (inputError) setInputError("");
+                      if (warnings.length > 0) setWarnings([]);
+                    }}
+                    className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      inputError ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                    }`}
+                    placeholder={mode === "encrypt" ? "Enter 8 characters..." : "Enter 16 hex chars or 8 ASCII chars..."}
+                    title={mode === "encrypt" 
+                      ? "Enter plaintext (8 ASCII characters)"
+                      : "Enter ciphertext (16 hex characters like 85E813540F0AB405, or 8 ASCII characters)"
+                    }
                   />
+                  {inputError && (
+                    <p className="mt-1 text-sm text-red-600">{inputError}</p>
+                  )}
+                  {mode === "encrypt" ? (
+                    <p className="mt-1 text-xs text-gray-500">
+                      Current length: {plaintext.length}/8 • {plaintext.length < 8 ? 'Will be padded' : plaintext.length > 8 ? 'Will be truncated' : 'Perfect length'}
+                    </p>
+                  ) : (
+                    <p className="mt-1 text-xs text-gray-500">
+                      {cipherInput.replace(/\s+/g, '').length > 0 && /^[0-9a-fA-F\s]+$/.test(cipherInput) 
+                        ? `Hex format detected • Length: ${cipherInput.replace(/\s+/g, '').length}/16`
+                        : `ASCII format • Length: ${cipherInput.length}/8`}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -575,10 +733,20 @@ const DESCipher = () => {
                 </div>
               </div>
 
+              {/* Warnings Display */}
+              {warnings.length > 0 && (
+                <div className="mt-4 p-3 rounded bg-yellow-50 text-yellow-800 text-sm border border-yellow-200">
+                  <div className="font-medium mb-1">⚠️ Warnings:</div>
+                  <ul className="list-disc list-inside space-y-1">
+                    {warnings.map((warning, i) => <li key={i}>{warning}</li>)}
+                  </ul>
+                </div>
+              )}
+
               <div className="flex gap-4 mt-6">
                 <button
                   onClick={runExplain}
-                  disabled={isAnimating}
+                  disabled={isAnimating || keyError || inputError}
                   className="flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   <Play size={18} />
@@ -587,7 +755,8 @@ const DESCipher = () => {
 
                 <button
                   onClick={() => runCore(false)}
-                  className="flex items-center gap-2 px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                  disabled={keyError || inputError}
+                  className="flex items-center gap-2 px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {mode === "encrypt" ? <Lock size={18} /> : <Unlock size={18} />}
                   {mode === "encrypt" ? "Encrypt" : "Decrypt"}
@@ -600,11 +769,70 @@ const DESCipher = () => {
                   <RotateCcw size={18} />
                   Reset
                 </button>
+                
+                {/* Quick Fill Buttons */}
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      setKey("TESTKEY8");
+                      setPlaintext("HELLO123");
+                      setCipherInput("");
+                      setMode("encrypt");
+                      setError("");
+                      setKeyError("");
+                      setInputError("");
+                      setWarnings([]);
+                    }}
+                    className="px-3 py-2 text-xs bg-purple-100 text-purple-700 rounded hover:bg-purple-200 transition-colors"
+                  >
+                    📝 Sample Data
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      setKey("");
+                      setPlaintext("");
+                      setCipherInput("");
+                      setError("");
+                      setKeyError("");
+                      setInputError("");
+                      setWarnings([]);
+                    }}
+                    className="px-3 py-2 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
+                  >
+                    🗑️ Clear All
+                  </button>
+                </div>
               </div>
 
+              {/* Error Display */}
               {error && (
                 <div className="mt-4 p-3 rounded bg-red-50 text-red-700 text-sm border border-red-200">
+                  <div className="font-medium mb-1">❌ Error:</div>
                   {error}
+                </div>
+              )}
+              
+              {/* Input Validation Status */}
+              {(key || (mode === "encrypt" ? plaintext : cipherInput)) && (
+                <div className="mt-4 p-3 rounded bg-blue-50 text-blue-700 text-sm border border-blue-200">
+                  <div className="font-medium mb-2">📋 Input Status:</div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+                    <div className={`flex items-center gap-1 ${keyError ? 'text-red-600' : 'text-green-600'}`}>
+                      {keyError ? '❌' : '✅'} Key: {key.length}/8 chars
+                      {keyError && ` (${keyError})`}
+                    </div>
+                    <div className={`flex items-center gap-1 ${inputError ? 'text-red-600' : 'text-green-600'}`}>
+                      {inputError ? '❌' : '✅'} {mode === "encrypt" ? "Plaintext" : "Ciphertext"}:
+                      {mode === "encrypt" 
+                        ? ` ${plaintext.length}/8 chars`
+                        : cipherInput.replace(/\s+/g, '').length > 0 && /^[0-9a-fA-F\s]+$/.test(cipherInput)
+                          ? ` ${cipherInput.replace(/\s+/g, '').length}/16 hex`
+                          : ` ${cipherInput.length}/8 ASCII`
+                      }
+                      {inputError && ` (${inputError})`}
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -662,6 +890,13 @@ const DESCipher = () => {
           </div>
         )}
       </div>
+      
+      {/* Footer */}
+      <footer className="text-center py-8">
+        <p className="text-gray-600 text-sm">
+          DES Cipher Simulation Tool © 2025
+        </p>
+      </footer>
     </div>
   );
 };
