@@ -394,9 +394,15 @@ const SpeckCipherVisualizer = () => {
           <div className="max-w-4xl mx-auto"><div className="rounded-xl shadow-lg p-8 bg-white"><h2 className="text-2xl font-bold mb-6 text-center" style={{ color: colors.textDark }}>Cipher Processor (Speck 32/64)</h2><div className="flex justify-center mb-6"><div className="rounded-lg p-1 flex" style={{ backgroundColor: colors.background }}><button onClick={() => setActiveMode('encrypt')} className={`px-4 py-2 rounded-md font-medium transition-all duration-200 flex items-center gap-2 ${activeMode === 'encrypt' ? 'text-white shadow-md' : 'text-gray-600'}`} style={{ backgroundColor: activeMode === 'encrypt' ? colors.accentGreen : 'transparent' }}><Lock size={18} /> Encrypt</button><button onClick={() => setActiveMode('decrypt')} className={`px-4 py-2 rounded-md font-medium transition-all duration-200 flex items-center gap-2 ${activeMode === 'decrypt' ? 'text-white shadow-md' : 'text-gray-600'}`} style={{ backgroundColor: activeMode === 'decrypt' ? colors.accentRed : 'transparent' }}><Unlock size={18} /> Decrypt</button></div></div><div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"><div><label className="block text-sm font-medium mb-2" style={{ color: colors.textLight }}>{activeMode === 'encrypt' ? 'Plaintext (32-bit Hex)' : 'Ciphertext (32-bit Hex)'}</label><input value={plaintext} onChange={(e) => setPlaintext(e.target.value)} className="w-full font-mono px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2" style={{borderColor: colors.primary, backgroundColor: colors.secondary}} placeholder="e.g., 6574694C" /></div><div><label className="block text-sm font-medium mb-2" style={{ color: colors.textLight }}>Key (64-bit Hex)</label><input type="text" value={key} onChange={(e) => setKey(e.target.value)} className="w-full font-mono px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2" style={{borderColor: colors.primary, backgroundColor: colors.secondary}} placeholder="e.g., 0F0E0D0C0B0A0908" /></div></div>{ciphertext && (<div className="mb-6"><label className="block text-sm font-medium mb-2 text-center" style={{ color: colors.textLight }}>Result</label><div className="border border-gray-300 rounded-lg p-4" style={{ backgroundColor: colors.secondary }}><p className="font-mono text-xl break-words text-center" style={{ color: colors.textDark }}>{ciphertext}</p></div></div>)}</div><VizPanel /></div>
         )}
       </div>
+      
+      {/* Footer */}
+      <footer className="text-center py-8">
+        <p className="text-gray-600 text-sm">
+          Speck Cipher Simulation Tool © 2025
+        </p>
+      </footer>
     </div>
   );
 };
-
 
 export default SpeckCipherVisualizer;

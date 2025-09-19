@@ -511,6 +511,13 @@ const A51CipherApp = () => {
         {activeTab === 'example' && renderExample()}
         {activeTab === 'simulation' && renderSimulation()}
       </div>
+      
+      {/* Footer */}
+      <footer className="text-center py-8">
+        <p className="text-gray-600 text-sm">
+          A5/1 Cipher Simulation Tool © 2025
+        </p>
+      </footer>
     </div>
   );
 };

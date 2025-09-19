@@ -361,6 +361,13 @@ export default function FeistelCipher() {
           )}
         </main>
       </div>
+      
+      {/* Footer */}
+      <footer className="text-center py-8">
+        <p className="text-gray-600 text-sm">
+          Feistel Cipher Simulation Tool © 2025
+        </p>
+      </footer>
     </div>
   );
 }

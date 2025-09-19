@@ -327,6 +327,13 @@ export default function HmacCipher() {
           )}
         </main>
       </div>
+      
+      {/* Footer */}
+      <footer className="text-center py-8">
+        <p className="text-gray-600 text-sm">
+          HMAC Simulation Tool © 2025
+        </p>
+      </footer>
     </div>
   );
 }

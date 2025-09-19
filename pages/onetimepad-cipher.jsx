@@ -459,6 +459,13 @@ const OneTimePadCipher = () => {
           )}
         </main>
       </div>
+      
+      {/* Footer */}
+      <footer className="text-center py-8">
+        <p className="text-gray-600 text-sm">
+          One-Time Pad Simulation Tool © 2025
+        </p>
+      </footer>
     </div>
   );
 };
