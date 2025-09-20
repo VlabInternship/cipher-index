@@ -18,11 +18,11 @@ Ciphers Virtual-Lab is an interactive web application built using Next.js and Re
 ## Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/VlabInternship/chiper-index.git
+   git clone https://github.com/VlabInternship/cipher-index.git
    ```
 2. Navigate to the project directory:
    ```bash
-   cd ciper-index
+   cd cipher-index
    ```
 3. Install dependencies:
    ```bash
