@@ -22,7 +22,7 @@ Ciphers Virtual-Lab is an interactive web application built using Next.js and Re
    ```
 2. Navigate to the project directory:
    ```bash
-   cd chiper-index
+   cd ciper-index
    ```
 3. Install dependencies:
    ```bash
