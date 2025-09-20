@@ -336,19 +336,48 @@ const decryptBlock = (input16, rks) => {
 
 /* ================================== UI bits ================================== */
 
-const Matrix = ({ title, bytes16 }) => {
+const Matrix = ({ title, bytes16, highlightedCells = [], animationPhase = '', currentStep = '' }) => {
   const m = bytes16 ? toMatrixRows(bytes16) : [[], [], [], []];
+  
+  const getCellClassName = (row, col, value) => {
+    const cellKey = `${row}-${col}`;
+    const isHighlighted = highlightedCells.includes(cellKey);
+    
+    let baseClass = "w-12 h-12 flex items-center justify-center border-2 font-mono text-xs transition-all duration-500 transform";
+    
+    if (isHighlighted) {
+      if (animationPhase === 'processing') {
+        return `${baseClass} border-amber-500 bg-gradient-to-br from-amber-100 to-amber-200 text-amber-800 scale-110 shadow-lg animate-pulse`;
+      } else if (animationPhase === 'completed') {
+        return `${baseClass} border-emerald-500 bg-gradient-to-br from-emerald-100 to-emerald-200 text-emerald-800 scale-105 shadow-md`;
+      }
+    }
+    
+    if (animationPhase === 'pending') {
+      return `${baseClass} border-gray-300 bg-gray-50 text-gray-400 scale-95`;
+    }
+    
+    return `${baseClass} border-blue-400 bg-gradient-to-br from-blue-50 to-blue-100 text-blue-800 hover:scale-105 shadow-sm`;
+  };
+  
   return (
-    <div className="bg-white rounded-lg shadow p-4">
-      <div className="font-semibold text-gray-800 mb-3">{title}</div>
-      <div className="inline-block border rounded-lg overflow-hidden">
+    <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-6">
+      <div className="font-bold text-gray-800 mb-4 flex items-center gap-2">
+        {title}
+        {currentStep && (
+          <span className="text-sm font-normal text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+            {currentStep}
+          </span>
+        )}
+      </div>
+      <div className="inline-block border-2 border-gray-300 rounded-xl overflow-hidden bg-white shadow-inner">
         {m.map((row, r) => (
           <div key={r} className="flex">
             {row.map((cell, c) => (
               <div
                 key={c}
-                className="w-10 h-10 flex items-center justify-center border border-gray-200 font-mono text-xs"
-                title={`[${r},${c}]`}
+                className={getCellClassName(r, c, cell)}
+                title={`[${r},${c}] = 0x${typeof cell === "number" ? cell.toString(16).padStart(2, "0").toUpperCase() : "00"}`}
               >
                 {typeof cell === "number" ? cell.toString(16).padStart(2, "0").toUpperCase() : ""}
               </div>
@@ -356,8 +385,442 @@ const Matrix = ({ title, bytes16 }) => {
           </div>
         ))}
       </div>
+      
+      {/* Row and Column Labels */}
+      <div className="mt-4 text-xs text-gray-500 text-center">
+        <div>4×4 AES State Matrix (Column-Major Order)</div>
+        <div className="mt-1">Rows 0-3, Columns 0-3</div>
+      </div>
     </div>
   );
+};
+
+const RoundKeyMatrix = ({ title, roundKey, isActive = false }) => {
+  if (!roundKey) return null;
+  
+  const m = toMatrixRows(roundKey);
+  
+  return (
+    <div className={`bg-white rounded-lg shadow-lg border p-4 ${isActive ? 'border-purple-400 bg-purple-50' : 'border-gray-200'}`}>
+      <div className={`font-bold mb-3 flex items-center gap-2 ${isActive ? 'text-purple-700' : 'text-gray-700'}`}>
+        {title}
+        {isActive && (
+          <span className="text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded-full">
+            Active
+          </span>
+        )}
+      </div>
+      <div className="inline-block border-2 border-gray-300 rounded-xl overflow-hidden bg-white shadow-inner">
+        {m.map((row, r) => (
+          <div key={r} className="flex">
+            {row.map((cell, c) => (
+              <div
+                key={c}
+                className={`w-10 h-10 flex items-center justify-center border-2 font-mono text-xs transition-all duration-300 ${
+                  isActive 
+                    ? 'border-purple-300 bg-gradient-to-br from-purple-50 to-purple-100 text-purple-700' 
+                    : 'border-gray-200 bg-gray-50 text-gray-600'
+                }`}
+                title={`Round Key [${r},${c}] = 0x${typeof cell === "number" ? cell.toString(16).padStart(2, "0").toUpperCase() : "00"}`}
+              >
+                {typeof cell === "number" ? cell.toString(16).padStart(2, "0").toUpperCase() : ""}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+      <div className="mt-2 text-xs text-gray-500 text-center">
+        Round Key Matrix
+      </div>
+    </div>
+  );
+};
+
+const SBoxTable = ({ sboxTable, highlightedValues = [], mode = 'encrypt' }) => {
+  const getHighlightCount = (value) => {
+    return highlightedValues.filter(v => v === value).length;
+  };
+
+  const getCellClassName = (value) => {
+    const count = getHighlightCount(value);
+    if (count === 0) {
+      return "w-6 h-6 flex items-center justify-center text-xs font-mono border border-gray-200 bg-gray-50 text-gray-600";
+    } else if (count === 1) {
+      return "w-6 h-6 flex items-center justify-center text-xs font-mono border-2 border-green-400 bg-green-100 text-green-800 animate-pulse";
+    } else {
+      return "w-6 h-6 flex items-center justify-center text-xs font-mono border-2 border-amber-400 bg-amber-100 text-amber-800 animate-pulse";
+    }
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-lg border border-green-200 p-3">
+      <div className="font-bold text-green-700 mb-2 text-sm flex items-center gap-2">
+        {mode === 'encrypt' ? 'S-box' : 'Inverse S-box'} Table
+        <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full">
+          256 values
+        </span>
+      </div>
+      
+      {/* Column headers */}
+      <div className="flex mb-1">
+        <div className="w-6"></div>
+        {Array.from({length: 16}, (_, i) => (
+          <div key={i} className="w-6 h-4 flex items-center justify-center text-xs font-bold text-gray-600">
+            {i.toString(16).toUpperCase()}
+          </div>
+        ))}
+      </div>
+      
+      {/* S-box table */}
+      <div className="border border-gray-300 rounded overflow-hidden">
+        {Array.from({length: 16}, (_, row) => (
+          <div key={row} className="flex">
+            {/* Row header */}
+            <div className="w-6 h-6 flex items-center justify-center text-xs font-bold text-gray-600 bg-gray-100 border-r border-gray-300">
+              {row.toString(16).toUpperCase()}
+            </div>
+            {/* S-box cells */}
+            {Array.from({length: 16}, (_, col) => {
+              const index = row * 16 + col;
+              const value = sboxTable[index];
+              return (
+                <div
+                  key={col}
+                  className={getCellClassName(index)}
+                  title={`S-box[0x${index.toString(16).padStart(2, '0').toUpperCase()}] = 0x${value.toString(16).padStart(2, '0').toUpperCase()}`}
+                >
+                  {value.toString(16).padStart(2, '0').toUpperCase()}
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+      
+      <div className="mt-2 text-xs text-gray-500 text-center">
+        Highlighted cells show active lookups
+      </div>
+    </div>
+  );
+};
+
+const SBoxVisualization = ({ title, inputState, outputState, mode = 'encrypt' }) => {
+  if (!inputState || !outputState) return null;
+  
+  const sboxTable = mode === 'encrypt' ? S : iS;
+  const inputMatrix = toMatrixRows(inputState);
+  const outputMatrix = toMatrixRows(outputState);
+  
+  // Create S-box lookup data and highlighted indices
+  const lookupData = [];
+  const highlightedIndices = [];
+  
+  for (let r = 0; r < 4; r++) {
+    for (let c = 0; c < 4; c++) {
+      const inputValue = inputMatrix[r][c];
+      const outputValue = outputMatrix[r][c];
+      lookupData.push({
+        position: `[${r},${c}]`,
+        input: inputValue,
+        output: outputValue,
+        sboxIndex: inputValue
+      });
+      highlightedIndices.push(inputValue);
+    }
+  }
+  
+  return (
+    <div className="space-y-4">
+      {/* S-box Table with highlighting */}
+      <SBoxTable 
+        sboxTable={sboxTable}
+        highlightedValues={highlightedIndices}
+        mode={mode}
+      />
+      
+      {/* Lookup Examples */}
+      <div className="bg-white rounded-lg shadow-lg border border-green-200 p-4">
+        <div className="font-bold text-green-700 mb-3 flex items-center gap-2">
+          Active Lookups
+          <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full">
+            16 substitutions
+          </span>
+        </div>
+        
+        <div className="space-y-2 max-h-32 overflow-y-auto">
+          {lookupData.slice(0, 6).map((lookup, index) => (
+            <div key={index} className="flex items-center justify-between text-xs p-2 bg-green-50 rounded border border-green-200">
+              <span className="font-mono text-green-700 min-w-[2rem]">
+                {lookup.position}
+              </span>
+              <span className="text-gray-600">→</span>
+              <span className="font-mono text-blue-600">
+                0x{lookup.input.toString(16).padStart(2, '0').toUpperCase()}
+              </span>
+              <span className="text-gray-600">→</span>
+              <span className="font-mono text-green-600">
+                0x{lookup.output.toString(16).padStart(2, '0').toUpperCase()}
+              </span>
+            </div>
+          ))}
+          {lookupData.length > 6 && (
+            <div className="text-xs text-gray-500 text-center py-1">
+              ... and {lookupData.length - 6} more substitutions
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const AnimatedAESVisualization = ({ 
+  isAnimating, 
+  animationSteps, 
+  currentStepIndex, 
+  mode,
+  onStepChange,
+  onToggleAnimation
+}) => {
+  if (animationSteps.length === 0) return null;
+  
+  const currentStep = animationSteps[currentStepIndex] || {};
+  const stepNames = {
+    'initial': 'Initial State',
+    'subBytes': 'SubBytes Transform',
+    'shiftRows': 'ShiftRows Permutation', 
+    'mixColumns': 'MixColumns Diffusion',
+    'addRoundKey': 'AddRoundKey (XOR with Round Key)'
+  };
+
+  const goToPreviousStep = () => {
+    if (currentStepIndex > 0) {
+      onStepChange(currentStepIndex - 1);
+    }
+  };
+
+  const goToNextStep = () => {
+    if (currentStepIndex < animationSteps.length - 1) {
+      onStepChange(currentStepIndex + 1);
+    }
+  };
+
+  const goToStep = (index) => {
+    onStepChange(index);
+  };
+  
+  return (
+    <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl shadow-lg border border-blue-200 p-6">
+      <h3 className="text-xl font-bold text-blue-800 mb-4 flex items-center gap-2">
+        <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+        AES Round Visualization
+      </h3>
+      
+      {/* Navigation Controls */}
+      <div className="flex items-center justify-between mb-6 bg-white rounded-lg p-4 border border-blue-200">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={goToPreviousStep}
+            disabled={currentStepIndex === 0}
+            className="flex items-center gap-1 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+          >
+            <ChevronDown className="rotate-90" size={16} />
+            Previous
+          </button>
+          
+          <button
+            onClick={onToggleAnimation}
+            className={`flex items-center gap-1 px-3 py-2 rounded-lg transition-colors text-sm ${
+              isAnimating 
+                ? 'bg-amber-500 text-white hover:bg-amber-600' 
+                : 'bg-green-500 text-white hover:bg-green-600'
+            }`}
+          >
+            {isAnimating ? (
+              <>
+                <RotateCcw size={16} />
+                Pause
+              </>
+            ) : (
+              <>
+                <Play size={16} />
+                Auto Play
+              </>
+            )}
+          </button>
+          
+          <button
+            onClick={goToNextStep}
+            disabled={currentStepIndex === animationSteps.length - 1}
+            className="flex items-center gap-1 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+          >
+            Next
+            <ChevronDown className="-rotate-90" size={16} />
+          </button>
+        </div>
+        
+        <div className="text-sm text-gray-600">
+          Step {currentStepIndex + 1} of {animationSteps.length}
+        </div>
+      </div>
+
+      {/* Step Timeline */}
+      <div className="mb-6 bg-white rounded-lg p-4 border border-blue-200">
+        <div className="text-sm font-medium text-gray-700 mb-3">Step Timeline</div>
+        <div className="flex gap-1 overflow-x-auto pb-2">
+          {animationSteps.map((step, index) => (
+            <button
+              key={index}
+              onClick={() => goToStep(index)}
+              className={`min-w-[60px] h-8 rounded text-xs font-medium transition-all ${
+                index === currentStepIndex
+                  ? 'bg-blue-500 text-white scale-105 shadow-md'
+                  : index < currentStepIndex
+                  ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                  : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+              }`}
+              title={stepNames[step.type] || 'Step'}
+            >
+              {index + 1}
+            </button>
+          ))}
+        </div>
+      </div>
+      
+      {/* Current Step Matrix and Context-Specific Visualization */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div className="flex justify-center">
+          <Matrix
+            title={stepNames[currentStep.type] || 'Processing...'}
+            bytes16={currentStep.state}
+            highlightedCells={currentStep.highlightedCells || []}
+            animationPhase={currentStep.phase || 'processing'}
+            currentStep={`Step ${currentStepIndex + 1}/${animationSteps.length}`}
+          />
+        </div>
+        
+        {/* Conditional right panel based on step type */}
+        <div className="flex justify-center">
+          {(currentStep.type === 'addRoundKey' || currentStep.type === 'initial') && (
+            <RoundKeyMatrix
+              title={`Round ${currentStep.roundNumber} Key`}
+              roundKey={currentStep.roundKey}
+              isActive={true}
+            />
+          )}
+          
+          {currentStep.type === 'subBytes' && currentStep.previousState && (
+            <SBoxVisualization
+              title="S-box Substitution"
+              inputState={currentStep.previousState}
+              outputState={currentStep.state}
+              mode={mode}
+            />
+          )}
+          
+          {(currentStep.type === 'shiftRows' || currentStep.type === 'mixColumns') && (
+            <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-6 flex items-center justify-center">
+              <div className="text-center text-gray-600">
+                <div className="text-2xl mb-2">
+                  {currentStep.type === 'shiftRows' ? '🔄' : '🔀'}
+                </div>
+                <div className="font-medium mb-1">
+                  {currentStep.type === 'shiftRows' ? 'Row Permutation' : 'Column Diffusion'}
+                </div>
+                <div className="text-sm">
+                  {currentStep.type === 'shiftRows' 
+                    ? 'Rows are cyclically shifted left'
+                    : 'Columns mixed using GF(2⁸) arithmetic'
+                  }
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+      
+      {/* Step-specific explanations */}
+      {currentStep.type === 'addRoundKey' && (
+        <div className="mb-6 bg-white rounded-lg border border-purple-200 p-4">
+          <div className="text-center text-purple-700 font-medium mb-2">
+            XOR Operation: State ⊕ Round Key = Result
+          </div>
+          <div className="text-sm text-gray-600 text-center">
+            Each byte of the state matrix is XORed with the corresponding byte of the round key
+          </div>
+        </div>
+      )}
+      
+      {currentStep.type === 'subBytes' && (
+        <div className="mb-6 bg-white rounded-lg border border-green-200 p-4">
+          <div className="text-center text-green-700 font-medium mb-2">
+            Non-linear Substitution: Each byte → S-box lookup → New byte
+          </div>
+          <div className="text-sm text-gray-600 text-center">
+            {mode === 'encrypt' 
+              ? 'Each input byte is used as an index into the S-box table to get the substituted output'
+              : 'Each input byte is used as an index into the inverse S-box table to reverse the substitution'
+            }
+          </div>
+        </div>
+      )}
+      
+      {/* Step Progress Indicator */}
+      <div className="mb-4">
+        <div className="flex justify-between text-xs text-gray-600 mb-2">
+          <span>Progress</span>
+          <span>{Math.round((currentStepIndex + 1) / animationSteps.length * 100)}%</span>
+        </div>
+        <div className="w-full bg-gray-200 rounded-full h-2">
+          <div 
+            className="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full transition-all duration-500"
+            style={{ width: `${((currentStepIndex + 1) / animationSteps.length) * 100}%` }}
+          ></div>
+        </div>
+      </div>
+      
+      {/* Step Explanation */}
+      <div className="bg-white rounded-lg border border-blue-200 p-4">
+        <div className="flex items-center gap-2 text-blue-700 mb-2">
+          <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+          <span className="font-medium">{stepNames[currentStep.type] || 'Processing...'}</span>
+        </div>
+        <div className="text-sm text-gray-700">
+          {currentStep.description || getStepDescription(currentStep.type, mode)}
+        </div>
+        {currentStep.roundNumber !== undefined && (
+          <div className="text-xs text-blue-600 mt-2 font-medium">
+            Round {currentStep.roundNumber} of {mode === 'encrypt' ? '10' : '10'}
+          </div>
+        )}
+      </div>
+
+      {/* Keyboard Hints */}
+      <div className="mt-4 text-xs text-gray-500 text-center">
+        💡 Keyboard shortcuts: ← → navigate steps • Space pause/play • Home/End jump to start/end
+      </div>
+    </div>
+  );
+};
+
+const getStepDescription = (stepType, mode) => {
+  const descriptions = {
+    'initial': mode === 'encrypt' 
+      ? 'Starting with the plaintext arranged in a 4×4 matrix, column-major order. Initial round key (K0) is ready for XOR operation.'
+      : 'Starting with the ciphertext arranged in a 4×4 matrix, ready for decryption. Final round key is applied first.',
+    'subBytes': mode === 'encrypt'
+      ? 'Applying S-box substitution to each byte for non-linear transformation. Round key remains unchanged.'
+      : 'Applying inverse S-box substitution to reverse the non-linear transformation. Round key remains unchanged.',
+    'shiftRows': mode === 'encrypt'
+      ? 'Shifting rows left: Row 0→0, Row 1→1, Row 2→2, Row 3→3 positions. Round key remains unchanged.'
+      : 'Shifting rows right to reverse the permutation from encryption. Round key remains unchanged.',
+    'mixColumns': mode === 'encrypt'
+      ? 'Mixing columns using matrix multiplication in GF(2⁸) for diffusion. Round key remains unchanged.'
+      : 'Applying inverse MixColumns to reverse the diffusion transformation. Round key remains unchanged.',
+    'addRoundKey': 'XORing each byte of the state matrix with the corresponding byte of the round key. This provides key-dependent transformation and completes the round.'
+  };
+  
+  return descriptions[stepType] || 'Processing AES transformation...';
 };
 
 const CollapsibleRound = ({ roundIndex, step, openDefault = false }) => {
@@ -401,6 +864,13 @@ const AESCipher = () => {
   const [keyError, setKeyError] = useState("");
   const [inputError, setInputError] = useState("");
   const [warnings, setWarnings] = useState([]);
+  
+  // Animation states
+  const [animationSteps, setAnimationSteps] = useState([]);
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [showAnimation, setShowAnimation] = useState(false);
+  const [autoPlay, setAutoPlay] = useState(false);
+  const [animationInterval, setAnimationInterval] = useState(null);
 
   const reset = () => {
     setIsAnimating(false);
@@ -411,6 +881,233 @@ const AESCipher = () => {
     setKeyError("");
     setInputError("");
     setWarnings([]);
+    setAnimationSteps([]);
+    setCurrentStepIndex(0);
+    setShowAnimation(false);
+    setAutoPlay(false);
+    if (animationInterval) {
+      clearInterval(animationInterval);
+      setAnimationInterval(null);
+    }
+  };
+
+  // Navigation functions
+  const handleStepChange = (newIndex) => {
+    if (newIndex >= 0 && newIndex < animationSteps.length) {
+      setCurrentStepIndex(newIndex);
+    }
+  };
+
+  const toggleAutoPlay = () => {
+    if (autoPlay) {
+      // Stop auto play
+      setAutoPlay(false);
+      setIsAnimating(false);
+      if (animationInterval) {
+        clearInterval(animationInterval);
+        setAnimationInterval(null);
+      }
+    } else {
+      // Start auto play
+      setAutoPlay(true);
+      setIsAnimating(true);
+      const interval = setInterval(() => {
+        setCurrentStepIndex(prev => {
+          if (prev >= animationSteps.length - 1) {
+            // Reached end, stop auto play
+            setAutoPlay(false);
+            setIsAnimating(false);
+            clearInterval(interval);
+            setAnimationInterval(null);
+            return prev;
+          }
+          return prev + 1;
+        });
+      }, 2000);
+      setAnimationInterval(interval);
+    }
+  };
+
+  // Keyboard navigation
+  React.useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (!showAnimation || animationSteps.length === 0) return;
+      
+      switch (event.key) {
+        case 'ArrowLeft':
+          event.preventDefault();
+          handleStepChange(currentStepIndex - 1);
+          break;
+        case 'ArrowRight':
+          event.preventDefault();
+          handleStepChange(currentStepIndex + 1);
+          break;
+        case ' ':
+          event.preventDefault();
+          toggleAutoPlay();
+          break;
+        case 'Home':
+          event.preventDefault();
+          handleStepChange(0);
+          break;
+        case 'End':
+          event.preventDefault();
+          handleStepChange(animationSteps.length - 1);
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [showAnimation, animationSteps.length, currentStepIndex, autoPlay]);
+
+  // Cleanup interval on unmount
+  React.useEffect(() => {
+    return () => {
+      if (animationInterval) {
+        clearInterval(animationInterval);
+      }
+    };
+  }, [animationInterval]);
+
+  // Generate animation steps for visualization
+  const generateAnimationSteps = (trace, mode, initialState, roundKeys) => {
+    const steps = [];
+    let previousState = initialState;
+    
+    // Initial state with first round key
+    steps.push({
+      type: 'initial',
+      state: initialState,
+      previousState: null,
+      phase: 'processing',
+      roundNumber: 0,
+      roundKey: roundKeys[0],
+      highlightedCells: ['0-0', '0-1', '0-2', '0-3', '1-0', '1-1', '1-2', '1-3', '2-0', '2-1', '2-2', '2-3', '3-0', '3-1', '3-2', '3-3']
+    });
+    
+    // Process each round
+    trace.forEach((round, roundIndex) => {
+      const roundNumber = roundIndex;
+      const currentRoundKey = roundKeys[roundNumber];
+      
+      if (round.subBytes) {
+        steps.push({
+          type: 'subBytes',
+          state: round.subBytes,
+          previousState: previousState,
+          phase: 'processing',
+          roundNumber: roundNumber,
+          roundKey: currentRoundKey,
+          highlightedCells: ['0-0', '0-1', '0-2', '0-3', '1-0', '1-1', '1-2', '1-3', '2-0', '2-1', '2-2', '2-3', '3-0', '3-1', '3-2', '3-3']
+        });
+        previousState = round.subBytes;
+      }
+      
+      if (round.shiftRows) {
+        steps.push({
+          type: 'shiftRows',
+          state: round.shiftRows,
+          previousState: previousState,
+          phase: 'processing',
+          roundNumber: roundNumber,
+          roundKey: currentRoundKey,
+          highlightedCells: mode === 'encrypt' 
+            ? ['1-0', '1-1', '1-2', '1-3', '2-0', '2-1', '2-2', '2-3', '3-0', '3-1', '3-2', '3-3'] // Rows 1,2,3 shifted
+            : ['1-0', '1-1', '1-2', '1-3', '2-0', '2-1', '2-2', '2-3', '3-0', '3-1', '3-2', '3-3']
+        });
+        previousState = round.shiftRows;
+      }
+      
+      if (round.mixColumns) {
+        steps.push({
+          type: 'mixColumns', 
+          state: round.mixColumns,
+          previousState: previousState,
+          phase: 'processing',
+          roundNumber: roundNumber,
+          roundKey: currentRoundKey,
+          highlightedCells: ['0-0', '1-0', '2-0', '3-0', '0-1', '1-1', '2-1', '3-1', '0-2', '1-2', '2-2', '3-2', '0-3', '1-3', '2-3', '3-3'] // All columns
+        });
+        previousState = round.mixColumns;
+      }
+      
+      if (round.addRoundKey) {
+        steps.push({
+          type: 'addRoundKey',
+          state: round.addRoundKey,
+          previousState: previousState,
+          phase: 'completed',
+          roundNumber: roundNumber,
+          roundKey: currentRoundKey,
+          highlightedCells: ['0-0', '0-1', '0-2', '0-3', '1-0', '1-1', '1-2', '1-3', '2-0', '2-1', '2-2', '2-3', '3-0', '3-1', '3-2', '3-3']
+        });
+        previousState = round.addRoundKey;
+      }
+    });
+    
+    return steps;
+  };
+
+  // Run animated explanation
+  const runAnimatedExplanation = async () => {
+    // First run the core encryption/decryption to get trace
+    const keyValidation = validateKey(key);
+    const inputValidation = validateInput(mode === "encrypt" ? plaintext : ciphertext, mode === "encrypt");
+    
+    setKeyError(keyValidation.errors.join(", "));
+    setInputError(inputValidation.errors.join(", "));
+    setWarnings([...keyValidation.warnings, ...inputValidation.warnings]);
+    setError("");
+    
+    if (keyValidation.errors.length > 0 || inputValidation.errors.length > 0) {
+      return;
+    }
+    
+    setTrace([]);
+    setInitialState(null);
+    setFinalState(null);
+
+    const keyBytes = toBytes16(key);
+    const rks = expandKey(keyBytes);
+
+    let block, result, rounds;
+    
+    if (mode === "encrypt") {
+      block = toBytes16(plaintext);
+      setInitialState(block);
+      const encryptResult = encryptBlock(block, rks);
+      result = encryptResult.result;
+      rounds = encryptResult.rounds;
+      setFinalState(result);
+      setCiphertext(bytesToHex(result));
+    } else {
+      const inBytes = parseCipherInput(ciphertext);
+      if (inBytes.length !== 16) { 
+        setError("Ciphertext must be 16 bytes (32 hex chars or 16 ASCII)."); 
+        return; 
+      }
+      block = inBytes;
+      setInitialState(inBytes);
+      const decryptResult = decryptBlock(inBytes, rks);
+      result = decryptResult.result;
+      rounds = decryptResult.rounds;
+      setFinalState(result);
+      const asPrintable = bytesToPrintableAscii(result);
+      setPlaintext(asPrintable);
+    }
+    
+    setTrace(rounds);
+    
+    // Generate animation steps with round keys
+    const steps = generateAnimationSteps(rounds, mode, block, rks);
+    setAnimationSteps(steps);
+    setCurrentStepIndex(0);
+    setShowAnimation(true);
+    
+    // Start with manual navigation (user can enable auto-play if desired)
+    setIsAnimating(false);
+    setAutoPlay(false);
   };
 
   const validateKey = (keyStr) => {
@@ -534,9 +1231,7 @@ const AESCipher = () => {
   };
 
   const runExplain = () => {
-    setIsAnimating(true);
-    runCore(true);
-    setTimeout(() => setIsAnimating(false), 800);
+    runAnimatedExplanation();
   };
 
   return (
@@ -799,13 +1494,6 @@ const AESCipher = () => {
                   {mode === "encrypt" ? "Encrypt" : "Decrypt"}
                 </button>
 
-                <button
-                  onClick={reset}
-                  className="flex items-center gap-2 px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
-                >
-                  <RotateCcw size={18} />
-                  Reset
-                </button>
                 
                 {/* Quick Fill Buttons */}
                 <div className="flex gap-2">
@@ -874,7 +1562,20 @@ const AESCipher = () => {
               )}
             </div>
 
-            {(trace.length > 0 || initialState || finalState) && (
+            {/* Animated Visualization */}
+            {showAnimation && (
+              <AnimatedAESVisualization
+                isAnimating={autoPlay}
+                animationSteps={animationSteps}
+                currentStepIndex={currentStepIndex}
+                mode={mode}
+                onStepChange={handleStepChange}
+                onToggleAnimation={toggleAutoPlay}
+              />
+            )}
+
+            {/* Static Round Visualization - only show when not animating */}
+            {!showAnimation && (trace.length > 0 || initialState || finalState) && (
               <div className="bg-white rounded-lg shadow-lg p-6">
                 <h3 className="text-xl font-bold text-gray-800 mb-4">Round Visualization</h3>
 

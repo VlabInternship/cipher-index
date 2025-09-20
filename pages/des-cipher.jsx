@@ -271,23 +271,51 @@ const bitsToHexNibbles = (bits) => {
   return out; // array of hex chars
 };
 
-const NibbleGrid = ({ title, bits, perRow = 16 }) => {
+const NibbleGrid = ({ title, bits, perRow = 16, highlightedNibbles = [], animationPhase = '', currentStep = '' }) => {
   const nibbles = bitsToHexNibbles(bits);
+  
+  const getNibbleClassName = (index) => {
+    const isHighlighted = highlightedNibbles.includes(index);
+    let baseClass = "w-8 h-8 border-2 rounded flex items-center justify-center text-sm font-mono transition-all duration-500 transform";
+    
+    if (isHighlighted) {
+      if (animationPhase === 'processing') {
+        return `${baseClass} border-amber-500 bg-gradient-to-br from-amber-100 to-amber-200 text-amber-800 scale-110 shadow-lg animate-pulse`;
+      } else if (animationPhase === 'completed') {
+        return `${baseClass} border-emerald-500 bg-gradient-to-br from-emerald-100 to-emerald-200 text-emerald-800 scale-105 shadow-md`;
+      }
+    }
+    
+    if (animationPhase === 'pending') {
+      return `${baseClass} border-gray-300 bg-gray-50 text-gray-400 scale-95`;
+    }
+    
+    return `${baseClass} border-blue-400 bg-gradient-to-br from-blue-50 to-blue-100 text-blue-800 hover:scale-105 shadow-sm`;
+  };
+  
   return (
-    <div className="bg-white rounded-lg shadow p-4">
-      <div className="font-semibold text-gray-800 mb-3">{title}</div>
+    <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-4">
+      <div className="font-bold text-gray-800 mb-3 flex items-center gap-2">
+        {title}
+        {currentStep && (
+          <span className="text-sm font-normal text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+            {currentStep}
+          </span>
+        )}
+      </div>
       <div className="flex flex-wrap gap-1">
         {nibbles.map((h, i) => (
           <div
             key={i}
-            className="w-8 h-8 border-2 rounded flex items-center justify-center text-sm font-mono border-blue-300 bg-blue-50 text-blue-700"
-            title={`Nibble ${i}`}
+            className={getNibbleClassName(i)}
+            title={`Nibble ${i}: 0x${h}`}
           >
             {h}
           </div>
         ))}
       </div>
-      <div className="mt-2 text-xs text-gray-600 font-mono break-all">{nibbles.join("")}</div>
+      <div className="mt-3 text-xs text-gray-600 font-mono break-all">{nibbles.join("")}</div>
+      <div className="mt-1 text-xs text-gray-500 text-center">{bits.length} bits</div>
     </div>
   );
 };
@@ -300,6 +328,498 @@ const HalfRow = ({ title, bits32 }) => (
     </div>
   </div>
 );
+
+const DESSubkeyVisualization = ({ title, subkey, isActive = false }) => {
+  if (!subkey) return null;
+  
+  return (
+    <div className={`bg-white rounded-lg shadow-lg border p-4 ${isActive ? 'border-purple-400 bg-purple-50' : 'border-gray-200'}`}>
+      <div className={`font-bold mb-3 flex items-center gap-2 ${isActive ? 'text-purple-700' : 'text-gray-700'}`}>
+        {title}
+        {isActive && (
+          <span className="text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded-full">
+            Active
+          </span>
+        )}
+      </div>
+      <NibbleGrid 
+        title="48-bit Subkey" 
+        bits={subkey}
+        animationPhase={isActive ? 'processing' : 'pending'}
+      />
+    </div>
+  );
+};
+
+const DESSBoxVisualization = ({ title, inputBits, outputBits, mode = 'encrypt' }) => {
+  if (!inputBits || !outputBits) return null;
+  
+  // Convert 48-bit input to 8 6-bit chunks and 32-bit output to 8 4-bit chunks
+  const sboxLookups = [];
+  for (let i = 0; i < 8; i++) {
+    const inputChunk = inputBits.slice(i * 6, (i + 1) * 6);
+    const outputChunk = outputBits.slice(i * 4, (i + 1) * 4);
+    
+    // Calculate row and column for S-box lookup
+    const b0 = inputChunk[0], b1 = inputChunk[1], b2 = inputChunk[2];
+    const b3 = inputChunk[3], b4 = inputChunk[4], b5 = inputChunk[5];
+    const row = (b0 << 1) | b5;
+    const col = (b1 << 3) | (b2 << 2) | (b3 << 1) | b4;
+    const sboxValue = SBOX[i][row][col];
+    
+    sboxLookups.push({
+      sboxIndex: i + 1,
+      input: inputChunk,
+      output: outputChunk,
+      row,
+      col,
+      sboxValue,
+      inputHex: bitsToHexNibbles(inputChunk).join(''),
+      outputHex: bitsToHexNibbles(outputChunk).join('')
+    });
+  }
+  
+  return (
+    <div className="space-y-4">
+      {/* S-box lookup summary */}
+      <div className="bg-white rounded-lg shadow-lg border border-green-200 p-4">
+        <div className="font-bold text-green-700 mb-3 flex items-center gap-2">
+          {title}
+          <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full">
+            8 S-boxes
+          </span>
+        </div>
+        
+        <div className="space-y-2 max-h-32 overflow-y-auto">
+          {sboxLookups.slice(0, 6).map((lookup, index) => (
+            <div key={index} className="flex items-center justify-between text-xs p-2 bg-green-50 rounded border border-green-200">
+              <span className="font-mono text-green-700 min-w-[3rem]">
+                S{lookup.sboxIndex}
+              </span>
+              <span className="text-gray-600">→</span>
+              <span className="font-mono text-blue-600">
+                R{lookup.row}C{lookup.col}
+              </span>
+              <span className="text-gray-600">→</span>
+              <span className="font-mono text-green-600">
+                {lookup.sboxValue}
+              </span>
+            </div>
+          ))}
+          {sboxLookups.length > 6 && (
+            <div className="text-xs text-gray-500 text-center py-1">
+              ... and {sboxLookups.length - 6} more S-box lookups
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const DESExpansionVisualization = ({ title, inputBits, outputBits }) => {
+  if (!inputBits || !outputBits) return null;
+  
+  // Create expansion mapping showing how 32 bits become 48 bits
+  const expansionMappings = [];
+  for (let i = 0; i < 48; i++) {
+    const sourcePos = E[i]; // 1-based position in original 32-bit input
+    const sourceBit = inputBits[sourcePos - 1]; // Convert to 0-based
+    const outputPos = i + 1; // 1-based output position
+    
+    expansionMappings.push({
+      outputPos,
+      sourcePos,
+      sourceBit,
+      isDuplicate: expansionMappings.some(m => m.sourcePos === sourcePos)
+    });
+  }
+  
+  // Group by input positions to show duplications
+  const inputPositions = {};
+  expansionMappings.forEach(mapping => {
+    if (!inputPositions[mapping.sourcePos]) {
+      inputPositions[mapping.sourcePos] = [];
+    }
+    inputPositions[mapping.sourcePos].push(mapping.outputPos);
+  });
+  
+  return (
+    <div className="space-y-4">
+      {/* Expansion summary */}
+      <div className="bg-white rounded-lg shadow-lg border border-cyan-200 p-4">
+        <div className="font-bold text-cyan-700 mb-3 flex items-center gap-2">
+          {title}
+          <span className="text-xs bg-cyan-100 text-cyan-600 px-2 py-1 rounded-full">
+            32 → 48 bits
+          </span>
+        </div>
+        
+        <div className="space-y-2 max-h-32 overflow-y-auto">
+          {Object.entries(inputPositions).slice(0, 8).map(([sourcePos, outputPositions], index) => (
+            <div key={index} className="flex items-center justify-between text-xs p-2 bg-cyan-50 rounded border border-cyan-200">
+              <span className="font-mono text-cyan-700 min-w-[3rem]">
+                Bit {sourcePos}
+              </span>
+              <span className="text-gray-600">→</span>
+              <span className="font-mono text-blue-600">
+                {inputBits[sourcePos - 1]}
+              </span>
+              <span className="text-gray-600">→</span>
+              <span className="font-mono text-cyan-600">
+                Pos {outputPositions.join(', ')}
+              </span>
+            </div>
+          ))}
+          {Object.keys(inputPositions).length > 8 && (
+            <div className="text-xs text-gray-500 text-center py-1">
+              ... and {Object.keys(inputPositions).length - 8} more bit expansions
+            </div>
+          )}
+        </div>
+      </div>
+      
+      {/* Expansion table visualization */}
+      <div className="bg-white rounded-lg shadow-lg border border-cyan-200 p-4">
+        <div className="font-bold text-cyan-700 mb-3 text-sm">Expansion (E-box) Table</div>
+        <div className="grid grid-cols-12 gap-1 text-xs">
+          {E.map((sourcePos, outputIndex) => (
+            <div
+              key={outputIndex}
+              className="flex flex-col items-center p-1 bg-cyan-50 rounded border border-cyan-200 hover:bg-cyan-100 transition-colors"
+              title={`Output position ${outputIndex + 1} ← Input position ${sourcePos}`}
+            >
+              <div className="font-mono text-cyan-600 text-xs">{outputIndex + 1}</div>
+              <div className="text-gray-500">←</div>
+              <div className="font-mono text-cyan-700 text-xs font-bold">{sourcePos}</div>
+            </div>
+          ))}
+        </div>
+        <div className="mt-2 text-xs text-gray-500 text-center">
+          Output position ← Input position mapping
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const DESFeistelXORVisualization = ({ title, leftHalf, roundFunctionOutput, result }) => {
+  if (!leftHalf || !roundFunctionOutput || !result) return null;
+  
+  // Create XOR operation mapping
+  const xorMappings = [];
+  for (let i = 0; i < 32; i++) {
+    const leftBit = leftHalf[i];
+    const fBit = roundFunctionOutput[i];
+    const resultBit = result[i];
+    
+    xorMappings.push({
+      position: i + 1,
+      leftBit,
+      fBit,
+      resultBit
+    });
+  }
+  
+  return (
+    <div className="space-y-4">
+      {/* XOR operation summary */}
+      <div className="bg-white rounded-lg shadow-lg border border-red-200 p-4">
+        <div className="font-bold text-red-700 mb-3 flex items-center gap-2">
+          {title}
+          <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full">
+            L ⊕ f(R,K)
+          </span>
+        </div>
+        
+        <div className="space-y-2 max-h-32 overflow-y-auto">
+          {xorMappings.slice(0, 8).map((mapping, index) => (
+            <div key={index} className="flex items-center justify-between text-xs p-2 bg-red-50 rounded border border-red-200">
+              <span className="font-mono text-red-700 min-w-[3rem]">
+                Bit {mapping.position}
+              </span>
+              <span className="text-gray-600">:</span>
+              <span className="font-mono text-blue-600">
+                {mapping.leftBit}
+              </span>
+              <span className="text-gray-600">⊕</span>
+              <span className="font-mono text-green-600">
+                {mapping.fBit}
+              </span>
+              <span className="text-gray-600">=</span>
+              <span className="font-mono text-red-600">
+                {mapping.resultBit}
+              </span>
+            </div>
+          ))}
+          {xorMappings.length > 8 && (
+            <div className="text-xs text-gray-500 text-center py-1">
+              ... and {xorMappings.length - 8} more XOR operations
+            </div>
+          )}
+        </div>
+      </div>
+      
+      {/* Visual XOR explanation */}
+      <div className="bg-white rounded-lg shadow-lg border border-red-200 p-4">
+        <div className="font-bold text-red-700 mb-3 text-sm">Feistel XOR Operation</div>
+        <div className="grid grid-cols-1 gap-3">
+          <div className="flex items-center justify-center gap-4 text-sm">
+            <div className="bg-blue-100 px-3 py-2 rounded border border-blue-200">
+              <span className="font-mono text-blue-700">L{leftHalf ? leftHalf.length : 32}</span>
+              <div className="text-xs text-blue-600">Left Half</div>
+            </div>
+            <span className="text-gray-600 text-lg">⊕</span>
+            <div className="bg-green-100 px-3 py-2 rounded border border-green-200">
+              <span className="font-mono text-green-700">f(R,K)</span>
+              <div className="text-xs text-green-600">Round Function</div>
+            </div>
+            <span className="text-gray-600 text-lg">=</span>
+            <div className="bg-red-100 px-3 py-2 rounded border border-red-200">
+              <span className="font-mono text-red-700">R{result ? result.length : 32}</span>
+              <div className="text-xs text-red-600">New Right Half</div>
+            </div>
+          </div>
+        </div>
+        <div className="mt-2 text-xs text-gray-500 text-center">
+          Bit-wise XOR of left half with round function output
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+const AnimatedDESVisualization = ({ 
+  isAnimating, 
+  animationSteps, 
+  currentStepIndex, 
+  mode,
+  onStepChange,
+  onToggleAnimation
+}) => {
+  if (animationSteps.length === 0) return null;
+  
+  const currentStep = animationSteps[currentStepIndex] || {};
+  const stepNames = {
+    'initial': 'Initial Permutation',
+    'expansion': 'Expansion (E-box)',
+    'keyMixing': 'Key Mixing (XOR)',
+    'sboxSubstitution': 'S-box Substitution', 
+    'permutation': 'Permutation (P-box)',
+    'feistelXor': 'Feistel XOR',
+    'final': 'Final Permutation'
+  };
+
+  const goToPreviousStep = () => {
+    if (currentStepIndex > 0) {
+      onStepChange(currentStepIndex - 1);
+    }
+  };
+
+  const goToNextStep = () => {
+    if (currentStepIndex < animationSteps.length - 1) {
+      onStepChange(currentStepIndex + 1);
+    }
+  };
+
+  const goToStep = (index) => {
+    onStepChange(index);
+  };
+  
+  return (
+    <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl shadow-lg border border-blue-200 p-6">
+      <h3 className="text-xl font-bold text-blue-800 mb-4 flex items-center gap-2">
+        <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+        DES Round Visualization
+      </h3>
+      
+      {/* Navigation Controls */}
+      <div className="flex items-center justify-between mb-6 bg-white rounded-lg p-4 border border-blue-200">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={goToPreviousStep}
+            disabled={currentStepIndex === 0}
+            className="flex items-center gap-1 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+          >
+            <ChevronDown className="rotate-90" size={16} />
+            Previous
+          </button>
+          
+          <button
+            onClick={onToggleAnimation}
+            className={`flex items-center gap-1 px-3 py-2 rounded-lg transition-colors text-sm ${
+              isAnimating 
+                ? 'bg-amber-500 text-white hover:bg-amber-600' 
+                : 'bg-green-500 text-white hover:bg-green-600'
+            }`}
+          >
+            {isAnimating ? (
+              <>
+                <RotateCcw size={16} />
+                Pause
+              </>
+            ) : (
+              <>
+                <Play size={16} />
+                Auto Play
+              </>
+            )}
+          </button>
+          
+          <button
+            onClick={goToNextStep}
+            disabled={currentStepIndex === animationSteps.length - 1}
+            className="flex items-center gap-1 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+          >
+            Next
+            <ChevronDown className="-rotate-90" size={16} />
+          </button>
+        </div>
+        
+        <div className="text-sm text-gray-600">
+          Step {currentStepIndex + 1} of {animationSteps.length}
+        </div>
+      </div>
+
+      {/* Step Timeline */}
+      <div className="mb-6 bg-white rounded-lg p-4 border border-blue-200">
+        <div className="text-sm font-medium text-gray-700 mb-3">Step Timeline</div>
+        <div className="flex gap-1 overflow-x-auto pb-2">
+          {animationSteps.map((step, index) => (
+            <button
+              key={index}
+              onClick={() => goToStep(index)}
+              className={`min-w-[60px] h-8 rounded text-xs font-medium transition-all ${
+                index === currentStepIndex
+                  ? 'bg-blue-500 text-white scale-105 shadow-md'
+                  : index < currentStepIndex
+                  ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                  : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+              }`}
+              title={stepNames[step.type] || 'Step'}
+            >
+              {index + 1}
+            </button>
+          ))}
+        </div>
+      </div>
+      
+      {/* Current Step Visualization */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div className="flex justify-center">
+          <NibbleGrid
+            title={stepNames[currentStep.type] || 'Processing...'}
+            bits={currentStep.data}
+            highlightedNibbles={currentStep.highlightedNibbles || []}
+            animationPhase={currentStep.phase || 'processing'}
+            currentStep={`Step ${currentStepIndex + 1}/${animationSteps.length}`}
+          />
+        </div>
+        
+        {/* Conditional right panel based on step type */}
+        <div className="flex justify-center">
+          {(currentStep.type === 'keyMixing' || currentStep.type === 'initial') && currentStep.subkey && (
+            <DESSubkeyVisualization
+              title={`Round ${currentStep.roundNumber} Subkey`}
+              subkey={currentStep.subkey}
+              isActive={true}
+            />
+          )}
+          
+          {currentStep.type === 'sboxSubstitution' && currentStep.inputBits && (
+            <DESSBoxVisualization
+              title="S-box Substitution"
+              inputBits={currentStep.inputBits}
+              outputBits={currentStep.data}
+              mode={mode}
+            />
+          )}
+          
+          {currentStep.type === 'expansion' && currentStep.inputBits && (
+            <DESExpansionVisualization
+              title="Expansion Function"
+              inputBits={currentStep.inputBits}
+              outputBits={currentStep.data}
+            />
+          )}
+          
+          {currentStep.type === 'feistelXor' && currentStep.leftHalf && currentStep.roundFunctionOutput && (
+            <DESFeistelXORVisualization
+              title="Feistel XOR"
+              leftHalf={currentStep.leftHalf}
+              roundFunctionOutput={currentStep.roundFunctionOutput}
+              result={currentStep.data}
+            />
+          )}
+          
+          {currentStep.type === 'permutation' && (
+            <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-6 flex items-center justify-center">
+              <div className="text-center text-gray-600">
+                <div className="text-2xl mb-2">🔄</div>
+                <div className="font-medium mb-1">P-box Permutation</div>
+                <div className="text-sm">32-bit permutation</div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+      
+      {/* Step Progress Indicator */}
+      <div className="mb-4">
+        <div className="flex justify-between text-xs text-gray-600 mb-2">
+          <span>Progress</span>
+          <span>{Math.round((currentStepIndex + 1) / animationSteps.length * 100)}%</span>
+        </div>
+        <div className="w-full bg-gray-200 rounded-full h-2">
+          <div 
+            className="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full transition-all duration-500"
+            style={{ width: `${((currentStepIndex + 1) / animationSteps.length) * 100}%` }}
+          ></div>
+        </div>
+      </div>
+      
+      {/* Step Explanation */}
+      <div className="bg-white rounded-lg border border-blue-200 p-4">
+        <div className="flex items-center gap-2 text-blue-700 mb-2">
+          <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+          <span className="font-medium">{stepNames[currentStep.type] || 'Processing...'}</span>
+        </div>
+        <div className="text-sm text-gray-700">
+          {currentStep.description || getStepDescription(currentStep.type, mode)}
+        </div>
+        {currentStep.roundNumber !== undefined && (
+          <div className="text-xs text-blue-600 mt-2 font-medium">
+            Round {currentStep.roundNumber} of 16
+          </div>
+        )}
+      </div>
+
+      {/* Keyboard Hints */}
+      <div className="mt-4 text-xs text-gray-500 text-center">
+        💡 Keyboard shortcuts: ← → navigate steps • Space pause/play • Home/End jump to start/end
+      </div>
+    </div>
+  );
+};
+
+const getStepDescription = (stepType, mode) => {
+  const descriptions = {
+    'initial': mode === 'encrypt' 
+      ? 'Initial permutation rearranges the 64-bit plaintext according to the IP table'
+      : 'Initial permutation applied to ciphertext before starting decryption rounds',
+    'expansion': 'Expansion function (E-box) expands the 32-bit right half to 48 bits using duplication and permutation',
+    'keyMixing': 'XOR operation combines the expanded 48-bit data with the current round subkey',
+    'sboxSubstitution': 'S-box substitution provides non-linearity - eight 6-bit inputs become eight 4-bit outputs',
+    'permutation': 'P-box permutation rearranges the 32 bits from S-box output according to permutation table P',
+    'feistelXor': 'Feistel XOR combines the P-box output with the left half, completing the round function',
+    'final': mode === 'encrypt'
+      ? 'Final permutation (FP = IP⁻¹) produces the final 64-bit ciphertext'
+      : 'Final permutation produces the decrypted 64-bit plaintext'
+  };
+  
+  return descriptions[stepType] || 'Processing DES transformation...';
+};
 
 const CollapsibleRound = ({ roundIndex, step, openDefault = false }) => {
   const [open, setOpen] = useState(openDefault);
@@ -344,6 +864,13 @@ const DESCipher = () => {
   const [keyError, setKeyError] = useState("");
   const [inputError, setInputError] = useState("");
   const [warnings, setWarnings] = useState([]);
+  
+  // Animation states
+  const [animationSteps, setAnimationSteps] = useState([]);
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [showAnimation, setShowAnimation] = useState(false);
+  const [autoPlay, setAutoPlay] = useState(false);
+  const [animationInterval, setAnimationInterval] = useState(null);
 
   const reset = () => {
     setIsAnimating(false);
@@ -354,6 +881,229 @@ const DESCipher = () => {
     setKeyError("");
     setInputError("");
     setWarnings([]);
+    setAnimationSteps([]);
+    setCurrentStepIndex(0);
+    setShowAnimation(false);
+    setAutoPlay(false);
+    if (animationInterval) {
+      clearInterval(animationInterval);
+      setAnimationInterval(null);
+    }
+  };
+
+  // Navigation functions
+  const handleStepChange = (newIndex) => {
+    if (newIndex >= 0 && newIndex < animationSteps.length) {
+      setCurrentStepIndex(newIndex);
+    }
+  };
+
+  const toggleAutoPlay = () => {
+    if (autoPlay) {
+      // Stop auto play
+      setAutoPlay(false);
+      setIsAnimating(false);
+      if (animationInterval) {
+        clearInterval(animationInterval);
+        setAnimationInterval(null);
+      }
+    } else {
+      // Start auto play
+      setAutoPlay(true);
+      setIsAnimating(true);
+      const interval = setInterval(() => {
+        setCurrentStepIndex(prev => {
+          if (prev >= animationSteps.length - 1) {
+            // Reached end, stop auto play
+            setAutoPlay(false);
+            setIsAnimating(false);
+            clearInterval(interval);
+            setAnimationInterval(null);
+            return prev;
+          }
+          return prev + 1;
+        });
+      }, 2000);
+      setAnimationInterval(interval);
+    }
+  };
+
+  // Keyboard navigation
+  React.useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (!showAnimation || animationSteps.length === 0) return;
+      
+      switch (event.key) {
+        case 'ArrowLeft':
+          event.preventDefault();
+          handleStepChange(currentStepIndex - 1);
+          break;
+        case 'ArrowRight':
+          event.preventDefault();
+          handleStepChange(currentStepIndex + 1);
+          break;
+        case ' ':
+          event.preventDefault();
+          toggleAutoPlay();
+          break;
+        case 'Home':
+          event.preventDefault();
+          handleStepChange(0);
+          break;
+        case 'End':
+          event.preventDefault();
+          handleStepChange(animationSteps.length - 1);
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [showAnimation, animationSteps.length, currentStepIndex, autoPlay]);
+
+  // Cleanup interval on unmount
+  React.useEffect(() => {
+    return () => {
+      if (animationInterval) {
+        clearInterval(animationInterval);
+      }
+    };
+  }, [animationInterval]);
+
+  // Generate animation steps for DES visualization (without P-box detail)
+  const generateDESAnimationSteps = (trace, mode, initialBits, subkeys) => {
+    const steps = [];
+    
+    // Initial permutation
+    steps.push({
+      type: 'initial',
+      data: initialBits,
+      phase: 'processing',
+      roundNumber: 0,
+      subkey: subkeys[0]
+    });
+    
+    // Process each round
+    trace.forEach((round, roundIndex) => {
+      const roundNumber = roundIndex + 1;
+      const currentSubkey = subkeys[roundIndex];
+      
+      // Expansion
+      steps.push({
+        type: 'expansion',
+        data: round.ER,
+        inputBits: round.R, // Right half is input to expansion
+        phase: 'processing',
+        roundNumber: roundNumber,
+        subkey: currentSubkey
+      });
+      
+      // Key mixing (XOR)
+      steps.push({
+        type: 'keyMixing',
+        data: round.XOR,
+        phase: 'processing',
+        roundNumber: roundNumber,
+        subkey: currentSubkey
+      });
+      
+      // S-box substitution
+      steps.push({
+        type: 'sboxSubstitution',
+        data: round.S,
+        inputBits: round.XOR,
+        phase: 'processing',
+        roundNumber: roundNumber,
+        subkey: currentSubkey
+      });
+      
+      // P-box permutation
+      steps.push({
+        type: 'permutation',
+        data: round.P,
+        phase: 'processing',
+        roundNumber: roundNumber,
+        subkey: currentSubkey
+      });
+      
+      // Feistel XOR (calculate new right half)
+      const newR = xorBits(round.L, round.P); // L ⊕ f(R,K)
+      steps.push({
+        type: 'feistelXor',
+        data: newR,
+        leftHalf: round.L,
+        roundFunctionOutput: round.P,
+        phase: 'completed',
+        roundNumber: roundNumber,
+        subkey: currentSubkey
+      });
+    });
+    
+    return steps;
+  };
+
+  // Run animated explanation
+  const runAnimatedExplanation = async () => {
+    // First run the core encryption/decryption to get trace
+    const keyValidation = validateKey(key);
+    const inputValidation = validateInput(mode === "encrypt" ? plaintext : cipherInput, mode === "encrypt");
+    
+    setKeyError(keyValidation.errors.join(", "));
+    setInputError(inputValidation.errors.join(", "));
+    setWarnings([...keyValidation.warnings, ...inputValidation.warnings]);
+    setError("");
+    
+    if (keyValidation.errors.length > 0 || inputValidation.errors.length > 0) {
+      return;
+    }
+    
+    setTrace([]);
+    setInitial(null);
+    setFinal(null);
+
+    const keyBytes = toBytes8(key);
+    const Ks = keySchedule(keyBytes);
+    setSubkeys(Ks);
+
+    let bits, result, rounds;
+    
+    if (mode === "encrypt") {
+      const ptBytes = toBytes8(plaintext);
+      bits = bytesToBits(ptBytes);
+      setInitial(bits);
+      const encryptResult = desEncryptBits(bits, Ks);
+      result = encryptResult.result;
+      rounds = encryptResult.rounds;
+      setFinal(result);
+      const outBytes = bitsToBytes(result);
+      setCipherInput(bytesToHex(outBytes));
+    } else {
+      const inBytes = parseCipherInput(cipherInput);
+      if (inBytes.length !== 8) { 
+        setError("Ciphertext must be 8 bytes (16 hex chars or 8 ASCII)."); 
+        return; 
+      }
+      bits = bytesToBits(inBytes);
+      setInitial(bits);
+      const decryptResult = desDecryptBits(bits, Ks);
+      result = decryptResult.result;
+      rounds = decryptResult.rounds;
+      setFinal(result);
+      const outBytes = bitsToBytes(result);
+      setPlaintext(bytesToPrintableAscii(outBytes));
+    }
+    
+    setTrace(rounds);
+    
+    // Generate animation steps
+    const steps = generateDESAnimationSteps(rounds, mode, bits, Ks);
+    setAnimationSteps(steps);
+    setCurrentStepIndex(0);
+    setShowAnimation(true);
+    
+    // Start with manual navigation (user can enable auto-play if desired)
+    setIsAnimating(false);
+    setAutoPlay(false);
   };
 
   const validateKey = (keyStr) => {
@@ -486,9 +1236,7 @@ const DESCipher = () => {
   };
 
   const runExplain = () => {
-    setIsAnimating(true);
-    runCore(true);
-    setTimeout(() => setIsAnimating(false), 800);
+    runAnimatedExplanation();
   };
 
   return (
@@ -762,13 +1510,6 @@ const DESCipher = () => {
                   {mode === "encrypt" ? "Encrypt" : "Decrypt"}
                 </button>
 
-                <button
-                  onClick={reset}
-                  className="flex items-center gap-2 px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
-                >
-                  <RotateCcw size={18} />
-                  Reset
-                </button>
                 
                 {/* Quick Fill Buttons */}
                 <div className="flex gap-2">
@@ -849,8 +1590,20 @@ const DESCipher = () => {
               </div>
             )}
 
-            {/* Round visualization */}
-            {(trace.length > 0 || initial || final) && (
+            {/* Animated Visualization */}
+            {showAnimation && (
+              <AnimatedDESVisualization
+                isAnimating={autoPlay}
+                animationSteps={animationSteps}
+                currentStepIndex={currentStepIndex}
+                mode={mode}
+                onStepChange={handleStepChange}
+                onToggleAnimation={toggleAutoPlay}
+              />
+            )}
+
+            {/* Static Round Visualization - only show when not animating */}
+            {!showAnimation && (trace.length > 0 || initial || final) && (
               <div className="bg-white rounded-lg shadow-lg p-6">
                 <h3 className="text-xl font-bold text-gray-800 mb-4">Round Visualization</h3>
 
