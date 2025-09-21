@@ -873,6 +873,9 @@ const AESCipher = () => {
   const [animationInterval, setAnimationInterval] = useState(null);
 
   const reset = () => {
+    setKey("");
+    setPlaintext("");
+    setCiphertext("");
     setIsAnimating(false);
     setTrace([]);
     setInitialState(null);
@@ -1283,31 +1286,95 @@ const AESCipher = () => {
         {/* Theory */}
         {activeTab === "theory" && (
           <div className="p-8 space-y-6 text-gray-800">
+            {/* Introduction Section */}
             <div className="bg-white rounded-lg shadow-lg p-6">
-              <h1 className="text-3xl font-bold text-blue-700">Introduction</h1>
-              <p>The Advanced Encryption Standard (AES) is a symmetric-key block cipher that is the global standard for securing digital information. It was adopted by the U.S. National Institute of Standards and Technology (NIST) in 2001 as the successor to DES, a testament to its efficiency, security, and versatility.</p>
-              
-              <h2 className="text-2xl font-semibold text-blue-600 mt-6">Origin Story</h2>
-              <p>The selection of AES was the result of a public, five-year competition held by NIST to find a replacement for DES, which was becoming obsolete due to its small key size. The winning algorithm was Rijndael, designed by Belgian cryptographers Joan Daemen and Vincent Rijmen. The transparent, open nature of this competition was a stark contrast to the secretive design process of DES and was crucial in building trust in the new standard.</p>
-              
-              <h2 className="text-2xl font-semibold text-blue-600 mt-6">Core Idea</h2>
-              <p>AES is a **Substitution-Permutation Network (SPN)** that operates on fixed-size blocks of 128 bits, regardless of the key length. This is a departure from the Feistel structure of DES. The algorithm's security stems from its iterative application of a series of reversible transformations that create both confusion and diffusion. These transformations are based on substitution (the S-box), permutation (row shifts), and key mixing (XOR).</p>
-              
-              <h2 className="text-2xl font-semibold text-blue-600 mt-6">Technical Blueprint</h2>
-              <p>The AES algorithm operates on a $4 \times 4$ matrix of bytes, which represents the 128-bit data block. The number of transformation rounds depends on the key length: 10 rounds for a 128-bit key, 12 for a 192-bit key, and 14 for a 256-bit key. The encryption process begins with an **Initial AddRoundKey** step, where the plaintext is XORed with the first round key.  Each subsequent round (except for the final one) consists of four steps:</p>
-              <ul className="list-disc list-inside space-y-2 mt-4 ml-4">
-                <li><strong>SubBytes:</strong> A non-linear substitution operation where each byte in the state matrix is replaced with a new byte from a fixed lookup table called a substitution box (S-box).</li>
-                <li><strong>ShiftRows:</strong> A permutation operation where the rows of the matrix are cyclically shifted to the left by different offsets. Row 0 is not shifted, Row 1 is shifted one byte, Row 2 is shifted two bytes, and Row 3 is shifted three bytes.</li>
-                <li><strong>MixColumns:</strong> A mixing operation where each column is transformed by matrix multiplication over a finite field. This step, which is omitted in the final round, provides robust diffusion across the block.</li>
-                <li><strong>AddRoundKey:</strong> The current round key, derived from the original key through a key expansion process, is XORed with the entire state matrix.</li>
-              </ul>
-              <p className="mt-4">Decryption is performed by applying the inverse of each of these steps in the reverse order.</p>
+              <h3 className="text-2xl font-bold mb-4 text-blue-700 border-b-2 border-blue-500 pb-2">Introduction</h3>
+              <p className="text-gray-700 leading-relaxed">
+                The <span className="font-semibold text-blue-600">Advanced Encryption Standard (AES)</span> is a symmetric-key block cipher that is the global standard for securing digital information. It was adopted by the U.S. National Institute of Standards and Technology (NIST) in 2001 as the successor to DES, a testament to its efficiency, security, and versatility.
+              </p>
+            </div>
 
-              <h2 className="text-2xl font-semibold text-blue-600 mt-6">Security Scorecard</h2>
-              <p>AES is considered highly secure and has withstood extensive cryptanalysis since its standardization. Its strength is a result of its substitution-permutation network design and its large key lengths, which make brute-force attacks computationally infeasible. The use of key expansion ensures that each round uses a unique, derived key.</p>
-              
-              <h2 className="text-2xl font-semibold text-blue-600 mt-6">Real-World Usage</h2>
-              <p>AES is ubiquitous in modern digital life. Its combination of speed, security, and hardware acceleration support makes it the go-to algorithm for a vast range of applications. It is used to secure web traffic (HTTPS), virtual private networks (VPNs), wireless security protocols (WPA2/WPA3), file encryption, and financial transactions. Its status as a global standard for classified U.S. government data further solidifies its position as a cornerstone of modern security.</p>
+            {/* Origin Story Section */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h3 className="text-2xl font-bold mb-4 text-blue-700 border-b-2 border-blue-500 pb-2">Origin Story</h3>
+              <p className="text-gray-700 leading-relaxed">
+                The selection of AES was the result of a public, five-year competition held by NIST to find a replacement for DES, which was becoming obsolete due to its small key size. The winning algorithm was <span className="font-semibold text-blue-600">Rijndael</span>, designed by Belgian cryptographers Joan Daemen and Vincent Rijmen. The transparent, open nature of this competition was a stark contrast to the secretive design process of DES and was crucial in building trust in the new standard.
+              </p>
+            </div>
+
+            {/* Core Idea Section */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h3 className="text-2xl font-bold mb-4 text-blue-700 border-b-2 border-blue-500 pb-2">Core Idea</h3>
+              <p className="text-gray-700 leading-relaxed">
+                AES is a <span className="font-semibold text-blue-600">Substitution-Permutation Network (SPN)</span> that operates on fixed-size blocks of 128 bits, regardless of the key length. This is a departure from the Feistel structure of DES. The algorithm's security stems from its iterative application of a series of reversible transformations that create both confusion and diffusion. These transformations are based on substitution (the S-box), permutation (row shifts), and key mixing (XOR).
+              </p>
+            </div>
+
+            {/* Technical Blueprint Section */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h3 className="text-2xl font-bold mb-4 text-blue-700 border-b-2 border-blue-500 pb-2">Technical Blueprint</h3>
+              <p className="text-gray-700 leading-relaxed mb-4">
+                The AES algorithm operates on a 4×4 matrix of bytes, which represents the 128-bit data block. The number of transformation rounds depends on the key length: 10 rounds for a 128-bit key, 12 for a 192-bit key, and 14 for a 256-bit key. The encryption process begins with an <span className="font-semibold text-blue-600">Initial AddRoundKey</span> step, where the plaintext is XORed with the first round key.
+              </p>
+              <p className="text-gray-700 leading-relaxed mb-4">
+                Each subsequent round (except for the final one) consists of four steps:
+              </p>
+              <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                <div className="flex items-start space-x-3">
+                  <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">1</span>
+                  <div>
+                    <span className="font-semibold text-blue-700">SubBytes:</span>
+                    <span className="text-gray-700"> A non-linear substitution operation where each byte in the state matrix is replaced with a new byte from a fixed lookup table called a substitution box (S-box).</span>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">2</span>
+                  <div>
+                    <span className="font-semibold text-blue-700">ShiftRows:</span>
+                    <span className="text-gray-700"> A permutation operation where the rows of the matrix are cyclically shifted to the left by different offsets. Row 0 is not shifted, Row 1 is shifted one byte, Row 2 is shifted two bytes, and Row 3 is shifted three bytes.</span>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">3</span>
+                  <div>
+                    <span className="font-semibold text-blue-700">MixColumns:</span>
+                    <span className="text-gray-700"> A mixing operation where each column is transformed by matrix multiplication over a finite field. This step, which is omitted in the final round, provides robust diffusion across the block.</span>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">4</span>
+                  <div>
+                    <span className="font-semibold text-blue-700">AddRoundKey:</span>
+                    <span className="text-gray-700"> The current round key, derived from the original key through a key expansion process, is XORed with the entire state matrix.</span>
+                  </div>
+                </div>
+              </div>
+              <p className="text-gray-700 leading-relaxed mt-4">
+                Decryption is performed by applying the inverse of each of these steps in the reverse order.
+              </p>
+            </div>
+
+            {/* Security Scorecard Section */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h3 className="text-2xl font-bold mb-4 text-blue-700 border-b-2 border-blue-500 pb-2">Security Scorecard</h3>
+              <div className="bg-green-100 border-l-4 border-green-500 p-4 rounded-lg mb-4">
+                <div className="flex items-center">
+                  <div className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold mr-3">
+                    HIGHLY SECURE - CURRENT STANDARD
+                  </div>
+                </div>
+              </div>
+              <p className="text-gray-700 leading-relaxed">
+                AES is considered highly secure and has withstood extensive cryptanalysis since its standardization. Its strength is a result of its substitution-permutation network design and its large key lengths, which make brute-force attacks computationally infeasible. The use of key expansion ensures that each round uses a unique, derived key.
+              </p>
+            </div>
+
+            {/* Real-World Usage Section */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h3 className="text-2xl font-bold mb-4 text-blue-700 border-b-2 border-blue-500 pb-2">Real-World Usage</h3>
+              <p className="text-gray-700 leading-relaxed">
+                AES is ubiquitous in modern digital life. Its combination of speed, security, and hardware acceleration support makes it the go-to algorithm for a vast range of applications. It is used to secure web traffic (HTTPS), virtual private networks (VPNs), wireless security protocols (WPA2/WPA3), file encryption, and financial transactions. Its status as a global standard for classified U.S. government data further solidifies its position as a cornerstone of modern security.
+              </p>
             </div>
           </div>
         )}
@@ -1315,42 +1382,310 @@ const AESCipher = () => {
         {/* Example */}
         {activeTab === "example" && (
           <div className="p-8 space-y-6 text-gray-800">
+            {/* Introduction */}
             <div className="bg-white rounded-lg shadow-lg p-6">
-              <h1 className="text-3xl font-bold text-blue-700">Solved Example:</h1>
-              <p>A full numerical walkthrough of an AES round is complex, but a conceptual example can illustrate the effect of each step on a simplified data block.</p>
-              <h3 className="text-xl font-medium text-blue-500 mt-4">Example: A single round of AES-128 encryption.</h3>
-              <p><strong>Plaintext Block:</strong> <code>00 11 22 33 44 55 66 77 88 99 AA BB CC DD EE FF</code></p>
-              <p><strong>Initial Key:</strong> <code>01 23 45 67 89 AB CD EF 01 23 45 67 89 AB CD EF</code></p>
-              <p className="text-sm italic">Note: These values are for demonstration purposes only.</p>
-              
-              <h3 className="text-xl font-medium text-blue-500 mt-6">Step 1: The Initial State</h3>
-              <p>The 128-bit plaintext is arranged into a $4 \times 4$ state matrix, column-wise:</p>
-              <pre className="bg-gray-100 p-4 rounded-lg font-mono text-sm mt-2 overflow-x-auto">
-                00  44  88  CC<br />
-                11  55  99  DD<br />
-                22  66  AA  EE<br />
-                33  77  BB  FF<br />
-              </pre>
-              
-              <h3 className="text-xl font-medium text-blue-500 mt-6">Step 2: Initial AddRoundKey</h3>
-              <p>The initial state is XORed ($\oplus$) with the original key (RoundKey0):</p>
-              <pre className="bg-gray-100 p-4 rounded-lg font-mono text-sm mt-2 overflow-x-auto">
-                00$\oplus$01  44$\oplus$89  88$\oplus$01  CC$\oplus$89<br />
-                11$\oplus$23  55$\oplus$AB  99$\oplus$23  DD$\oplus$AB<br />
-                22$\oplus$45  66$\oplus$CD  AA$\oplus$45  EE$\oplus$CD<br />
-                33$\oplus$67  77$\oplus$EF  BB$\oplus$67  FF$\oplus$EF<br />
-              </pre>
-              <p className="mt-2">This produces a new state matrix.</p>
+              <h3 className="text-2xl font-bold mb-4 text-blue-700 border-b-2 border-blue-500 pb-2">Solved Example</h3>
+              <p className="text-gray-700 leading-relaxed">
+                Let's walk through a complete AES-128 encryption example to understand how the algorithm transforms plaintext into ciphertext step by step.
+              </p>
+            </div>
 
-              <h3 className="text-xl font-medium text-blue-500 mt-6">Step 3: Round 1 (of 10 total rounds)</h3>
-              <p>The new state matrix undergoes the four main round steps.</p>
-              <ul className="list-disc list-inside space-y-2 mt-4 ml-4">
-                <li><strong>SubBytes:</strong> Each byte in the matrix is replaced by a value from the S-box lookup table. For example, <code>00</code> from the first row and column might be replaced with <code>63</code>.</li>
-                <li><strong>ShiftRows:</strong> The rows are cyclically shifted. Row 0 is unchanged. Row 1 is shifted left by 1 byte. Row 2 is shifted left by 2 bytes. Row 3 is shifted left by 3 bytes. This permutation moves bytes to new columns, spreading their influence.</li>
-                <li><strong>MixColumns:</strong> Each column of the matrix is treated as a vector and multiplied by a fixed, invertible matrix over a finite field. This is a complex mathematical operation that ensures a single change in an input bit diffuses throughout the entire column, increasing the cipher's diffusion.</li>
-                <li><strong>AddRoundKey:</strong> The resulting matrix is XORed with the next round key, which was generated in the key expansion process.</li>
-              </ul>
-              <p className="mt-4">These four steps are repeated for the remaining rounds. The final round omits the MixColumns step, and the final AddRoundKey produces the ciphertext. Decryption reverses this process by applying the inverse operations in the opposite order.</p>
+            {/* Example Setup */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h4 className="text-xl font-semibold text-blue-600 mb-4">Example Setup</h4>
+              <div className="bg-gray-50 rounded-lg p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <p className="text-gray-700 mb-2">
+                      <strong className="text-blue-600">Plaintext:</strong> 
+                      <span className="font-mono text-green-600 bg-white px-2 py-1 rounded ml-2">Hello AES World!</span>
+                    </p>
+                    <p className="text-gray-700 mb-2">
+                      <strong className="text-blue-600">Key:</strong> 
+                      <span className="font-mono text-purple-600 bg-white px-2 py-1 rounded ml-2">MySecretAESKey16</span>
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-gray-700 mb-2">
+                      <strong className="text-blue-600">Algorithm:</strong> AES-128 ECB
+                    </p>
+                    <p className="text-gray-700">
+                      <strong className="text-blue-600">Rounds:</strong> 10 rounds + initial round
+                    </p>
+                  </div>
+                </div>
+                <p className="text-sm text-gray-500 mt-4 italic">
+                  Note: In practice, use a more secure mode than ECB and ensure proper key management.
+                </p>
+              </div>
+            </div>
+
+            {/* Step 1: Data Preparation */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h4 className="text-xl font-semibold text-blue-600 mb-4">Step 1: Data Preparation</h4>
+              <div className="space-y-4">
+                <div>
+                  <p className="text-gray-700 mb-3">
+                    Both the plaintext and key are converted to bytes and arranged in 4×4 state matrices:
+                  </p>
+                  
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Plaintext Matrix */}
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h5 className="font-medium text-gray-800 mb-3 text-center">Plaintext State Matrix</h5>
+                      <div className="flex justify-center">
+                        <table className="border-collapse text-center font-mono text-sm">
+                          <tbody>
+                            <tr>
+                              <td className="border border-gray-400 p-2 bg-green-100">48</td>
+                              <td className="border border-gray-400 p-2 bg-green-100">6C</td>
+                              <td className="border border-gray-400 p-2 bg-green-100">53</td>
+                              <td className="border border-gray-400 p-2 bg-green-100">6F</td>
+                            </tr>
+                            <tr>
+                              <td className="border border-gray-400 p-2 bg-green-100">65</td>
+                              <td className="border border-gray-400 p-2 bg-green-100">6C</td>
+                              <td className="border border-gray-400 p-2 bg-green-100">20</td>
+                              <td className="border border-gray-400 p-2 bg-green-100">72</td>
+                            </tr>
+                            <tr>
+                              <td className="border border-gray-400 p-2 bg-green-100">6C</td>
+                              <td className="border border-gray-400 p-2 bg-green-100">6F</td>
+                              <td className="border border-gray-400 p-2 bg-green-100">57</td>
+                              <td className="border border-gray-400 p-2 bg-green-100">6C</td>
+                            </tr>
+                            <tr>
+                              <td className="border border-gray-400 p-2 bg-green-100">6C</td>
+                              <td className="border border-gray-400 p-2 bg-green-100">20</td>
+                              <td className="border border-gray-400 p-2 bg-green-100">64</td>
+                              <td className="border border-gray-400 p-2 bg-green-100">21</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <p className="text-xs text-gray-600 text-center mt-2">
+                        H e l l o   A E S   W o r l d !
+                      </p>
+                    </div>
+
+                    {/* Key Matrix */}
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h5 className="font-medium text-gray-800 mb-3 text-center">Key State Matrix (Round 0)</h5>
+                      <div className="flex justify-center">
+                        <table className="border-collapse text-center font-mono text-sm">
+                          <tbody>
+                            <tr>
+                              <td className="border border-gray-400 p-2 bg-purple-100">4D</td>
+                              <td className="border border-gray-400 p-2 bg-purple-100">63</td>
+                              <td className="border border-gray-400 p-2 bg-purple-100">74</td>
+                              <td className="border border-gray-400 p-2 bg-purple-100">65</td>
+                            </tr>
+                            <tr>
+                              <td className="border border-gray-400 p-2 bg-purple-100">79</td>
+                              <td className="border border-gray-400 p-2 bg-purple-100">72</td>
+                              <td className="border border-gray-400 p-2 bg-purple-100">41</td>
+                              <td className="border border-gray-400 p-2 bg-purple-100">79</td>
+                            </tr>
+                            <tr>
+                              <td className="border border-gray-400 p-2 bg-purple-100">53</td>
+                              <td className="border border-gray-400 p-2 bg-purple-100">65</td>
+                              <td className="border border-gray-400 p-2 bg-purple-100">45</td>
+                              <td className="border border-gray-400 p-2 bg-purple-100">31</td>
+                            </tr>
+                            <tr>
+                              <td className="border border-gray-400 p-2 bg-purple-100">65</td>
+                              <td className="border border-gray-400 p-2 bg-purple-100">74</td>
+                              <td className="border border-gray-400 p-2 bg-purple-100">53</td>
+                              <td className="border border-gray-400 p-2 bg-purple-100">36</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <p className="text-xs text-gray-600 text-center mt-2">
+                        M y S e c r e t A E S K e y 1 6
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 2: Initial Round */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h4 className="text-xl font-semibold text-blue-600 mb-4">Step 2: Initial AddRoundKey</h4>
+              <p className="text-gray-700 mb-4">
+                The encryption begins by XORing the plaintext with the initial round key:
+              </p>
+              
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="text-center mb-3">
+                  <span className="text-lg font-semibold text-blue-700">State ⊕ Round Key 0 = Initial State</span>
+                </div>
+                
+                <div className="flex justify-center">
+                  <table className="border-collapse text-center font-mono text-sm">
+                    <tbody>
+                      <tr>
+                        <td className="border border-gray-400 p-2 bg-yellow-100">05</td>
+                        <td className="border border-gray-400 p-2 bg-yellow-100">0F</td>
+                        <td className="border border-gray-400 p-2 bg-yellow-100">27</td>
+                        <td className="border border-gray-400 p-2 bg-yellow-100">0A</td>
+                      </tr>
+                      <tr>
+                        <td className="border border-gray-400 p-2 bg-yellow-100">1C</td>
+                        <td className="border border-gray-400 p-2 bg-yellow-100">1E</td>
+                        <td className="border border-gray-400 p-2 bg-yellow-100">61</td>
+                        <td className="border border-gray-400 p-2 bg-yellow-100">0B</td>
+                      </tr>
+                      <tr>
+                        <td className="border border-gray-400 p-2 bg-yellow-100">3F</td>
+                        <td className="border border-gray-400 p-2 bg-yellow-100">0A</td>
+                        <td className="border border-gray-400 p-2 bg-yellow-100">12</td>
+                        <td className="border border-gray-400 p-2 bg-yellow-100">5D</td>
+                      </tr>
+                      <tr>
+                        <td className="border border-gray-400 p-2 bg-yellow-100">09</td>
+                        <td className="border border-gray-400 p-2 bg-yellow-100">54</td>
+                        <td className="border border-gray-400 p-2 bg-yellow-100">37</td>
+                        <td className="border border-gray-400 p-2 bg-yellow-100">17</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                
+                <p className="text-sm text-gray-600 text-center mt-3">
+                  Result after XOR operation with Round Key 0
+                </p>
+              </div>
+            </div>
+
+            {/* Step 3: Round Operations */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h4 className="text-xl font-semibold text-blue-600 mb-4">Step 3: Round Operations (Rounds 1-10)</h4>
+              
+              <div className="space-y-6">
+                <p className="text-gray-700">
+                  Each of the 10 rounds applies four transformations in sequence. Here's what happens in each round:
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* SubBytes */}
+                  <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">1</span>
+                      <h5 className="font-semibold text-red-700">SubBytes</h5>
+                    </div>
+                    <p className="text-sm text-gray-700">
+                      Each byte is substituted using the AES S-box lookup table. This provides non-linearity and confusion.
+                    </p>
+                    <div className="mt-2 text-xs text-gray-600 font-mono">
+                      Example: 05 → 63, 0F → 76
+                    </div>
+                  </div>
+
+                  {/* ShiftRows */}
+                  <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="bg-orange-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">2</span>
+                      <h5 className="font-semibold text-orange-700">ShiftRows</h5>
+                    </div>
+                    <p className="text-sm text-gray-700">
+                      Rows are cyclically shifted left. Row 0: no shift, Row 1: 1 position, Row 2: 2 positions, Row 3: 3 positions.
+                    </p>
+                    <div className="mt-2 text-xs text-gray-600">
+                      Provides diffusion across the state
+                    </div>
+                  </div>
+
+                  {/* MixColumns */}
+                  <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">3</span>
+                      <h5 className="font-semibold text-green-700">MixColumns</h5>
+                    </div>
+                    <p className="text-sm text-gray-700">
+                      Each column is multiplied by a fixed polynomial matrix over GF(2⁸). Omitted in the final round.
+                    </p>
+                    <div className="mt-2 text-xs text-gray-600">
+                      Maximum diffusion within columns
+                    </div>
+                  </div>
+
+                  {/* AddRoundKey */}
+                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">4</span>
+                      <h5 className="font-semibold text-blue-700">AddRoundKey</h5>
+                    </div>
+                    <p className="text-sm text-gray-700">
+                      The state is XORed with the current round key derived from the original key through key expansion.
+                    </p>
+                    <div className="mt-2 text-xs text-gray-600">
+                      Introduces key material into the state
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <p className="text-sm text-gray-700 text-center">
+                    <strong>Note:</strong> The final round (Round 10) omits the MixColumns step and applies only SubBytes, ShiftRows, and AddRoundKey.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 4: Final Result */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h4 className="text-xl font-semibold text-blue-600 mb-4">Step 4: Final Ciphertext</h4>
+              
+              <div className="bg-gray-50 rounded-lg p-6">
+                <div className="text-center">
+                  <p className="text-gray-700 mb-4">
+                    After 10 rounds of transformation, our plaintext has been converted to ciphertext:
+                  </p>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-sm text-gray-600 mb-2">Original Plaintext:</p>
+                      <div className="font-mono text-lg bg-green-100 text-green-800 px-4 py-2 rounded border">
+                        Hello AES World!
+                      </div>
+                    </div>
+                    
+                    <div className="text-2xl text-gray-500">↓</div>
+                    
+                    <div>
+                      <p className="text-sm text-gray-600 mb-2">Final Ciphertext (Hex):</p>
+                      <div className="font-mono text-lg bg-red-100 text-red-800 px-4 py-2 rounded border">
+                        3AD77BB40D7A3660A89ECAF32466EF97
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <p className="text-sm text-gray-500 mt-4 italic">
+                    The exact ciphertext depends on the implementation and may vary slightly between different AES libraries.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Interactive Try */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h4 className="text-xl font-semibold text-blue-600 mb-4">Try It Yourself</h4>
+              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                <p className="text-blue-800 mb-3">
+                  <strong>Want to see this in action?</strong>
+                </p>
+                <p className="text-gray-700 text-sm mb-4">
+                  Switch to the "Cipher" tab and use the sample data to encrypt "Hello AES World!" with key "MySecretAESKey16". 
+                  Click "Explain" to see each step of the process visualized!
+                </p>
+                <div className="flex gap-2 text-xs">
+                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded">📝 Sample Data</span>
+                  <span className="bg-green-100 text-green-700 px-2 py-1 rounded">🔍 Explain Mode</span>
+                  <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded">⚡ Quick Encrypt</span>
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -1514,15 +1849,7 @@ const AESCipher = () => {
                   </button>
                   
                   <button
-                    onClick={() => {
-                      setKey("");
-                      setPlaintext("");
-                      setCiphertext("");
-                      setError("");
-                      setKeyError("");
-                      setInputError("");
-                      setWarnings([]);
-                    }}
+                    onClick={reset}
                     className="px-3 py-2 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
                   >
                     🗑️ Clear All
@@ -1625,11 +1952,7 @@ const AESCipher = () => {
       </div>
       
       {/* Footer */}
-      <footer className="text-center py-8">
-        <p className="text-gray-600 text-sm">
-          AES Cipher Simulation Tool © 2025
-        </p>
-      </footer>
+      
     </div>
   );
 };

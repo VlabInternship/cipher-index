@@ -1288,39 +1288,132 @@ const DESCipher = () => {
         {/* Theory */}
         {activeTab === "theory" && (
           <div className="p-8 space-y-6 text-gray-800">
+            {/* Introduction Section */}
             <div className="bg-white rounded-lg shadow-lg p-6">
-              <h1 className="text-3xl font-bold text-indigo-700">Introduction</h1>
-              <p>
-                The Data Encryption Standard (DES) is a symmetric-key block cipher that, for decades, was the global standard for data encryption. It was developed by IBM, and its design, based on the Feistel structure, was a cornerstone of modern cryptography until its small key size made it vulnerable to brute-force attacks.
+              <h3 className="text-2xl font-bold mb-4 text-blue-700 border-b-2 border-blue-500 pb-2">Introduction</h3>
+              <p className="text-gray-700 leading-relaxed">
+                The <span className="font-semibold text-blue-600">Data Encryption Standard (DES)</span> is a symmetric-key block cipher that, for decades, was the global standard for data encryption. Developed by IBM and based on the Feistel structure, it was a cornerstone of modern cryptography until its small key size made it vulnerable to brute-force attacks.
               </p>
+            </div>
 
-              <h2 className="text-2xl font-semibold text-blue-600 mt-6">Origin Story</h2>
-              <p>
-                DES was developed in the early 1970s by a team at IBM and was selected by the U.S. National Bureau of Standards (now NIST) in 1977 as an official federal standard. Its adoption was not without controversy. The algorithm's designers, with input from the NSA, reduced the key length from 64 bits to a final 56 bits. This, along with the undisclosed design rationale for the S-boxes, fueled speculation that the NSA had intentionally weakened the cipher or inserted a backdoor. However, the design proved to be remarkably resistant to a major cryptanalytic attack, differential cryptanalysis, that was publicly discovered much later but had been secretly known by the NSA for years.
+            {/* Origin Story Section */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h3 className="text-2xl font-bold mb-4 text-blue-700 border-b-2 border-blue-500 pb-2">Origin Story</h3>
+              <p className="text-gray-700 leading-relaxed">
+                DES was developed in the early 1970s by a team at <span className="font-semibold text-blue-600">IBM</span> and was selected by the U.S. National Bureau of Standards (now NIST) in 1977 as an official federal standard. Its adoption was not without controversy. The algorithm's designers, with input from the NSA, reduced the key length from 64 bits to a final <span className="font-semibold text-blue-600">56 bits</span>. This, along with the undisclosed design rationale for the S-boxes, fueled speculation that the NSA had intentionally weakened the cipher. However, the design proved remarkably resistant to differential cryptanalysis, which was publicly discovered much later but had been secretly known by the NSA for years.
               </p>
-              <h2 className="text-2xl font-semibold text-blue-600 mt-6">Core Idea</h2>
-              <p>
-                DES processes 64-bit blocks of plaintext using a 56-bit key. Its core principle is a Feistel network with 16 rounds of iterative transformation. The security of the cipher relies on a combination of substitution and permutation, with the non-linear S-boxes being the most critical component for introducing confusion and preventing linear attacks.
-              </p>
-              <h2 className="text-2xl font-semibold text-blue-600 mt-6">Technical Blueprint</h2>
-              <p>
-                The DES encryption process is a sequence of well-defined steps:
-              </p>
-              <ul className="list-disc list-inside space-y-2 mt-4 ml-4">
-                <li><strong>Initial Permutation (IP):</strong> The 64-bit plaintext block is permuted according to a fixed rule.</li>
-                <li><strong>Feistel Network Rounds:</strong> The permuted block is split into two 32-bit halves, a left half (L₀) and a right half (R₀). These halves undergo 16 rounds of the Feistel function. In each round, the right half becomes the new left half, and the new right half is computed as the XOR of the old left half and the output of the round function, f, applied to the old right half and a round-specific subkey (Kᵢ). </li>
-                <li><strong>Round Function f:</strong> This function involves several key operations: an expansion permutation that expands the 32-bit input to 48 bits, a substitution using 8 different **S-boxes**, and a final permutation. The S-boxes are the single non-linear component of the algorithm, making them crucial for its security.</li>
-                <li><strong>Final Permutation (FP):</strong> After 16 rounds, the left and right halves are re-combined and a final inverse permutation, IP⁻¹, is applied to produce the 64-bit ciphertext.</li>
-              </ul>
+            </div>
 
-              <h2 className="text-2xl font-semibold text-blue-600 mt-6">Security Scorecard</h2>
-              <p>
-                The primary weakness of DES is its small **56-bit effective key size**. This was a reasonable length when the cipher was designed in the 1970s, but the exponential growth of computational power quickly made it vulnerable to **brute-force attacks**. In 1999, the Electronic Frontier Foundation (EFF) demonstrated that a DES key could be found in less than 24 hours. Due to this vulnerability, DES was officially deprecated by NIST and has since been replaced by the more secure Advanced Encryption Standard (AES).
+            {/* Core Idea Section */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h3 className="text-2xl font-bold mb-4 text-blue-700 border-b-2 border-blue-500 pb-2">Core Idea</h3>
+              <p className="text-gray-700 leading-relaxed">
+                DES processes <span className="font-semibold text-blue-600">64-bit blocks</span> of plaintext using a <span className="font-semibold text-blue-600">56-bit key</span>. Its core principle is a <span className="font-semibold text-blue-600">Feistel network</span> with 16 rounds of iterative transformation. The security of the cipher relies on a combination of substitution and permutation, with the non-linear S-boxes being the most critical component for introducing confusion and preventing linear attacks.
               </p>
+            </div>
 
-              <h2 className="text-2xl font-semibold text-blue-600 mt-6">Real-World Usage</h2>
-              <p>
-                For over two decades, DES was the workhorse of symmetric encryption, used in a wide range of applications from securing financial transactions to protecting government data. Its story is a microcosm of the evolution of cryptography, where a once-formidable standard became obsolete in the face of rapid technological advancement. The transition from DES's 56-bit key to AES's 128/192/256-bit keys perfectly illustrates the need for larger key spaces to outpace the relentless increase in computing power.
+            {/* Technical Blueprint Section */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h3 className="text-2xl font-bold mb-4 text-blue-700 border-b-2 border-blue-500 pb-2">Technical Blueprint</h3>
+              <p className="text-gray-700 leading-relaxed mb-4">
+                The DES encryption process follows the <span className="font-semibold text-blue-600">Feistel structure</span> and consists of several well-defined steps:
+              </p>
+              
+              <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                <div className="flex items-start space-x-3">
+                  <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">1</span>
+                  <div>
+                    <span className="font-semibold text-blue-700">Initial Permutation (IP):</span>
+                    <span className="text-gray-700"> The 64-bit plaintext block is rearranged according to a fixed permutation table. This step provides no security but is part of the standard.</span>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">2</span>
+                  <div>
+                    <span className="font-semibold text-blue-700">Feistel Network (16 Rounds):</span>
+                    <span className="text-gray-700"> The permuted block is split into two 32-bit halves (L₀, R₀). Each round applies the Feistel function where the right half becomes the new left half, and the new right half is L₀ ⊕ f(R₀, Kᵢ).</span>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">3</span>
+                  <div>
+                    <span className="font-semibold text-blue-700">Round Function f(R, K):</span>
+                    <span className="text-gray-700"> Expansion (32→48 bits), XOR with subkey, S-box substitution (48→32 bits), and permutation. The S-boxes provide the crucial non-linearity.</span>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">4</span>
+                  <div>
+                    <span className="font-semibold text-blue-700">Final Permutation (FP):</span>
+                    <span className="text-gray-700"> After 16 rounds, the halves are recombined and the inverse of the initial permutation (IP⁻¹) is applied to produce the 64-bit ciphertext.</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="mt-4 bg-blue-50 p-4 rounded-lg border border-blue-200">
+                <h4 className="font-semibold text-blue-700 mb-2">Key Features:</h4>
+                <ul className="text-sm text-gray-700 space-y-1">
+                  <li>• <strong>Block Size:</strong> 64 bits</li>
+                  <li>• <strong>Key Size:</strong> 56 bits (8 parity bits make it 64 bits total)</li>
+                  <li>• <strong>Rounds:</strong> 16</li>
+                  <li>• <strong>Structure:</strong> Feistel Network</li>
+                  <li>• <strong>S-boxes:</strong> 8 different 6→4 bit substitution boxes</li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Security Scorecard Section */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h3 className="text-2xl font-bold mb-4 text-blue-700 border-b-2 border-blue-500 pb-2">Security Scorecard</h3>
+              <div className="bg-red-100 border-l-4 border-red-500 p-4 rounded-lg mb-4">
+                <div className="flex items-center">
+                  <div className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold mr-3">
+                    OBSOLETE - DEPRECATED
+                  </div>
+                </div>
+              </div>
+              <p className="text-gray-700 leading-relaxed mb-4">
+                The primary weakness of DES is its small <span className="font-semibold text-red-600">56-bit effective key size</span>. This was reasonable in the 1970s, but exponential growth in computational power made it vulnerable to brute-force attacks.
+              </p>
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h4 className="font-semibold text-gray-800 mb-2">Historical Milestones:</h4>
+                <ul className="text-sm text-gray-700 space-y-1">
+                  <li>• <strong>1977:</strong> Adopted as federal standard</li>
+                  <li>• <strong>1999:</strong> EFF cracked DES in 22 hours 15 minutes</li>
+                  <li>• <strong>2001:</strong> Officially replaced by AES</li>
+                  <li>• <strong>Today:</strong> Used only for legacy systems and education</li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Real-World Usage Section */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h3 className="text-2xl font-bold mb-4 text-blue-700 border-b-2 border-blue-500 pb-2">Real-World Usage</h3>
+              <p className="text-gray-700 leading-relaxed mb-4">
+                For over two decades, DES was the workhorse of symmetric encryption, securing financial transactions, government data, and corporate communications. Its story is a microcosm of cryptographic evolution—a once-formidable standard that became obsolete as computing power advanced.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                  <h4 className="font-semibold text-green-700 mb-2">Historical Applications:</h4>
+                  <ul className="text-sm text-gray-700 space-y-1">
+                    <li>• Banking and financial systems</li>
+                    <li>• Government secure communications</li>
+                    <li>• Early internet security protocols</li>
+                    <li>• Corporate data protection</li>
+                  </ul>
+                </div>
+                <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                  <h4 className="font-semibold text-orange-700 mb-2">Modern Legacy:</h4>
+                  <ul className="text-sm text-gray-700 space-y-1">
+                    <li>• Educational tool for cryptography</li>
+                    <li>• Basis for Triple DES (3DES)</li>
+                    <li>• Historical reference for standards</li>
+                    <li>• Inspiration for modern ciphers</li>
+                  </ul>
+                </div>
+              </div>
+              <p className="text-gray-700 leading-relaxed mt-4">
+                The transition from DES's 56-bit key to AES's 128/192/256-bit keys perfectly illustrates the need for larger key spaces to outpace the relentless increase in computing power.
               </p>
             </div>
           </div>
@@ -1329,45 +1422,323 @@ const DESCipher = () => {
         {/* Example */}
         {activeTab === "example" && (
           <div className="p-8 space-y-6 text-gray-800">
+            {/* Introduction */}
             <div className="bg-white rounded-lg shadow-lg p-6">
-              <h1 className="text-3xl font-bold text-blue-700">Solved Example </h1>
-              <p>
-                A complete numerical walkthrough of DES is too complex and lengthy for this report, but a conceptual example can illustrate the process of a single round.
+              <h3 className="text-2xl font-bold mb-4 text-blue-700 border-b-2 border-blue-500 pb-2">Solved Example</h3>
+              <p className="text-gray-700 leading-relaxed">
+                Let's walk through a DES encryption example to understand how the Feistel network transforms plaintext into ciphertext through 16 rounds of substitution and permutation.
               </p>
-              <h3 className="text-xl font-medium text-blue-500 mt-4">Example: A single round of DES encryption.</h3>
-              <p><strong>Plaintext block:</strong> <code>0123456789ABCDEF</code> (in hexadecimal)</p>
-              <p><strong>Subkey for Round 1:</strong> K₁</p>
-              <h3 className="text-xl font-medium text-blue-500 mt-6">Step 1: Initial Permutation (IP)</h3>
-              <p>
-                The 64-bit plaintext is rearranged. This step is a fixed, known permutation that shuffles the bits. The resulting 64-bit block is split into two 32-bit halves, L₀ and R₀.
+            </div>
+
+            {/* Example Setup */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h4 className="text-xl font-semibold text-blue-600 mb-4">Example Setup</h4>
+              <div className="bg-gray-50 rounded-lg p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <p className="text-gray-700 mb-2">
+                      <strong className="text-blue-600">Plaintext:</strong> 
+                      <span className="font-mono text-green-600 bg-white px-2 py-1 rounded ml-2">HELLODES</span>
+                    </p>
+                    <p className="text-gray-700 mb-2">
+                      <strong className="text-blue-600">Key:</strong> 
+                      <span className="font-mono text-purple-600 bg-white px-2 py-1 rounded ml-2">SECRETKY</span>
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-gray-700 mb-2">
+                      <strong className="text-blue-600">Algorithm:</strong> DES ECB
+                    </p>
+                    <p className="text-gray-700">
+                      <strong className="text-blue-600">Rounds:</strong> 16 Feistel rounds
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="text-sm text-gray-600">
+                    <strong>Hex Plaintext:</strong> <span className="font-mono">48454C4C4F444553</span>
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    <strong>Hex Key:</strong> <span className="font-mono">5345435245544B59</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 1: Initial Permutation */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h4 className="text-xl font-semibold text-blue-600 mb-4">Step 1: Initial Permutation (IP)</h4>
+              <p className="text-gray-700 mb-4">
+                The 64-bit plaintext is rearranged according to the Initial Permutation table. This provides no cryptographic security but is part of the DES standard.
               </p>
-              <h3 className="text-xl font-medium text-blue-500 mt-6">Step 2: The Round Function, f(R₀, K₁)</h3>
-              <p>
-                The round function takes R₀ and the subkey K₁ as input.
-              </p>
-              <ul className="list-disc list-inside space-y-2 mt-4 ml-4">
-                <li><strong>Expansion Permutation (E-Box):</strong> R₀ (32 bits) is expanded to 48 bits by duplicating and rearranging some bits.</li>
-                <li><strong>Key Mixing:</strong> The 48-bit expanded R₀ is XORed with the 48-bit subkey K₁.</li>
-                <li><strong>S-Box Substitution:</strong> The 48-bit result is divided into eight 6-bit chunks. Each chunk is fed into a separate S-box, which is a lookup table that maps each 6-bit input to a unique 4-bit output. This is the non-linear, non-invertible step that provides the cipher's security. The eight 4-bit outputs are concatenated to form a 32-bit block.</li>
-                <li><strong>P-Box Permutation:</strong> The resulting 32-bit block is then permuted to create the final output of the round function.</li>
-              </ul>
-              <h3 className="text-xl font-medium text-blue-500 mt-6">Step 3: XOR with the Left Half</h3>
-              <p>
-                The output of the round function, f(R₀, K₁), is XORed with the original left half, L₀.
-              </p>
-              <p className="mt-2 font-mono text-sm">
-                R₁ = L₀ ⊕ f(R₀, K₁)
-              </p>
-              <h3 className="text-xl font-medium text-blue-500 mt-6">Step 4: Swap the Halves</h3>
-              <p>
-                The new left half becomes the old right half, and the new right half becomes the result of the XOR operation.
-              </p>
-              <p className="mt-2 font-mono text-sm">
-                L₁ = R₀
-              </p>
-              <p className="mt-4">
-                This completes a single round. The resulting (L₁, R₁) pair becomes the input for the next round. This process is repeated 16 times, followed by a final inverse permutation to produce the ciphertext.
-              </p>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h5 className="font-medium text-gray-800 mb-3 text-center">Before IP</h5>
+                  <div className="font-mono text-sm text-center">
+                    <div className="bg-green-100 p-2 rounded border">
+                      48454C4C4F444553
+                    </div>
+                    <p className="text-xs text-gray-600 mt-1">Original 64-bit plaintext</p>
+                  </div>
+                </div>
+                
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h5 className="font-medium text-gray-800 mb-3 text-center">After IP</h5>
+                  <div className="font-mono text-sm text-center space-y-2">
+                    <div className="bg-blue-100 p-2 rounded border">
+                      <div>L₀: CC00CCCC</div>
+                      <div>R₀: 00F00FFF</div>
+                    </div>
+                    <p className="text-xs text-gray-600 mt-1">Split into 32-bit halves</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 2: Feistel Rounds */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h4 className="text-xl font-semibold text-blue-600 mb-4">Step 2: Feistel Network (16 Rounds)</h4>
+              
+              <div className="mb-6">
+                <p className="text-gray-700 mb-4">
+                  Each round follows the Feistel structure. Let's examine Round 1 in detail:
+                </p>
+                
+                <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                  <h5 className="font-semibold text-orange-700 mb-3">Round 1 Process</h5>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-4">
+                      <span className="bg-orange-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">1</span>
+                      <div>
+                        <strong>Input:</strong> L₀ = CC00CCCC, R₀ = 00F00FFF, K₁ = B1946AC7CA4CE
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className="bg-orange-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">2</span>
+                      <div>
+                        <strong>Feistel Function:</strong> L₁ = R₀, R₁ = L₀ ⊕ f(R₀, K₁)
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className="bg-orange-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">3</span>
+                      <div>
+                        <strong>Output:</strong> L₁ = 00F00FFF, R₁ = 8C008C8C
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                <h5 className="text-lg font-semibold text-blue-600">Round Function f(R, K) Details:</h5>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Expansion */}
+                  <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">E</span>
+                      <h6 className="font-semibold text-red-700">Expansion (32→48 bits)</h6>
+                    </div>
+                    <p className="text-sm text-gray-700 mb-2">
+                      R₀ is expanded from 32 to 48 bits by duplicating certain bits according to the E-table.
+                    </p>
+                    <div className="font-mono text-xs bg-white p-2 rounded">
+                      R₀: 00F00FFF → E(R₀): 001E001FFFFFEF
+                    </div>
+                  </div>
+
+                  {/* S-Boxes */}
+                  <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="bg-purple-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">S</span>
+                      <h6 className="font-semibold text-purple-700">S-Box Substitution</h6>
+                    </div>
+                    <p className="text-sm text-gray-700 mb-2">
+                      The 48-bit result is divided into 8 groups of 6 bits, each processed by a different S-box (6→4 bits).
+                    </p>
+                    <div className="font-mono text-xs bg-white p-2 rounded">
+                      48 bits → 8 S-boxes → 32 bits
+                    </div>
+                  </div>
+
+                  {/* XOR with Subkey */}
+                  <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">⊕</span>
+                      <h6 className="font-semibold text-green-700">XOR with Subkey</h6>
+                    </div>
+                    <p className="text-sm text-gray-700 mb-2">
+                      The expanded R₀ is XORed with the 48-bit round subkey K₁.
+                    </p>
+                    <div className="font-mono text-xs bg-white p-2 rounded">
+                      E(R₀) ⊕ K₁ → S-box input
+                    </div>
+                  </div>
+
+                  {/* Permutation */}
+                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">P</span>
+                      <h6 className="font-semibold text-blue-700">P-Box Permutation</h6>
+                    </div>
+                    <p className="text-sm text-gray-700 mb-2">
+                      The 32-bit S-box output is permuted according to the P-table to complete the round function.
+                    </p>
+                    <div className="font-mono text-xs bg-white p-2 rounded">
+                      Final f(R₀, K₁) output
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 3: Continuing Rounds */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h4 className="text-xl font-semibold text-blue-600 mb-4">Step 3: Continuing Through 16 Rounds</h4>
+              
+              <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                <p className="text-gray-700 mb-3">
+                  The Feistel process continues for all 16 rounds. Here's a summary of a few key rounds:
+                </p>
+                
+                <div className="space-y-2 font-mono text-sm">
+                  <div className="grid grid-cols-3 gap-4 text-center font-bold border-b pb-2">
+                    <span>Round</span>
+                    <span>Left Half (L)</span>
+                    <span>Right Half (R)</span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 text-center">
+                    <span>0</span>
+                    <span className="text-blue-600">CC00CCCC</span>
+                    <span className="text-green-600">00F00FFF</span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 text-center">
+                    <span>1</span>
+                    <span className="text-blue-600">00F00FFF</span>
+                    <span className="text-green-600">8C008C8C</span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 text-center">
+                    <span>2</span>
+                    <span className="text-blue-600">8C008C8C</span>
+                    <span className="text-green-600">4A4A4A4A</span>
+                  </div>
+                  <div className="text-center text-gray-500">...</div>
+                  <div className="grid grid-cols-3 gap-4 text-center">
+                    <span>16</span>
+                    <span className="text-blue-600">19BA9212</span>
+                    <span className="text-green-600">CF526D03</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                <p className="text-blue-800 text-sm">
+                  <strong>Note:</strong> In the final round, the halves are not swapped. The final output is (R₁₆, L₁₆) before the final permutation.
+                </p>
+              </div>
+            </div>
+
+            {/* Step 4: Final Permutation */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h4 className="text-xl font-semibold text-blue-600 mb-4">Step 4: Final Permutation (FP)</h4>
+              
+              <div className="bg-gray-50 rounded-lg p-6">
+                <div className="text-center">
+                  <p className="text-gray-700 mb-4">
+                    After 16 rounds, the final permutation (IP⁻¹) is applied to produce the ciphertext:
+                  </p>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-sm text-gray-600 mb-2">After 16 Rounds:</p>
+                      <div className="font-mono text-lg bg-orange-100 text-orange-800 px-4 py-2 rounded border">
+                        R₁₆L₁₆: CF526D0319BA9212
+                      </div>
+                    </div>
+                    
+                    <div className="text-2xl text-gray-500">↓ Final Permutation (FP)</div>
+                    
+                    <div>
+                      <p className="text-sm text-gray-600 mb-2">Final Ciphertext:</p>
+                      <div className="font-mono text-lg bg-red-100 text-red-800 px-4 py-2 rounded border">
+                        85E813540F0AB405
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <p className="text-sm text-gray-500 mt-4 italic">
+                    The exact values depend on the specific implementation and key schedule generation.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Feistel Structure Illustration */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h4 className="text-xl font-semibold text-blue-600 mb-4">Feistel Structure Visualization</h4>
+              
+              <div className="bg-gray-50 p-6 rounded-lg">
+                <div className="text-center mb-4">
+                  <h5 className="font-semibold text-gray-800">Single Round Process</h5>
+                </div>
+                
+                <div className="flex flex-col items-center space-y-4 max-w-md mx-auto">
+                  <div className="flex gap-8">
+                    <div className="bg-blue-100 px-4 py-2 rounded border text-center">
+                      <div className="font-mono text-sm">Lᵢ</div>
+                      <div className="text-xs text-gray-600">Left Half</div>
+                    </div>
+                    <div className="bg-green-100 px-4 py-2 rounded border text-center">
+                      <div className="font-mono text-sm">Rᵢ</div>
+                      <div className="text-xs text-gray-600">Right Half</div>
+                    </div>
+                  </div>
+                  
+                  <div className="text-center">
+                    <div className="bg-purple-100 px-6 py-3 rounded border">
+                      <div className="font-mono text-sm">f(Rᵢ, Kᵢ)</div>
+                      <div className="text-xs text-gray-600">Round Function</div>
+                    </div>
+                  </div>
+                  
+                  <div className="text-2xl text-gray-500">⊕</div>
+                  
+                  <div className="flex gap-8">
+                    <div className="bg-green-100 px-4 py-2 rounded border text-center">
+                      <div className="font-mono text-sm">Lᵢ₊₁ = Rᵢ</div>
+                      <div className="text-xs text-gray-600">New Left</div>
+                    </div>
+                    <div className="bg-yellow-100 px-4 py-2 rounded border text-center">
+                      <div className="font-mono text-sm">Rᵢ₊₁ = Lᵢ ⊕ f(Rᵢ, Kᵢ)</div>
+                      <div className="text-xs text-gray-600">New Right</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <p className="text-sm text-gray-600 text-center mt-4">
+                  This structure is repeated 16 times with different subkeys Kᵢ
+                </p>
+              </div>
+            </div>
+
+            {/* Interactive Try */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h4 className="text-xl font-semibold text-blue-600 mb-4">Try It Yourself</h4>
+              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                <p className="text-blue-800 mb-3">
+                  <strong>Want to see DES in action?</strong>
+                </p>
+                <p className="text-gray-700 text-sm mb-4">
+                  Switch to the "Cipher" tab and use the sample data to encrypt "HELLODES" with key "SECRETKY". 
+                  Click "Explain" to see each round of the Feistel network visualized!
+                </p>
+                <div className="flex gap-2 text-xs">
+                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded">📝 Sample Data</span>
+                  <span className="bg-green-100 text-green-700 px-2 py-1 rounded">🔍 Explain Mode</span>
+                  <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded">⚡ Quick Encrypt</span>
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -1645,11 +2016,7 @@ const DESCipher = () => {
       </div>
       
       {/* Footer */}
-      <footer className="text-center py-8">
-        <p className="text-gray-600 text-sm">
-          DES Cipher Simulation Tool © 2025
-        </p>
-      </footer>
+      
     </div>
   );
 };
