@@ -96,19 +96,19 @@ const Visualizer = ({ message, keys, animationState, currentStep, currentCharact
     <div className="flex flex-col items-center justify-center space-y-4">
       {/* Encryption Flow */}
       {isEncrypting && (
-        <div className="flex flex-col items-center w-full space-y-4">
+        <div className="flex flex-row items-center justify-center w-full space-x-6">
           <div className="bg-gray-100 p-5 rounded-xl border border-gray-200 shadow-sm w-full min-h-[100px] flex flex-col justify-center items-center text-center">
             <div className="text-xl font-bold font-mono text-[#0056b3]">{currentCharacter}</div>
             <div className="mt-2 text-gray-500 text-sm">Plaintext Character</div>
           </div>
-          <div className="text-4xl text-[#007bff]">↓</div>
+          <div className="text-4xl text-[#007bff]">→</div>
           {currentStep >= 1 && (
             <>
               <div className="bg-gray-100 p-5 rounded-xl border border-gray-200 shadow-sm w-full min-h-[100px] flex flex-col justify-center items-center text-center">
                 <div className="text-xl font-bold font-mono text-[#0056b3]">{message.charCodeAt(message.indexOf(currentCharacter))}</div>
                 <div className="mt-2 text-gray-500 text-sm">ASCII Value</div>
               </div>
-              <div className="text-4xl text-[#007bff]">↓</div>
+              <div className="text-4xl text-[#007bff]">→</div>
             </>
           )}
           {currentStep >= 2 && (
@@ -117,7 +117,7 @@ const Visualizer = ({ message, keys, animationState, currentStep, currentCharact
                 <div className="text-xl font-bold font-mono text-[#0056b3]">{modPow(message.charCodeAt(message.indexOf(currentCharacter)), keys.publicKey.e, keys.publicKey.n)}</div>
                 <div className="mt-2 text-gray-500 text-sm">C = M^e mod n</div>
               </div>
-              <div className="text-4xl text-[#007bff]">↓</div>
+              <div className="text-4xl text-[#007bff]">→</div>
             </>
           )}
           {currentStep >= 3 && (
@@ -131,19 +131,19 @@ const Visualizer = ({ message, keys, animationState, currentStep, currentCharact
 
       {/* Decryption Flow */}
       {isDecrypting && (
-        <div className="flex flex-col items-center w-full space-y-4">
+        <div className="flex flex-row items-center justify-center w-full space-x-6">
           <div className="bg-gray-100 p-5 rounded-xl border border-gray-200 shadow-sm w-full min-h-[100px] flex flex-col justify-center items-center text-center">
             <div className="text-xl font-bold font-mono text-[#0056b3]">{currentCharacter}</div>
             <div className="mt-2 text-gray-500 text-sm">Ciphertext Number</div>
           </div>
-          <div className="text-4xl text-[#007bff]">↓</div>
+          <div className="text-4xl text-[#007bff]">→</div>
           {currentStep >= 1 && (
             <>
               <div className="bg-gray-100 p-5 rounded-xl border border-gray-200 shadow-sm w-full min-h-[100px] flex flex-col justify-center items-center text-center">
                 <div className="text-xl font-bold font-mono text-[#0056b3]">{modPow(currentCharacter, keys.privateKey.d, keys.privateKey.n)}</div>
                 <div className="mt-2 text-gray-500 text-sm">M = C^d mod n</div>
               </div>
-              <div className="text-4xl text-[#007bff]">↓</div>
+              <div className="text-4xl text-[#007bff]">→</div>
             </>
           )}
           {currentStep >= 2 && (
