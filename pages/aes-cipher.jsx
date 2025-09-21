@@ -871,6 +871,28 @@ const AESCipher = () => {
   const [showAnimation, setShowAnimation] = useState(false);
   const [autoPlay, setAutoPlay] = useState(false);
   const [animationInterval, setAnimationInterval] = useState(null);
+  const [copied, setCopied] = useState(false);
+
+  // Copy result to clipboard
+  const copyToClipboard = () => {
+    const resultText = mode === "encrypt" ? ciphertext : plaintext;
+    if (resultText) {
+      navigator.clipboard.writeText(resultText).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }).catch(() => {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = resultText;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      });
+    }
+  };
 
   const reset = () => {
     setKey("");
@@ -888,6 +910,7 @@ const AESCipher = () => {
     setCurrentStepIndex(0);
     setShowAnimation(false);
     setAutoPlay(false);
+    setCopied(false);
     if (animationInterval) {
       clearInterval(animationInterval);
       setAnimationInterval(null);
@@ -1274,8 +1297,8 @@ const AESCipher = () => {
               Example
             </button>
             <button
-              onClick={() => setActiveTab("interactive")}
-              className={`px-6 py-2 rounded-md transition-colors ${activeTab === "interactive" ? "bg-blue-500 text-white" : "text-gray-600 hover:bg-gray-100"
+              onClick={() => setActiveTab("cipher")}
+              className={`px-6 py-2 rounded-md transition-colors ${activeTab === "cipher" ? "bg-blue-500 text-white" : "text-gray-600 hover:bg-gray-100"
                 }`}
             >
               Cipher
@@ -1690,8 +1713,8 @@ const AESCipher = () => {
           </div>
         )}
 
-        {/* Interactive */}
-        {activeTab === "interactive" && (
+        {/* Cipher */}
+        {activeTab === "cipher" && (
           <div className="space-y-6">
             <div className="bg-white rounded-lg shadow-lg p-6">
               <h2 className="text-2xl font-bold text-gray-800 mb-4">Interactive AES Tool</h2>
@@ -1787,9 +1810,33 @@ const AESCipher = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {mode === "encrypt" ? "Ciphertext (HEX)" : "Decrypted Text"}
-                  </label>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      {mode === "encrypt" ? "Ciphertext (HEX)" : "Decrypted Text"}
+                    </label>
+                    {(mode === "encrypt" ? ciphertext : plaintext) && (
+                      <button
+                        onClick={copyToClipboard}
+                        className="text-xs text-blue-600 hover:text-blue-800 flex items-center transition-colors"
+                      >
+                        {copied ? (
+                          <>
+                            <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Copied!
+                          </>
+                        ) : (
+                          <>
+                            <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                            Copy
+                          </>
+                        )}
+                      </button>
+                    )}
+                  </div>
                   <input
                     type="text"
                     value={mode === "encrypt" ? (ciphertext || "") : plaintext}
